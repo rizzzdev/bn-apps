@@ -4,3 +4,7 @@ dist
 .next
 build
 .svelte-kit
+.agents
+agent
+.gemini
+.claude
