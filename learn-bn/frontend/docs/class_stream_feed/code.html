@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Math 101 - Advanced Algebra | EduBrutal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Space+Grotesk:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "tertiary-fixed": "#e2e2e2",
+                        "outline-variant": "#c1caae",
+                        "inverse-primary": "#8fdb00",
+                        "primary-container": "#adff2f",
+                        "secondary": "#5e5e5e",
+                        "on-primary-container": "#497300",
+                        "outline": "#717a62",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#474747",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f9f9f9",
+                        "secondary-container": "#e2e2e2",
+                        "primary-fixed": "#a8f928",
+                        "on-background": "#1a1c1c",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "surface-dim": "#dadada",
+                        "surface-variant": "#e2e2e2",
+                        "surface-container": "#eeeeee",
+                        "surface": "#f9f9f9",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#112000",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-bright": "#f9f9f9",
+                        "on-surface-variant": "#414a35",
+                        "primary": "#426900",
+                        "inverse-surface": "#2f3131",
+                        "inverse-on-surface": "#f1f1f1",
+                        "primary-fixed-dim": "#8fdb00",
+                        "on-secondary-fixed": "#1b1b1b",
+                        "surface-tint": "#426900",
+                        "on-tertiary-container": "#666868",
+                        "on-secondary-container": "#646464",
+                        "tertiary-container": "#e8e8e8",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#314f00",
+                        "on-surface": "#1a1c1c",
+                        "secondary-fixed-dim": "#c6c6c6",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#5d5f5f",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#e2e2e2",
+                        "surface-container-low": "#f3f3f3",
+                        "surface-container-highest": "#e2e2e2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "container-max": "1280px",
+                        "base": "8px",
+                        "stack-lg": "48px",
+                        "stack-sm": "12px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px",
+                        "stack-md": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Space Grotesk"],
+                        "label-bold": ["Space Grotesk"],
+                        "display-lg-mobile": ["Space Grotesk"],
+                        "display-lg": ["Space Grotesk"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "label-bold": ["14px", { "lineHeight": "1", "fontWeight": "700" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .neo-shadow { box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); }
+        .neo-shadow-hover:hover { box-shadow: 8px 8px 0px 0px rgba(0,0,0,1); transform: translate(-2px, -2px); }
+        .neo-shadow-active:active { box-shadow: 0px 0px 0px 0px rgba(0,0,0,1); transform: translate(4px, 4px); }
+        .neo-border { border: 2px solid #1a1c1c; }
+        .neo-border-3 { border: 3px solid #1a1c1c; }
+        
+        .input-neo:focus {
+            box-shadow: 4px 4px 0px 0px #adff2f;
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar (Shared Component) -->
+<nav class="bg-surface dark:bg-on-tertiary-fixed hidden md:flex flex-col fixed left-0 top-0 h-full p-stack-md w-64 border-r-2 border-on-surface dark:border-outline z-40">
+<div class="mb-stack-lg">
+<h1 class="font-headline-md text-headline-md font-black text-on-surface dark:text-on-primary-fixed tracking-tight">EduBrutal</h1>
+<p class="text-secondary font-label-bold text-xs mt-1">LMS Platform</p>
+</div>
+<div class="flex flex-col gap-2 flex-grow">
+<!-- Active: Dashboard -->
+<a class="flex items-center gap-3 p-3 bg-primary-container text-on-primary-container border-2 border-on-surface shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-label-bold text-label-bold hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all duration-100 active:translate-x-1 active:translate-y-1 active:shadow-none" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Dashboard
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-3 p-3 text-on-surface dark:text-surface-variant hover:bg-surface-container font-label-bold text-label-bold hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all duration-100 active:translate-x-1 active:translate-y-1 active:shadow-none" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">school</span>
+                My Classes
+            </a>
+<a class="flex items-center gap-3 p-3 text-on-surface dark:text-surface-variant hover:bg-surface-container font-label-bold text-label-bold hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all duration-100 active:translate-x-1 active:translate-y-1 active:shadow-none" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">calendar_month</span>
+                Calendar
+            </a>
+<a class="flex items-center gap-3 p-3 text-on-surface dark:text-surface-variant hover:bg-surface-container font-label-bold text-label-bold hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all duration-100 active:translate-x-1 active:translate-y-1 active:shadow-none" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">grade</span>
+                Grades
+            </a>
+</div>
+<button class="mt-auto bg-primary-container text-on-surface neo-border neo-shadow neo-shadow-hover neo-shadow-active font-label-bold text-label-bold py-3 px-4 w-full flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined">add</span>
+            Create Content
+        </button>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar (Shared Component) -->
+<header class="bg-surface dark:bg-on-tertiary-fixed flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-20 sticky top-0 z-30 border-b-2 border-on-surface shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]">
+<div class="flex items-center gap-4">
+<button class="md:hidden p-2 text-on-surface neo-border neo-shadow neo-shadow-active bg-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="font-headline-md text-headline-md font-black text-on-surface truncate max-w-[200px] md:max-w-md">Math 101 - Advanced Algebra</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-white neo-border px-3 py-2 w-64 focus-within:shadow-[4px_4px_0px_0px_#adff2f] transition-shadow">
+<span class="material-symbols-outlined text-secondary mr-2">search</span>
+<input class="bg-transparent border-none outline-none w-full font-body-md text-sm placeholder:text-[#777777]" placeholder="Search class..." type="text"/>
+</div>
+<button class="bg-primary-container text-on-surface neo-border neo-shadow neo-shadow-hover neo-shadow-active font-label-bold text-label-bold py-2 px-4 hidden md:block transition-all">
+                    Join Class
+                </button>
+<div class="w-10 h-10 neo-border neo-shadow bg-surface-container overflow-hidden flex-shrink-0 cursor-pointer neo-shadow-hover transition-all">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A close up portrait photo of a young indonesian male student with short black hair wearing a yellow hoodie, smiling slightly. Bright flat lighting, neobrutalist aesthetic, solid light grey background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwBtA_CNJr3EVbHDYCIvixDSUkxbbmQH6tWnhE7L72-uNKOSPLtgBIqXxBNEAl2h-tWiIQw5cFiD7l3zjM8sTIQAkBmPYe2O4iu4ZizGCV3aFVUIseGgo_eqR8Z7ovWxNWUtnkvXLG8JsdMoF0Kz3OdLIz5B2N2RFkdFX9dhiZdMReFi3HY5scWJZRsXPnMSe8HzyZ3bnOZX6NwvkUavXmNHCT8aMSnVORMm7rfHB72CXgqN7NXKjdgA"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto w-full">
+<!-- Bento Layout for Class Stream -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Main Feed Column -->
+<div class="lg:col-span-8 flex flex-col gap-stack-md">
+<!-- Share Box -->
+<div class="bg-white neo-border neo-shadow p-6 relative overflow-hidden group focus-within:border-primary">
+<div class="absolute top-0 left-0 w-full h-2 bg-primary-container border-b-2 border-on-surface"></div>
+<div class="flex gap-4 items-start mt-2">
+<div class="w-12 h-12 neo-border bg-surface-container shrink-0 overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A close up portrait photo of a young indonesian male student with short black hair wearing a yellow hoodie, smiling slightly. Bright flat lighting, neobrutalist aesthetic, solid light grey background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4hb2BNdk9SetY0UYYNmZW_Oy4yCbGJHoM3avZ8iLXeYe3NXx9NPlVs26OhHR3xNl9OqjM_tbw4_bhwajGOAEMacIwX1fJumUrDdZoLW-Solm7WofjhXV84R-n58SeFNt5MGCXEQL8TfHEv_qhIjY6vro9f6bP1bpVzW6KpxD62u5vxBzApaLT5yLf1VcXVawvHv7VdHcYVEirYBz5y4m0V89ac8IFguED7UQQny8jDAZV9frNyC4ESg"/>
+</div>
+<div class="w-full">
+<textarea class="w-full min-h-[80px] p-3 bg-background neo-border input-neo font-body-md placeholder:text-[#777777] resize-none transition-shadow mb-4" placeholder="Bagikan sesuatu dengan kelas Anda..."></textarea>
+<div class="flex justify-between items-center">
+<div class="flex gap-2">
+<button aria-label="Attach file" class="p-2 bg-white neo-border neo-shadow neo-shadow-active text-on-surface hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<button aria-label="Add link" class="p-2 bg-white neo-border neo-shadow neo-shadow-active text-on-surface hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined">link</span>
+</button>
+</div>
+<button class="bg-on-surface text-white neo-border neo-shadow neo-shadow-hover neo-shadow-active font-label-bold text-label-bold py-2 px-6 transition-all">
+                                        Posting
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Feed Posts -->
+<!-- Post 1: Assignment -->
+<article class="bg-white neo-border neo-shadow hover:-translate-y-1 transition-transform duration-200">
+<div class="border-b-2 border-on-surface bg-[#E2E2E2] p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container neo-border flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+<span class="material-symbols-outlined text-on-surface">assignment</span>
+</div>
+<div>
+<h3 class="font-label-bold text-label-bold text-on-surface">Bpk. Budi Santoso</h3>
+<p class="font-body-md text-sm text-secondary">Tugas Baru • 10 Okt 2023</p>
+</div>
+</div>
+<button class="text-on-surface hover:bg-white neo-border p-1 neo-shadow-active transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="p-6">
+<h4 class="font-headline-md text-xl font-bold mb-2">Tugas 3: Persamaan Kuadrat Lanjutan</h4>
+<p class="font-body-md mb-4 text-on-surface">Silakan kerjakan soal-soal pada halaman 45-47 di buku teks. Kumpulkan dalam bentuk PDF. Pastikan langkah-langkah penyelesaian ditulis dengan jelas.</p>
+<div class="flex items-center justify-between mt-6 p-4 border-2 border-on-surface bg-background border-dashed">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">event</span>
+<span class="font-label-bold text-sm">Tenggat: 15 Okt, 23:59</span>
+</div>
+<div class="px-3 py-1 bg-white neo-border font-label-bold text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                    Belum Selesai
+                                </div>
+</div>
+</div>
+</article>
+<!-- Post 2: Material -->
+<article class="bg-white neo-border neo-shadow hover:-translate-y-1 transition-transform duration-200">
+<div class="border-b-2 border-on-surface bg-surface-container p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-white neo-border flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+<span class="material-symbols-outlined text-on-surface">menu_book</span>
+</div>
+<div>
+<h3 class="font-label-bold text-label-bold text-on-surface">Bpk. Budi Santoso</h3>
+<p class="font-body-md text-sm text-secondary">Materi Baru • 8 Okt 2023</p>
+</div>
+</div>
+<button class="text-on-surface hover:bg-white neo-border p-1 neo-shadow-active transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="p-6">
+<h4 class="font-headline-md text-xl font-bold mb-2">Slide Kuliah: Pengantar Matriks</h4>
+<p class="font-body-md mb-4 text-on-surface">Berikut adalah slide presentasi dari pertemuan kita hari ini. Pelajari dengan baik sebelum kuis minggu depan.</p>
+<a class="flex items-center p-3 neo-border hover:bg-primary-container transition-colors group" href="#">
+<div class="w-12 h-12 bg-error text-white neo-border flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-none group-hover:translate-x-[2px] group-hover:translate-y-[2px] transition-all">
+<span class="font-label-bold text-xs">PDF</span>
+</div>
+<div class="ml-4 truncate">
+<p class="font-label-bold text-sm truncate">Pengantar_Matriks_Bab4.pdf</p>
+<p class="font-body-md text-xs text-secondary">PDF Document • 2.4 MB</p>
+</div>
+</a>
+</div>
+</article>
+<!-- Post 3: Quiz -->
+<article class="bg-white neo-border neo-shadow hover:-translate-y-1 transition-transform duration-200">
+<div class="border-b-2 border-on-surface bg-[#E2E2E2] p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-inverse-primary neo-border flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+<span class="material-symbols-outlined text-on-surface">quiz</span>
+</div>
+<div>
+<h3 class="font-label-bold text-label-bold text-on-surface">Bpk. Budi Santoso</h3>
+<p class="font-body-md text-sm text-secondary">Kuis Baru • 5 Okt 2023</p>
+</div>
+</div>
+<button class="text-on-surface hover:bg-white neo-border p-1 neo-shadow-active transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="font-headline-md text-xl font-bold mb-2">Kuis Singkat: Fungsi Linear</h4>
+<p class="font-body-md text-on-surface">Waktu pengerjaan: 30 Menit. Terdiri dari 15 soal pilihan ganda.</p>
+</div>
+<div class="px-3 py-1 bg-primary-container neo-border font-label-bold text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-on-surface">
+                                    Lulus
+                                </div>
+</div>
+<div class="mt-4 pt-4 border-t-2 border-on-surface flex justify-between items-center">
+<div class="font-label-bold">Skor Anda: <span class="text-xl ml-1">85/100</span></div>
+<button class="bg-white text-on-surface neo-border neo-shadow neo-shadow-active font-label-bold text-label-bold py-2 px-4 transition-all">
+                                    Lihat Hasil
+                                </button>
+</div>
+</div>
+</article>
+</div>
+<!-- Sidebar (Widgets) -->
+<aside class="lg:col-span-4 flex flex-col gap-stack-md hidden lg:flex">
+<!-- Progress Card -->
+<div class="bg-white neo-border neo-shadow p-6">
+<h3 class="font-headline-md text-lg font-bold mb-4 border-b-2 border-on-surface pb-2">Progres Kelas</h3>
+<div class="mb-2 flex justify-between font-label-bold text-sm">
+<span>Selesai</span>
+<span>60%</span>
+</div>
+<div class="w-full neo-border-3 bg-white h-6 mb-4">
+<div class="bg-primary-container h-full border-r-2 border-on-surface" style="width: 60%"></div>
+</div>
+<p class="font-body-md text-sm text-secondary">Pertahankan kinerja Anda! 4 modul tersisa bulan ini.</p>
+</div>
+<!-- Upcoming Card -->
+<div class="bg-white neo-border neo-shadow p-6 relative">
+<div class="absolute top-0 right-0 w-8 h-8 bg-primary-container border-b-2 border-l-2 border-on-surface"></div>
+<h3 class="font-headline-md text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined">event_upcoming</span>
+                            Mendatang
+                        </h3>
+<ul class="flex flex-col gap-4">
+<li class="flex gap-4 items-start group cursor-pointer">
+<div class="w-12 h-12 bg-background neo-border flex flex-col items-center justify-center shrink-0 group-hover:bg-primary-container transition-colors">
+<span class="font-label-bold text-[10px] leading-none uppercase">Okt</span>
+<span class="font-headline-md text-lg leading-none">15</span>
+</div>
+<div>
+<h4 class="font-label-bold text-sm">Tugas 3: Persamaan Kuadrat</h4>
+<p class="font-body-md text-xs text-secondary mt-1">23:59 WIB</p>
+</div>
+</li>
+<li class="flex gap-4 items-start group cursor-pointer">
+<div class="w-12 h-12 bg-background neo-border flex flex-col items-center justify-center shrink-0 group-hover:bg-primary-container transition-colors">
+<span class="font-label-bold text-[10px] leading-none uppercase">Okt</span>
+<span class="font-headline-md text-lg leading-none">18</span>
+</div>
+<div>
+<h4 class="font-label-bold text-sm">Ujian Tengah Semester</h4>
+<p class="font-body-md text-xs text-secondary mt-1">08:00 WIB - Ruang 101</p>
+</div>
+</li>
+</ul>
+<button class="mt-6 w-full text-center font-label-bold text-sm py-2 hover:bg-surface-container neo-border transition-colors">
+                            Lihat Semua
+                        </button>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</body></html>

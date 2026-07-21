@@ -1,0 +1,499 @@
+<!doctype html>
+
+<html lang="id">
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+		<title>Jurusan Murid - SIS Management</title>
+		<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&amp;family=Space+Mono:wght@400;500;700&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<script id="tailwind-config">
+			tailwind.config = {
+				darkMode: 'class',
+				theme: {
+					extend: {
+						colors: {
+							'surface-container-lowest': '#ffffff',
+							'outline-variant': '#e4beb8',
+							outline: '#8f706a',
+							'on-secondary-fixed': '#161e00',
+							'on-tertiary-fixed': '#1f1c06',
+							'on-error': '#ffffff',
+							'surface-container-highest': '#e6e1e1',
+							'on-tertiary-fixed-variant': '#4b472d',
+							'surface-dim': '#ddd9d8',
+							'surface-container': '#f1edec',
+							'secondary-fixed': '#c3f400',
+							primary: '#830300',
+							'tertiary-fixed-dim': '#cec7a5',
+							'on-primary-fixed': '#410100',
+							'error-container': '#ffdad6',
+							'on-secondary': '#ffffff',
+							'surface-bright': '#fdf8f8',
+							'on-primary': '#ffffff',
+							surface: '#fdf8f8',
+							'secondary-fixed-dim': '#abd600',
+							'on-tertiary': '#ffffff',
+							tertiary: '#433f26',
+							'surface-container-low': '#f7f2f2',
+							'primary-fixed-dim': '#ffb4a8',
+							'primary-fixed': '#ffdad4',
+							'on-secondary-fixed-variant': '#3c4d00',
+							'on-secondary-container': '#546b00',
+							'on-surface-variant': '#5b403c',
+							'on-primary-container': '#ffbbaf',
+							'surface-variant': '#e6e1e1',
+							'on-tertiary-container': '#d3cbaa',
+							'on-primary-fixed-variant': '#930300',
+							background: '#fdf8f8',
+							'surface-container-high': '#ece7e7',
+							secondary: '#506600',
+							'on-background': '#1c1b1b',
+							'on-surface': '#1c1b1b',
+							'primary-container': '#ab1509',
+							'tertiary-fixed': '#ebe3c0',
+							'tertiary-container': '#5b563b',
+							'secondary-container': '#c1f100',
+							'inverse-surface': '#313030',
+							'on-error-container': '#93000a',
+							error: '#ba1a1a',
+							'surface-tint': '#b82012',
+							'inverse-on-surface': '#f4f0ef',
+							'inverse-primary': '#ffb4a8'
+						},
+						borderRadius: {
+							DEFAULT: '0.25rem',
+							lg: '0.5rem',
+							xl: '0.75rem',
+							full: '9999px'
+						},
+						spacing: {
+							unit: '8px',
+							margin: '32px',
+							'container-max': '1280px',
+							'shadow-offset': '8px',
+							gutter: '24px',
+							'border-width': '4px'
+						},
+						fontFamily: {
+							'headline-md': ['Outfit'],
+							'headline-xl': ['Outfit'],
+							'data-mono': ['Space Mono'],
+							'headline-lg': ['Outfit'],
+							'label-caps': ['Space Mono'],
+							'headline-lg-mobile': ['Outfit'],
+							'body-md': ['Outfit'],
+							'body-lg': ['Outfit']
+						},
+						fontSize: {
+							'headline-md': ['24px', { lineHeight: '1.3', fontWeight: '700' }],
+							'headline-xl': [
+								'64px',
+								{ lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '800' }
+							],
+							'data-mono': [
+								'14px',
+								{ lineHeight: '1.5', letterSpacing: '0.05em', fontWeight: '500' }
+							],
+							'headline-lg': [
+								'40px',
+								{ lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }
+							],
+							'label-caps': ['12px', { lineHeight: '1.2', fontWeight: '700' }],
+							'headline-lg-mobile': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
+							'body-md': ['16px', { lineHeight: '1.6', fontWeight: '400' }],
+							'body-lg': ['18px', { lineHeight: '1.6', fontWeight: '400' }]
+						}
+					}
+				}
+			};
+		</script>
+		<style>
+			.material-symbols-outlined {
+				font-variation-settings:
+					'FILL' 1,
+					'wght' 700,
+					'GRAD' 0,
+					'opsz' 24;
+			}
+			.neo-shadow {
+				box-shadow: 8px 8px 0px 0px rgba(28, 27, 27, 1);
+			}
+			.neo-shadow-hover:hover {
+				box-shadow: 12px 12px 0px 0px rgba(28, 27, 27, 1);
+				transform: translate(-4px, -4px);
+			}
+			.neo-shadow-active:active {
+				box-shadow: 0px 0px 0px 0px rgba(28, 27, 27, 1);
+				transform: translate(8px, 8px);
+			}
+			.neo-button {
+				transition: all 0.15s ease-in-out;
+			}
+		</style>
+	</head>
+	<body
+		class="selection:text-on-secondary-fixed min-h-screen overflow-x-hidden bg-background font-body-md text-on-background selection:bg-secondary-fixed"
+	>
+		<nav
+			class="fixed top-0 left-0 z-40 flex h-full w-64 flex-col gap-4 border-r-[4px] border-on-background bg-surface-container p-4 font-label-caps text-label-caps shadow-[8px_0px_0px_0px_rgba(28,27,27,1)] dark:bg-surface-container-high"
+		>
+			<div class="mb-8 flex items-center gap-4">
+				<div
+					class="h-12 w-12 flex-shrink-0 overflow-hidden border-[4px] border-on-background bg-surface-container-lowest neo-shadow"
+				>
+					<img
+						class="h-full w-full object-cover"
+						data-alt="A stark, minimalist neobrutalist style school crest in high-contrast black and white with a single deep red geometric accent. Thick 4px strokes define an abstract open book and gear motif against a pristine white background. The image is devoid of organic curves, feeling rigid, institutional, and authoritative."
+						src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwppVrNjy1myVhueysaDX96XtgIb8bSK5zY28nJj0fn0-VVBTbDGOygCkTbcvl_G3NkFGdw0hVuTo85VPqqXY1qI6fCtQov81xZbMiKBfygQ_kUhN8qGI0Btz3R6TzGDFKu34cpprv6GE3WvWHyhVrwi07gyRXl0MdP5KNNSW1UZ9Bi4jw5jn1quVYnAp8Of5lXf64LNBMPiN7SJk1z9CDmb9P47cay5JjTtRbtxq9JVhapEViFVuq"
+					/>
+				</div>
+				<div>
+					<h1
+						class="m-0 font-headline-md text-headline-md tracking-tighter text-primary uppercase dark:text-primary-fixed-dim"
+					>
+						SIS Management
+					</h1>
+					<p class="m-0 font-data-mono text-data-mono text-on-surface-variant">
+						Admin Terminal v1.0
+					</p>
+				</div>
+			</div>
+			<button
+				class="neo-button neo-shadow-hover neo-shadow-active mb-8 flex w-full items-center justify-center gap-2 border-[4px] border-on-background bg-primary-container px-4 py-3 font-headline-md text-[18px] text-on-primary-container neo-shadow"
+			>
+				<span class="material-symbols-outlined">add</span>
+				Add New Record
+			</button>
+			<div class="flex flex-1 flex-col gap-2">
+				<a
+					class="flex items-center gap-3 border-[4px] border-on-background bg-secondary-container p-3 font-bold text-on-secondary-container shadow-[4px_4px_0px_0px_rgba(28,27,27,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">school</span>
+					Jurusan Murid
+				</a>
+				<a
+					class="flex items-center gap-3 border-[4px] border-transparent p-3 font-medium text-on-surface-variant transition-all hover:border-[4px] hover:border-on-background hover:bg-surface-container-highest hover:shadow-[4px_4px_0px_0px_rgba(28,27,27,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">groups</span>
+					Kelas Murid
+				</a>
+				<a
+					class="flex items-center gap-3 border-[4px] border-transparent p-3 font-medium text-on-surface-variant transition-all hover:border-[4px] hover:border-on-background hover:bg-surface-container-highest hover:shadow-[4px_4px_0px_0px_rgba(28,27,27,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">supervisor_account</span>
+					Wali Kelas
+				</a>
+				<a
+					class="flex items-center gap-3 border-[4px] border-transparent p-3 font-medium text-on-surface-variant transition-all hover:border-[4px] hover:border-on-background hover:bg-surface-container-highest hover:shadow-[4px_4px_0px_0px_rgba(28,27,27,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">menu_book</span>
+					Guru Mapel
+				</a>
+				<a
+					class="flex items-center gap-3 border-[4px] border-transparent p-3 font-medium text-on-surface-variant transition-all hover:border-[4px] hover:border-on-background hover:bg-surface-container-highest hover:shadow-[4px_4px_0px_0px_rgba(28,27,27,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">calendar_today</span>
+					Jadwal Piket
+				</a>
+			</div>
+			<div class="mt-auto flex flex-col gap-2 border-t-[4px] border-on-background pt-4">
+				<a
+					class="flex items-center gap-3 border-[4px] border-transparent p-3 font-medium text-on-surface-variant transition-all hover:border-[4px] hover:border-on-background hover:bg-surface-container-highest hover:shadow-[4px_4px_0px_0px_rgba(28,27,27,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">settings</span>
+					Settings
+				</a>
+				<a
+					class="flex items-center gap-3 border-[4px] border-transparent p-3 font-medium text-on-surface-variant transition-all hover:border-[4px] hover:border-on-background hover:bg-surface-container-highest hover:shadow-[4px_4px_0px_0px_rgba(28,27,27,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">logout</span>
+					Logout
+				</a>
+			</div>
+		</nav>
+		<main class="ml-[256px] min-h-screen p-margin">
+			<header class="mb-12 flex items-end justify-between border-b-[8px] border-on-background pb-4">
+				<div>
+					<h1 class="m-0 font-headline-xl text-headline-xl text-primary uppercase">
+						Direktori Jurusan
+					</h1>
+					<p class="mt-2 font-data-mono text-data-mono text-on-surface-variant">
+						SISTEM INFORMASI AKADEMIK / MODUL PEMETAAN
+					</p>
+				</div>
+				<div class="flex items-center gap-4">
+					<div
+						class="relative flex items-center border-[4px] border-on-background bg-surface-container-lowest neo-shadow"
+					>
+						<span class="material-symbols-outlined absolute left-4 text-on-background">search</span>
+						<input
+							class="w-64 border-none bg-transparent py-3 pr-4 pl-12 font-data-mono text-data-mono text-on-background placeholder:text-outline-variant focus:ring-0 focus:outline-none"
+							placeholder="Cari Kode Jurusan..."
+							type="text"
+						/>
+					</div>
+				</div>
+			</header>
+			<section class="mb-16">
+				<div
+					class="overflow-hidden border-[4px] border-on-background bg-surface-container-lowest neo-shadow"
+				>
+					<table class="w-full border-collapse text-left">
+						<thead class="border-b-[4px] border-on-background bg-surface-variant">
+							<tr>
+								<th
+									class="w-24 border-r-[4px] border-on-background p-6 text-center font-label-caps text-label-caps uppercase"
+								>
+									No
+								</th>
+								<th
+									class="border-r-[4px] border-on-background p-6 font-label-caps text-label-caps uppercase"
+								>
+									Nama Jurusan
+								</th>
+								<th
+									class="border-r-[4px] border-on-background p-6 text-center font-label-caps text-label-caps uppercase"
+								>
+									Jumlah Murid
+								</th>
+								<th
+									class="border-r-[4px] border-on-background p-6 text-center font-label-caps text-label-caps uppercase"
+								>
+									Akreditasi
+								</th>
+								<th class="p-6 text-center font-label-caps text-label-caps uppercase">
+									Aksi Sistem
+								</th>
+							</tr>
+						</thead>
+						<tbody class="font-data-mono text-data-mono">
+							<tr
+								class="border-b-[4px] border-on-background transition-colors hover:bg-surface-bright"
+							>
+								<td
+									class="border-r-[4px] border-on-background p-6 text-center text-[18px] font-bold"
+								>
+									01
+								</td>
+								<td class="border-r-[4px] border-on-background p-6 font-headline-md text-[20px]">
+									Teknik Informatika
+								</td>
+								<td class="border-r-[4px] border-on-background p-6 text-center text-[18px]">142</td>
+								<td class="border-r-[4px] border-on-background p-6 text-center">
+									<span
+										class="text-on-secondary-fixed inline-block border-[4px] border-on-background bg-secondary-fixed px-3 py-1 font-bold shadow-[4px_4px_0px_0px_rgba(28,27,27,1)]"
+										>A+</span
+									>
+								</td>
+								<td class="p-6 text-center">
+									<div class="flex justify-center gap-3">
+										<button
+											class="neo-button flex items-center gap-1 border-[4px] border-on-background bg-primary-container px-4 py-2 text-[12px] font-bold text-on-primary-container uppercase neo-shadow active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+										>
+											<span class="material-symbols-outlined text-[16px]">visibility</span> Lihat
+										</button>
+										<button
+											class="neo-button border-[4px] border-on-background bg-surface px-4 py-2 text-[12px] font-bold text-on-surface uppercase neo-shadow active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+										>
+											Update
+										</button>
+										<button
+											class="neo-button flex h-10 w-10 items-center justify-center border-[4px] border-on-background bg-error text-on-error neo-shadow active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+										>
+											<span class="material-symbols-outlined text-[18px]">delete</span>
+										</button>
+									</div>
+								</td>
+							</tr>
+							<tr
+								class="border-b-[4px] border-on-background bg-surface-container-low transition-colors hover:bg-surface-bright"
+							>
+								<td
+									class="border-r-[4px] border-on-background p-6 text-center text-[18px] font-bold"
+								>
+									02
+								</td>
+								<td class="border-r-[4px] border-on-background p-6 font-headline-md text-[20px]">
+									Sistem Informasi
+								</td>
+								<td class="border-r-[4px] border-on-background p-6 text-center text-[18px]">98</td>
+								<td class="border-r-[4px] border-on-background p-6 text-center">
+									<span
+										class="text-on-secondary-fixed inline-block border-[4px] border-on-background bg-secondary-fixed px-3 py-1 font-bold shadow-[4px_4px_0px_0px_rgba(28,27,27,1)]"
+										>A</span
+									>
+								</td>
+								<td class="p-6 text-center">
+									<div class="flex justify-center gap-3">
+										<button
+											class="neo-button flex items-center gap-1 border-[4px] border-on-background bg-primary-container px-4 py-2 text-[12px] font-bold text-on-primary-container uppercase neo-shadow active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+										>
+											<span class="material-symbols-outlined text-[16px]">visibility</span> Lihat
+										</button>
+										<button
+											class="neo-button border-[4px] border-on-background bg-surface px-4 py-2 text-[12px] font-bold text-on-surface uppercase neo-shadow active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+										>
+											Update
+										</button>
+										<button
+											class="neo-button flex h-10 w-10 items-center justify-center border-[4px] border-on-background bg-error text-on-error neo-shadow active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+										>
+											<span class="material-symbols-outlined text-[18px]">delete</span>
+										</button>
+									</div>
+								</td>
+							</tr>
+							<tr class="transition-colors hover:bg-surface-bright">
+								<td
+									class="border-r-[4px] border-on-background p-6 text-center text-[18px] font-bold"
+								>
+									03
+								</td>
+								<td class="border-r-[4px] border-on-background p-6 font-headline-md text-[20px]">
+									Desain Komunikasi Visual
+								</td>
+								<td class="border-r-[4px] border-on-background p-6 text-center text-[18px]">115</td>
+								<td class="border-r-[4px] border-on-background p-6 text-center">
+									<span
+										class="inline-block border-[4px] border-on-background bg-surface-variant px-3 py-1 font-bold text-on-surface-variant shadow-[4px_4px_0px_0px_rgba(28,27,27,1)]"
+										>B+</span
+									>
+								</td>
+								<td class="p-6 text-center">
+									<div class="flex justify-center gap-3">
+										<button
+											class="neo-button flex items-center gap-1 border-[4px] border-on-background bg-primary-container px-4 py-2 text-[12px] font-bold text-on-primary-container uppercase neo-shadow active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+										>
+											<span class="material-symbols-outlined text-[16px]">visibility</span> Lihat
+										</button>
+										<button
+											class="neo-button border-[4px] border-on-background bg-surface px-4 py-2 text-[12px] font-bold text-on-surface uppercase neo-shadow active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+										>
+											Update
+										</button>
+										<button
+											class="neo-button flex h-10 w-10 items-center justify-center border-[4px] border-on-background bg-error text-on-error neo-shadow active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+										>
+											<span class="material-symbols-outlined text-[18px]">delete</span>
+										</button>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
+			<section class="border-t-[8px] border-on-background pt-12">
+				<div class="mb-8 flex items-center gap-4">
+					<div class="h-8 w-8 bg-on-background"></div>
+					<h2 class="m-0 font-headline-lg text-headline-lg tracking-tight uppercase">
+						Detail Jurusan: <span class="text-primary-container">Teknik Informatika</span>
+					</h2>
+				</div>
+				<div class="grid grid-cols-12 gap-gutter">
+					<div
+						class="group col-span-4 flex cursor-pointer flex-col border-[4px] border-on-background bg-tertiary-fixed p-6 neo-shadow transition-colors hover:bg-surface-bright"
+					>
+						<div class="mb-6 flex items-start justify-between">
+							<div
+								class="h-20 w-20 overflow-hidden border-[4px] border-on-background bg-surface-container shadow-[4px_4px_0px_0px_rgba(28,27,27,1)] transition-all duration-200 group-hover:translate-x-[4px] group-hover:translate-y-[4px] group-hover:shadow-none"
+							>
+								<img
+									class="h-full w-full object-cover contrast-125 grayscale"
+									data-alt="A striking, high-contrast neobrutalist portrait of a young Indonesian male student. The lighting is harsh and directional, creating deep black, blocky shadows across his face. He wears a plain white collared uniform. The background is a stark, solid cream color. The composition rejects soft gradients, favoring rigid structure and intense physical presence."
+									src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtuDxydnms27E63HBCkoQgMkPpgJs7CZ0GvK7IjQFhv6wl4MzCxTw386pZgLLhAN81zxdua6WflFQn8ny10LT5sLTC-SjINxqpy4AEEgD7PFEpkVn6lOzZpPOJiJsi-TrxlQA-yb6BS6a1kMSAKWO8PjJfUySjY-1tjD3_KVeDIBSyKS8F283KFieOiYKLXIelS6pz1Ex-BDcnxGelSICc8U_TBTu6a0vF2O-p9_rqGkeETnPJQBjG"
+								/>
+							</div>
+							<span
+								class="text-on-secondary-fixed border-[4px] border-on-background bg-secondary-fixed px-2 py-1 font-label-caps text-[10px] font-bold tracking-widest uppercase shadow-[2px_2px_0px_0px_rgba(28,27,27,1)]"
+								>AKTIF</span
+							>
+						</div>
+						<div class="mt-auto border-t-[4px] border-on-background pt-4">
+							<h3 class="m-0 truncate font-headline-md text-headline-md">Budi Santoso</h3>
+							<p class="mt-1 font-data-mono text-data-mono text-on-surface-variant">
+								NIS: 102938475
+							</p>
+						</div>
+					</div>
+					<div
+						class="group col-span-4 flex cursor-pointer flex-col border-[4px] border-on-background bg-tertiary-fixed p-6 neo-shadow transition-colors hover:bg-surface-bright"
+					>
+						<div class="mb-6 flex items-start justify-between">
+							<div
+								class="h-20 w-20 overflow-hidden border-[4px] border-on-background bg-surface-container shadow-[4px_4px_0px_0px_rgba(28,27,27,1)] transition-all duration-200 group-hover:translate-x-[4px] group-hover:translate-y-[4px] group-hover:shadow-none"
+							>
+								<img
+									class="h-full w-full object-cover contrast-125 grayscale"
+									data-alt="A stark, high-contrast neobrutalist portrait of a young Indonesian female student wearing a hijab. The lighting is severe and directional, carving out deep, hard-edged black shadows. She is dressed in a crisp white uniform. Set against a flat, solid cream background, the image feels heavily structured, raw, and highly intentional, void of any soft aesthetics."
+									src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqlyllckJasMFqSMKf6TO_1w_Ugfk96hn-1tNU1CohfWUFbKtWmTCCv0v92SKjIu0BGyJFI8EmbVM4mr19HL8TmStgAV7V6YwVWMNNo2LVJfElzFbQ03CbTsc-932iiOfZ42r5fuHHqi9dg4F6VwLsLAXc0ODpVV7pB1PVPJHdWMagop9jh44o_CjzibncZY2wZ5XAKACQ_Visa0wjXgoDw6szkId2qGjBwUzsfrbBq-ZsscfM8Q9Z"
+								/>
+							</div>
+							<span
+								class="text-on-secondary-fixed border-[4px] border-on-background bg-secondary-fixed px-2 py-1 font-label-caps text-[10px] font-bold tracking-widest uppercase shadow-[2px_2px_0px_0px_rgba(28,27,27,1)]"
+								>AKTIF</span
+							>
+						</div>
+						<div class="mt-auto border-t-[4px] border-on-background pt-4">
+							<h3 class="m-0 truncate font-headline-md text-headline-md">Siti Aminah</h3>
+							<p class="mt-1 font-data-mono text-data-mono text-on-surface-variant">
+								NIS: 102938476
+							</p>
+						</div>
+					</div>
+					<div
+						class="group col-span-4 flex cursor-pointer flex-col border-[4px] border-on-background bg-tertiary-fixed p-6 neo-shadow transition-colors hover:bg-surface-bright"
+					>
+						<div class="mb-6 flex items-start justify-between">
+							<div
+								class="h-20 w-20 overflow-hidden border-[4px] border-on-background bg-surface-container shadow-[4px_4px_0px_0px_rgba(28,27,27,1)] transition-all duration-200 group-hover:translate-x-[4px] group-hover:translate-y-[4px] group-hover:shadow-none"
+							>
+								<img
+									class="h-full w-full object-cover contrast-125 grayscale"
+									data-alt="An intense, high-contrast neobrutalist portrait photo of a young Indonesian male student with glasses. Harsh, single-source lighting generates solid block shadows on his features. He is wearing a standard white school shirt. The background is a completely flat, unbroken cream tone. The overall visual style is brutal, geometric, and unapologetically rigid."
+									src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkjDV8mYw0XNxZEKZsvSw-8XYJfP2rA3lZZsIKNdHyb8NWd4SaCr9y9j0W4148a2wk3gsk3YB9efHlEisGgENTFlon7syqzB5FdCt2kuSRtnjFc9vQ-mlmjoIgiww9-GLWWSHVTbI6hMT3axbk_MTXPip1xL0sJm7pSgrkgXNcaxsNNlFAGTimMDOLvbzdL28nSguEiwtFJgrQh7fXq-jYz4SKUcO9WRbDsJpPv_sUOV09YYi06jGk"
+								/>
+							</div>
+							<span
+								class="border-[4px] border-on-background bg-error px-2 py-1 font-label-caps text-[10px] font-bold tracking-widest text-on-error uppercase shadow-[2px_2px_0px_0px_rgba(28,27,27,1)]"
+								>CUTI</span
+							>
+						</div>
+						<div class="mt-auto border-t-[4px] border-on-background pt-4">
+							<h3 class="m-0 truncate font-headline-md text-headline-md">Ahmad Fauzi</h3>
+							<p class="mt-1 font-data-mono text-data-mono text-on-surface-variant">
+								NIS: 102938477
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="mt-8 flex justify-center">
+					<button
+						class="neo-button neo-shadow-hover neo-shadow-active border-[4px] border-on-background bg-surface-container-lowest px-8 py-3 font-headline-md text-[16px] tracking-wider text-on-background uppercase neo-shadow"
+					>
+						Muat Lebih Banyak Modul Data
+					</button>
+				</div>
+			</section>
+		</main>
+	</body>
+</html>

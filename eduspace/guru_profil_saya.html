@@ -1,0 +1,225 @@
+<!DOCTYPE html><html lang="id"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EduSpace — Profil Guru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --teal-50:#E1F5EE;--teal-100:#9FE1CB;--teal-200:#5DCAA5;--teal-400:#1D9E75;--teal-600:#0F6E56;--teal-800:#085041;--teal-900:#04342C;
+    --purple-50:#EEEDFE;--purple-200:#AFA9EC;--purple-400:#7F77DD;--purple-600:#534AB7;--purple-800:#3C3489;
+    --amber-50:#FAEEDA;--amber-400:#BA7517;--amber-600:#854F0B;--amber-800:#633806;
+    --coral-50:#FAECE7;--coral-400:#D85A30;--coral-600:#993C1D;
+    --blue-50:#E6F1FB;--blue-100:#B5D4F4;--blue-400:#378ADD;--blue-600:#185FA5;--blue-800:#0C447C;
+    --green-50:#EAF3DE;--green-400:#639922;--green-800:#27500A;
+    --red-50:#FCEBEB;--red-400:#E24B4A;--red-600:#A32D2D;--red-800:#791F1F;
+    --gray-50:#F1EFE8;--gray-400:#888780;--gray-800:#444441;
+    --bg:#FAFAF8;--surface:#FFFFFF;--surface-2:#F4F3EF;
+    --border:rgba(0,0,0,0.08);--border-med:rgba(0,0,0,0.14);
+    --text-1:#1A1918;--text-2:#5F5E5A;--text-3:#9B9A95;
+    --accent:var(--teal-400);
+    --radius-sm:6px;--radius-md:10px;--radius-lg:14px;
+    --font-sans:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace;
+    --sidebar-w:220px;--topbar-h:52px;
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#111110;--surface:#1C1B1A;--surface-2:#252422;
+    --border:rgba(255,255,255,0.08);--border-med:rgba(255,255,255,0.14);
+    --text-1:#E8E7E2;--text-2:#9B9A95;--text-3:#5F5E5A;
+    --teal-50:#063528;--teal-400:#1D9E75;
+    --purple-50:#2A2660;--purple-400:#AFA9EC;
+    --amber-50:#3A2200;--amber-400:#EF9F27;
+    --coral-50:#3A1508;--coral-400:#F0997B;
+    --blue-50:#062240;--blue-400:#85B7EB;
+    --green-50:#162400;--green-400:#97C459;
+    --red-50:#3A0A0A;--red-400:#F09595;
+  }}
+  html{font-family:var(--font-sans);background:var(--bg);color:var(--text-1);font-size:14px}
+  body{min-height:100vh}
+  .topbar{position:sticky;top:0;z-index:100;height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--surface);border-bottom:0.5px solid var(--border)}
+  .brand{font-size:15px;font-weight:500;color:var(--text-1);letter-spacing:-.3px}
+  .brand span{color:var(--teal-400)}
+  .role-pill{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--teal-50);color:var(--teal-800)}
+  .topbar-right{display:flex;align-items:center;gap:10px}
+  .icon-btn{width:32px;height:32px;border-radius:var(--radius-sm);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-2);background:transparent;position:relative;transition:background .15s}
+  .icon-btn:hover{background:var(--surface-2)}
+  .notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--red-400)}
+  .av{width:32px;height:32px;border-radius:50%;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;background:var(--teal-50);color:var(--teal-600);cursor:pointer;flex-shrink:0}
+  .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:6px;border-radius:var(--radius-sm)}
+  .hamburger span{display:block;width:18px;height:1.5px;background:var(--text-2);border-radius:2px;transition:.3s}
+  .shell{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:calc(100vh - var(--topbar-h))}
+  .sidebar{background:var(--surface);border-right:0.5px solid var(--border);padding:14px 0;display:flex;flex-direction:column;position:sticky;top:var(--topbar-h);height:calc(100vh - var(--topbar-h));overflow-y:auto;transition:transform .3s ease}
+  .prof-block{padding:10px 14px 14px;border-bottom:0.5px solid var(--border);margin-bottom:8px}
+  .prof-av{width:42px;height:42px;border-radius:50%;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;background:var(--teal-50);color:var(--teal-600);margin-bottom:8px}
+  .prof-name{font-size:13px;font-weight:500;color:var(--text-1)}
+  .prof-sub{font-size:11px;color:var(--text-2);margin-top:2px}
+  .ns{font-size:10px;font-weight:500;color:var(--text-3);padding:8px 14px 3px;letter-spacing:.06em}
+  .ni{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12px;color:var(--text-2);cursor:pointer;border-right:2px solid transparent;transition:background .15s,color .15s;text-decoration:none}
+  .ni:hover{background:var(--surface-2);color:var(--text-1)}
+  .ni.active{background:var(--surface-2);color:var(--text-1);font-weight:500;border-right-color:var(--teal-400)}
+  .ni svg{width:14px;height:14px;flex-shrink:0;opacity:.65}
+  .ni.active svg{opacity:1}
+  .ni-badge{margin-left:auto;font-size:10px;padding:1px 6px;border-radius:8px;background:var(--coral-50);color:var(--coral-600)}
+  .main{padding:20px 22px;display:flex;flex-direction:column;gap:16px;background:var(--surface);overflow-x:hidden}
+  .page-title{font-size:16px;font-weight:500;color:var(--text-1)}
+  .page-sub{font-size:12px;color:var(--text-2);margin-top:3px}
+  .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .sec-title{font-size:13px;font-weight:500;color:var(--text-1)}
+  .sec-link{font-size:11px;color:var(--teal-400);cursor:pointer}
+  .sec-link:hover{text-decoration:underline}
+  .badge{font-size:10px;padding:2px 7px;border-radius:7px}
+  .btn{font-size:12px;padding:6px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--border-med);background:transparent;color:var(--text-1);cursor:pointer;transition:background .15s;white-space:nowrap}
+  .btn:hover{background:var(--surface-2)}
+  .btn-primary{background:var(--teal-400);color:var(--teal-50);border-color:var(--teal-400)}
+  .btn-primary:hover{background:var(--teal-600);border-color:var(--teal-600)}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:90;opacity:0;transition:opacity .3s}
+  .overlay.show{display:block;opacity:1}
+  .tab-bar{display:flex;gap:2px;border-bottom:0.5px solid var(--border);margin-bottom:16px}
+  .tab{font-size:12px;padding:8px 14px;cursor:pointer;color:var(--text-2);border-bottom:2px solid transparent;margin-bottom:-0.5px;transition:color .15s;white-space:nowrap}
+  .tab:hover{color:var(--text-1)}
+  .tab.on{color:var(--teal-400);font-weight:500;border-bottom-color:var(--teal-400)}
+  .tbl{width:100%;border-collapse:collapse;font-size:12px}
+  .tbl thead th{text-align:left;font-size:10px;font-weight:500;color:var(--text-3);padding:8px 10px;border-bottom:0.5px solid var(--border);background:var(--surface-2);white-space:nowrap}
+  .tbl tbody tr{border-bottom:0.5px solid var(--border);transition:background .1s;cursor:pointer}
+  .tbl tbody tr:last-child{border-bottom:none}
+  .tbl tbody tr:hover{background:var(--surface-2)}
+  .tbl td{padding:9px 10px;color:var(--text-1);vertical-align:middle}
+  .kpi{background:var(--surface-2);border-radius:var(--radius-md);padding:10px 12px}
+  .kpi-lbl{font-size:11px;color:var(--text-2)}
+  .kpi-val{font-size:20px;font-weight:500;color:var(--text-1);line-height:1.2;margin-top:2px}
+  .kpi-tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:7px;margin-top:3px}
+  .prog-row{display:flex;align-items:center;gap:6px}
+  .prog-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;min-width:40px}
+  .prog-fill{height:100%;border-radius:2px}
+  .prog-val{font-size:10px;color:var(--text-2);width:26px;text-align:right;flex-shrink:0;font-family:var(--font-mono)}
+  .av-sm{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+  @media(max-width:640px){:root{--sidebar-w:0px}.shell{grid-template-columns:1fr}.sidebar{position:fixed;top:var(--topbar-h);left:0;z-index:95;width:240px;transform:translateX(-100%);height:calc(100vh - var(--topbar-h))}.sidebar.open{transform:translateX(0)}.hamburger{display:flex}.main{padding:14px;gap:13px}}
+  @media(min-width:1280px){:root{--sidebar-w:240px}}
+.profile-layout{display:grid;grid-template-columns:260px 1fr;gap:16px}
+.prof-card{border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);overflow:hidden}
+.prof-cover{height:70px;background:linear-gradient(135deg,var(--teal-50),var(--blue-50))}
+.prof-body{padding:0 16px 16px;margin-top:-22px}
+.big-av{width:44px;height:44px;border-radius:50%;background:var(--teal-400);color:var(--teal-50);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;border:3px solid var(--surface);margin-bottom:8px}
+.right-col{display:flex;flex-direction:column;gap:14px}
+.info-section{border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);overflow:hidden}
+.info-head{padding:12px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.info-title{font-size:13px;font-weight:500;color:var(--text-1)}
+.info-body{padding:0 14px}
+.info-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:12px}
+.info-row:last-child{border-bottom:none}
+.info-lbl{color:var(--text-2)}
+.info-val{color:var(--text-1);font-weight:500}
+.form-input{padding:6px 9px;border-radius:var(--radius-sm);border:0.5px solid var(--border-med);background:var(--surface-2);color:var(--text-1);font-size:12px;font-family:var(--font-sans);width:160px}
+.form-input:focus{outline:none;border-color:var(--teal-400)}
+.stat-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0}
+.sm-item{background:var(--surface-2);border-radius:var(--radius-sm);padding:8px 10px;text-align:center}
+.sm-val{font-size:18px;font-weight:500;color:var(--text-1)}
+.sm-lbl{font-size:9px;color:var(--text-2);margin-top:1px}
+.mapel-bar{display:flex;flex-direction:column;gap:6px}
+.mb-row{display:flex;align-items:center;gap:8px}
+.mb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mb-name{font-size:11px;color:var(--text-1);width:110px;flex-shrink:0}
+.mb-track{flex:1;height:4px;background:var(--surface-2);border-radius:2px;overflow:hidden}
+.mb-fill{height:100%;border-radius:2px}
+.mb-val{font-size:11px;font-weight:500;font-family:var(--font-mono);width:24px;text-align:right;flex-shrink:0}
+@media(max-width:800px){.profile-layout{grid-template-columns:1fr}}
+</style></head><body>
+<header class="topbar"><div style="display:flex;align-items:center;gap:12px"><button class="hamburger" id="menuBtn"><span></span><span></span><span></span></button><a href="index.html" style="text-decoration:none"><div class="brand">Edu<span>Space</span></div></a><div class="role-pill">Portal Guru</div></div><div class="topbar-right"><div class="icon-btn"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 0 1 4 4v2l1.5 2.5H2.5L4 8V6a4 4 0 0 1 4-4zM6.5 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="notif-dot"></div></div><div class="av">SR</div></div></header><div class="overlay" id="overlay"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="prof-block">
+    <div class="prof-av" style="background:var(--teal-50);color:var(--teal-600)">SR</div>
+    <div class="prof-name">Siti Rahayu, S.Pd</div>
+    <div class="prof-sub">Matematika · Kelas 7–9</div>
+    <div style="display:inline-block;margin-top:5px;font-size:10px;padding:2px 7px;border-radius:8px;background:var(--teal-50);color:var(--teal-600)">Guru Aktif</div>
+  </div>
+  <div class="ns">Pengajaran</div>
+  <a class="ni" href="homepage_guru_eduspace.html"><svg viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/></svg>Dashboard</a>
+  <a class="ni" href="guru_kelas_saya.html"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Kelas saya</a>
+  <a class="ni" href="guru_upload_materi.html"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h10M3 12h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Upload materi<span class="ni-badge">2</span></a>
+  <a class="ni" href="guru_tugas_kuis.html"><svg viewBox="0 0 16 16" fill="none"><path d="M13 4L6 11l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Tugas &amp; kuis<span class="ni-badge">5</span></a>
+  <a class="ni" href="guru_input_nilai.html"><svg viewBox="0 0 16 16" fill="none"><path d="M2 12L5 7l3 3 2.5-4 3.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Input nilai</a>
+  <div class="ns">Lainnya</div>
+  <a class="ni" href="guru_forum_diskusi.html"><svg viewBox="0 0 16 16" fill="none"><path d="M2 11V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7l-3 2v-2H4a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="1.3"/></svg>Forum diskusi</a>
+  <a class="ni" href="guru_jadwal_mengajar.html"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 3V2M11 3V2M2 7h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Jadwal mengajar</a>
+  <div class="ns">Akun</div>
+  <a class="ni" href="guru_profil_saya.html"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Profil saya</a>
+</aside>
+<main class="main">
+  <div><div class="page-title">Profil saya</div><div class="page-sub">Informasi akun dan statistik mengajar</div></div>
+
+  <div class="profile-layout">
+    <div>
+      <div class="prof-card">
+        <div class="prof-cover"></div>
+        <div class="prof-body">
+          <div class="big-av">SR</div>
+          <div style="font-size:15px;font-weight:500;color:var(--text-1)">Siti Rahayu, S.Pd</div>
+          <div style="font-size:11px;color:var(--text-2);margin-top:2px">Guru Matematika · SMP Negeri 3 Semarang</div>
+          <div style="font-size:11px;color:var(--text-2);margin-top:1px">NIP: 199003152015042001</div>
+          <div class="stat-mini">
+            <div class="sm-item"><div class="sm-val">128</div><div class="sm-lbl">Total siswa</div></div>
+            <div class="sm-item"><div class="sm-val">4</div><div class="sm-lbl">Kelas aktif</div></div>
+            <div class="sm-item"><div class="sm-val">81,4</div><div class="sm-lbl">Rata nilai</div></div>
+          </div>
+          <div style="margin-top:10px">
+            <div style="font-size:11px;font-weight:500;color:var(--text-2);margin-bottom:8px">Rata-rata nilai per kelas</div>
+            <div class="mapel-bar">
+              <div class="mb-row"><div class="mb-dot" style="background:var(--purple-600)"></div><div class="mb-name">Matematika 7A</div><div class="mb-track"><div class="mb-fill" style="width:83%;background:var(--purple-600)"></div></div><div class="mb-val">83</div></div>
+              <div class="mb-row"><div class="mb-dot" style="background:var(--purple-400)"></div><div class="mb-name">Matematika 7B</div><div class="mb-track"><div class="mb-fill" style="width:79%;background:var(--purple-400)"></div></div><div class="mb-val">79</div></div>
+              <div class="mb-row"><div class="mb-dot" style="background:var(--teal-400)"></div><div class="mb-name">Matematika 8A</div><div class="mb-track"><div class="mb-fill" style="width:85%;background:var(--teal-400)"></div></div><div class="mb-val">85</div></div>
+              <div class="mb-row"><div class="mb-dot" style="background:var(--blue-400)"></div><div class="mb-name">Matematika 9B</div><div class="mb-track"><div class="mb-fill" style="width:78%;background:var(--blue-400)"></div></div><div class="mb-val">78</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="info-section">
+        <div class="info-head"><div class="info-title">Informasi pribadi</div><button class="btn" style="font-size:11px;padding:4px 9px" id="editBtn" onclick="toggleEdit()">Edit profil</button></div>
+        <div class="info-body">
+          <div class="info-row"><div class="info-lbl">Nama lengkap</div><div class="info-val" id="nama-view">Siti Rahayu, S.Pd</div><input id="nama-edit" class="form-input" value="Siti Rahayu, S.Pd" style="display:none"></div>
+          <div class="info-row"><div class="info-lbl">NIP</div><div class="info-val" style="font-family:var(--font-mono);font-size:11px">199003152015042001</div></div>
+          <div class="info-row"><div class="info-lbl">Spesialisasi</div><div class="info-val" id="spesial-view">Matematika (Aljabar)</div><input id="spesial-edit" class="form-input" value="Matematika (Aljabar)" style="display:none"></div>
+          <div class="info-row"><div class="info-lbl">Email</div><div class="info-val" style="color:var(--teal-400)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="60130914094e12010801191520130d100e53130d074e1303084e0904">[email&#160;protected]</a></div></div>
+          <div class="info-row"><div class="info-lbl">No. HP</div><div class="info-val" id="hp-view">+62 812 3456 7890</div><input id="hp-edit" class="form-input" value="+62 812 3456 7890" style="display:none"></div>
+          <div class="info-row"><div class="info-lbl">Gelar & sertifikasi</div><div class="info-val">S.Pd · Guru Bersertifikat 2018</div></div>
+          <div class="info-row"><div class="info-lbl">Kata sandi</div><div><button class="btn" style="font-size:11px;padding:3px 8px">Ubah kata sandi</button></div></div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-head"><div class="info-title">Statistik mengajar semester ini</div></div>
+        <div class="info-body">
+          <div class="info-row"><div class="info-lbl">Total jam mengajar</div><div class="info-val">216 jam</div></div>
+          <div class="info-row"><div class="info-lbl">Materi diupload</div><div class="info-val">34 modul</div></div>
+          <div class="info-row"><div class="info-lbl">Tugas dibuat</div><div class="info-val">12 tugas · 5 kuis</div></div>
+          <div class="info-row"><div class="info-lbl">Nilai diinput</div><div class="info-val">287 penilaian</div></div>
+          <div class="info-row"><div class="info-lbl">Pertanyaan forum dijawab</div><div class="info-val">48 jawaban</div></div>
+          <div class="info-row"><div class="info-lbl">Kehadiran mengajar</div><div class="info-val" style="color:var(--teal-400)">96% (dari 24 sesi)</div></div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-head"><div class="info-title">RPP & administrasi</div><button class="btn btn-primary" style="font-size:11px;padding:4px 9px">Upload RPP</button></div>
+        <div class="info-body">
+          <div class="info-row"><div class="info-lbl">RPP Semester Genap 2025/2026</div><div><span class="badge" style="background:var(--teal-50);color:var(--teal-800)">Uploaded 3 Jan</span></div></div>
+          <div class="info-row"><div class="info-lbl">Silabus Matematika 7–9</div><div><span class="badge" style="background:var(--teal-50);color:var(--teal-800)">Uploaded</span></div></div>
+          <div class="info-row"><div class="info-lbl">Program Tahunan 2025/2026</div><div><span class="badge" style="background:var(--amber-50);color:var(--amber-800)">Perlu diperbarui</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main></div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>const btn=document.getElementById("menuBtn"),sb=document.getElementById("sidebar"),ov=document.getElementById("overlay");function open(){sb.classList.add("open");ov.classList.add("show")}function close(){sb.classList.remove("open");ov.classList.remove("show")}btn.addEventListener("click",()=>sb.classList.contains("open")?close():open());ov.addEventListener("click",close);document.querySelectorAll(".ni").forEach(n=>{if(n.href&&n.href.includes(location.pathname.split("/").pop()))n.classList.add("active")});<\/script>
+<script>
+let editing=false;
+function toggleEdit(){
+  editing=!editing;
+  ['nama','spesial','hp'].forEach(k=>{
+    document.getElementById(k+'-view').style.display=editing?'none':'';
+    document.getElementById(k+'-edit').style.display=editing?'':'none';
+  });
+  document.getElementById('editBtn').textContent=editing?'Simpan':'Edit prof
+

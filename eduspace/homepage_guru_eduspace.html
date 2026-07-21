@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduSpace — Dashboard Guru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --teal-50:    #E1F5EE; --teal-100:   #9FE1CB; --teal-200:   #5DCAA5;
+    --teal-400:   #1D9E75; --teal-600:   #0F6E56; --teal-800:   #085041;
+    --purple-50:  #EEEDFE; --purple-400: #7F77DD; --purple-600: #534AB7; --purple-800: #3C3489;
+    --amber-50:   #FAEEDA; --amber-400:  #BA7517; --amber-600:  #854F0B;
+    --coral-50:   #FAECE7; --coral-400:  #D85A30; --coral-600:  #993C1D;
+    --blue-50:    #E6F1FB; --blue-400:   #378ADD; --blue-600:   #185FA5;
+    --green-50:   #EAF3DE; --green-400:  #639922; --green-800:  #27500A;
+    --red-50:     #FCEBEB; --red-400:    #E24B4A; --red-800:    #791F1F;
+
+    --bg:         #FAFAF8;
+    --surface:    #FFFFFF;
+    --surface-2:  #F4F3EF;
+    --border:     rgba(0,0,0,0.08);
+    --border-med: rgba(0,0,0,0.14);
+    --text-1:     #1A1918;
+    --text-2:     #5F5E5A;
+    --text-3:     #9B9A95;
+    --accent:     var(--teal-400);
+    --radius-sm:  6px;
+    --radius-md:  10px;
+    --radius-lg:  14px;
+    --font-sans:  'DM Sans', sans-serif;
+    --font-mono:  'DM Mono', monospace;
+    --sidebar-w:  220px;
+    --right-w:    224px;
+    --topbar-h:   52px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:        #111110;
+      --surface:   #1C1B1A;
+      --surface-2: #252422;
+      --border:    rgba(255,255,255,0.08);
+      --border-med:rgba(255,255,255,0.14);
+      --text-1:    #E8E7E2;
+      --text-2:    #9B9A95;
+      --text-3:    #5F5E5A;
+      --teal-50:   #063528; --teal-400: #1D9E75;
+      --purple-50: #2A2660; --purple-400:#7F77DD;
+      --amber-50:  #3A2200; --amber-400: #EF9F27;
+      --coral-50:  #3A1508; --coral-400: #F0997B;
+      --blue-50:   #062240; --blue-400:  #85B7EB;
+      --green-50:  #162400; --green-400: #97C459;
+      --red-50:    #3A0A0A; --red-400:   #F09595;
+    }
+  }
+
+  html { font-family: var(--font-sans); background: var(--bg); color: var(--text-1); font-size: 14px; }
+  body { min-height: 100vh; }
+
+  /* ── Topbar ─────────────────────────────────── */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    height: var(--topbar-h);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .brand { font-size: 15px; font-weight: 500; color: var(--text-1); letter-spacing: -.3px; }
+  .brand span { color: var(--teal-400); }
+  .role-pill {
+    font-size: 10px; font-weight: 500; padding: 2px 8px;
+    border-radius: 20px; background: var(--teal-50); color: var(--teal-800);
+  }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .icon-btn {
+    width: 32px; height: 32px; border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border); display: flex; align-items: center;
+    justify-content: center; cursor: pointer; color: var(--text-2);
+    background: transparent; position: relative; transition: background .15s;
+  }
+  .icon-btn:hover { background: var(--surface-2); }
+  .notif-dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--red-400); }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%; font-size: 11px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--teal-50); color: var(--teal-600); cursor: pointer; flex-shrink: 0;
+  }
+  .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; padding: 6px; border-radius: var(--radius-sm); }
+  .hamburger span { display: block; width: 18px; height: 1.5px; background: var(--text-2); border-radius: 2px; transition: .3s; }
+
+  /* ── Layout shell ─────────────────────────── */
+  .shell {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) 1fr var(--right-w);
+    min-height: calc(100vh - var(--topbar-h));
+  }
+
+  /* ── Sidebar ─────────────────────────────── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 0.5px solid var(--border);
+    padding: 14px 0;
+    display: flex; flex-direction: column;
+    position: sticky; top: var(--topbar-h);
+    height: calc(100vh - var(--topbar-h));
+    overflow-y: auto;
+    transition: transform .3s ease;
+  }
+  .profile-block {
+    padding: 10px 14px 14px;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .profile-av {
+    width: 42px; height: 42px; border-radius: 50%; font-size: 14px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--teal-50); color: var(--teal-600); margin-bottom: 8px;
+  }
+  .profile-name { font-size: 13px; font-weight: 500; color: var(--text-1); }
+  .profile-sub  { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+  .profile-tag  {
+    display: inline-block; margin-top: 6px;
+    font-size: 10px; padding: 2px 7px; border-radius: 8px;
+    background: var(--teal-50); color: var(--teal-600);
+  }
+
+  .nav-section { font-size: 10px; font-weight: 500; color: var(--text-3); padding: 8px 14px 3px; letter-spacing: .06em; }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 14px; font-size: 12px; color: var(--text-2); cursor: pointer;
+    border-right: 2px solid transparent; transition: background .15s, color .15s;
+  }
+  .nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+  .nav-item.active { background: var(--surface-2); color: var(--text-1); font-weight: 500; border-right-color: var(--teal-400); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; opacity: .65; }
+  .nav-item.active svg { opacity: 1; }
+  .nav-badge { margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 8px; background: var(--coral-50); color: var(--coral-600); }
+
+  /* ── Main ────────────────────────────────── */
+  .main { padding: 20px 22px; display: flex; flex-direction: column; gap: 18px; overflow-x: hidden; }
+
+  .page-head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .page-title { font-size: 16px; font-weight: 500; color: var(--text-1); }
+  .page-sub   { font-size: 12px; color: var(--text-2); margin-top: 3px; }
+  .page-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    font-size: 12px; padding: 6px 12px; border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border-med); background: transparent;
+    color: var(--text-1); cursor: pointer; transition: background .15s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--surface-2); }
+  .btn-primary { background: var(--teal-400); color: var(--teal-50); border-color: var(--teal-400); }
+  .btn-primary:hover { background: var(--teal-600); border-color: var(--teal-600); }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+  .stat-card { background: var(--surface-2); border-radius: var(--radius-md); padding: 11px 13px; }
+  .stat-label { font-size: 11px; color: var(--text-2); }
+  .stat-val   { font-size: 20px; font-weight: 500; color: var(--text-1); line-height: 1.2; margin-top: 3px; }
+  .stat-tag   { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 8px; margin-top: 3px; }
+  .tag-teal   { background: var(--teal-50);   color: var(--teal-800); }
+  .tag-coral  { background: var(--coral-50);  color: var(--coral-600); }
+  .tag-green  { background: var(--green-50);  color: var(--green-800); }
+  .tag-purple { background: var(--purple-50); color: var(--purple-800); }
+
+  /* Sec head */
+  .sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .sec-title { font-size: 13px; font-weight: 500; color: var(--text-1); }
+  .sec-link  { font-size: 11px; color: var(--teal-400); cursor: pointer; }
+  .sec-link:hover { text-decoration: underline; }
+
+  /* Class cards */
+  .class-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+  .class-card {
+    border: 0.5px solid var(--border); border-radius: var(--radius-lg);
+    overflow: hidden; cursor: pointer; background: var(--surface);
+    transition: border-color .15s, transform .15s;
+  }
+  .class-card:hover { border-color: var(--border-med); transform: translateY(-1px); }
+  .card-top { padding: 11px 13px; display: flex; align-items: center; gap: 9px; }
+  .card-icon { width: 34px; height: 34px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .card-icon svg { width: 18px; height: 18px; }
+  .card-name { font-size: 12px; font-weight: 500; color: var(--text-1); }
+  .card-sub  { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+  .card-body { padding: 9px 13px; border-top: 0.5px solid var(--border); }
+  .card-stats { display: flex; justify-content: space-between; }
+  .cs-item { text-align: center; }
+  .cs-val { font-size: 13px; font-weight: 500; color: var(--text-1); }
+  .cs-lbl { font-size: 10px; color: var(--text-2); margin-top: 1px; }
+
+  /* Tugas list */
+  .tugas-list { display: flex; flex-direction: column; }
+  .tl-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0; border-bottom: 0.5px solid var(--border);
+  }
+  .tl-item:last-child { border-bottom: none; }
+  .tl-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .tl-info { flex: 1; min-width: 0; }
+  .tl-name { font-size: 12px; font-weight: 500; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tl-meta { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+  .tl-prog { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .tl-bar  { width: 60px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+  .tl-fill { height: 100%; border-radius: 2px; }
+  .tl-pct  { font-size: 11px; color: var(--text-2); width: 30px; text-align: right; font-family: var(--font-mono); }
+  .tl-badge { font-size: 10px; padding: 2px 7px; border-radius: 7px; flex-shrink: 0; white-space: nowrap; }
+
+  /* ── Right panel ──────────────────────────── */
+  .right {
+    border-left: 0.5px solid var(--border); background: var(--surface);
+    padding: 14px 13px; display: flex; flex-direction: column; gap: 16px;
+    position: sticky; top: var(--topbar-h);
+    height: calc(100vh - var(--topbar-h)); overflow-y: auto;
+  }
+  .rp-title { font-size: 12px; font-weight: 500; color: var(--text-1); margin-bottom: 8px; }
+
+  /* Jadwal */
+  .jadwal-list { display: flex; flex-direction: column; gap: 5px; }
+  .jl-item {
+    display: flex; align-items: center; gap: 8px; padding: 6px 9px;
+    background: var(--surface-2); border-radius: var(--radius-md);
+  }
+  .jl-time  { font-size: 10px; color: var(--text-2); min-width: 36px; font-family: var(--font-mono); }
+  .jl-dot   { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .jl-label { font-size: 11px; color: var(--text-1); flex: 1; }
+  .jl-kelas { font-size: 10px; padding: 1px 6px; border-radius: 6px; flex-shrink: 0; }
+
+  /* Siswa ranking */
+  .siswa-list { display: flex; flex-direction: column; gap: 5px; }
+  .sl-item {
+    display: flex; align-items: center; gap: 7px; padding: 6px 9px;
+    background: var(--surface-2); border-radius: var(--radius-md); cursor: pointer;
+    transition: background .15s;
+  }
+  .sl-item:hover { background: var(--border); }
+  .sl-av   { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+  .sl-name { font-size: 11px; color: var(--text-1); flex: 1; }
+  .sl-score { font-size: 12px; font-weight: 500; font-family: var(--font-mono); }
+  .sl-trend { font-size: 10px; margin-left: 2px; }
+  .sl-divider { height: 0.5px; background: var(--border); margin: 2px 0; }
+
+  /* Notif */
+  .notif-list { display: flex; flex-direction: column; gap: 5px; }
+  .notif-item {
+    display: flex; gap: 8px; padding: 7px 9px;
+    background: var(--surface-2); border-radius: var(--radius-md);
+  }
+  .notif-icon { width: 26px; height: 26px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .notif-icon svg { width: 12px; height: 12px; }
+  .notif-text { font-size: 11px; color: var(--text-1); line-height: 1.4; }
+  .notif-time { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+  /* Overlay mobile */
+  .overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    z-index: 90; opacity: 0; transition: opacity .3s;
+  }
+  .overlay.show { display: block; opacity: 1; }
+
+  /* ── RESPONSIVE ────────────────────────────── */
+
+  @media (max-width: 1024px) {
+    .tl-prog { display: none; }
+  }
+
+  /* Tablet (≤900px): sembunyikan right panel */
+  @media (max-width: 900px) {
+    :root { --right-w: 0px; }
+    .shell { grid-template-columns: var(--sidebar-w) 1fr; }
+    .right { display: none; }
+    .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .class-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+
+  /* Mobile (≤640px): sidebar drawer */
+  @media (max-width: 640px) {
+    :root { --sidebar-w: 0px; }
+    .shell { grid-template-columns: 1fr; }
+    .sidebar {
+      position: fixed; top: var(--topbar-h); left: 0; z-index: 95;
+      width: 240px; transform: translateX(-100%);
+      height: calc(100vh - var(--topbar-h));
+    }
+    .sidebar.open { transform: translateX(0); }
+    .hamburger { display: flex; }
+    .stats { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+    .class-grid { grid-template-columns: 1fr; }
+    .main { padding: 14px; gap: 14px; }
+    .page-head { flex-direction: column; align-items: flex-start; }
+    .page-actions { width: 100%; }
+    .btn { flex: 1; text-align: center; }
+    .tl-badge { display: none; }
+  }
+
+  @media (max-width: 380px) {
+    .stats { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .stat-val { font-size: 17px; }
+  }
+
+  @media (min-width: 1280px) {
+    :root { --sidebar-w: 240px; --right-w: 240px; }
+  }
+
+  /* ── Sidebar nav links ── */
+  .ni {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 14px; font-size: 12px; color: var(--text-2);
+    cursor: pointer; text-decoration: none;
+    border-right: 2px solid transparent;
+    transition: background .15s, color .15s;
+  }
+  .ni:hover { background: var(--surface-2); color: var(--text-1); }
+  .ni svg { width: 14px; height: 14px; flex-shrink: 0; opacity: .65; }
+  .ni-badge { margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 8px; background: var(--coral-50, #FAECE7); color: var(--coral-600, #993C1D); flex-shrink:0; }
+  .ns { font-size: 10px; font-weight: 500; color: var(--text-3); padding: 8px 14px 3px; letter-spacing: .06em; }
+  .prof-av { width: 40px; height: 40px; border-radius: 50%; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; margin-bottom: 7px; }
+  .prof-name { font-size: 13px; font-weight: 500; color: var(--text-1); }
+  .prof-sub { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+  .prof-block { padding: 12px 14px 14px; border-bottom: 0.5px solid var(--border); margin-bottom: 6px; }
+  .ni.active { background: var(--surface-2); color: var(--text-1); font-weight: 500; border-right-color: var(--teal-400); }
+  .ni.active svg { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger" id="menuBtn" aria-label="Buka menu">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="index.html" style="text-decoration:none"><div class="brand">Edu<span>Space</span></div></a>
+    <div class="role-pill">Portal Guru</div>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" aria-label="Notifikasi">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+        <path d="M8 2a4 4 0 0 1 4 4v2l1.5 2.5H2.5L4 8V6a4 4 0 0 1 4-4zM6.5 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="notif-dot"></div>
+    </button>
+    <div class="avatar">SR</div>
+  </div>
+</header>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+  <div class="prof-block">
+    <div class="prof-av" style="background:var(--teal-50);color:var(--teal-600)">SR</div>
+    <div class="prof-name">Siti Rahayu, S.Pd</div>
+    <div class="prof-sub">Matematika · Kelas 7–9</div>
+  </div>
+  <div class="ns">Pengajaran</div>
+  <a class="ni active" href="homepage_guru_eduspace.html"><svg viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/></svg>Dashboard</a>
+  <a class="ni" href="guru_kelas_saya.html"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Kelas saya</a>
+  <a class="ni" href="guru_upload_materi.html"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h10M3 12h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Upload materi<span class="ni-badge">2</span></a>
+  <a class="ni" href="guru_tugas_kuis.html"><svg viewBox="0 0 16 16" fill="none"><path d="M13 4L6 11l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Tugas & kuis<span class="ni-badge">5</span></a>
+  <a class="ni" href="guru_input_nilai.html"><svg viewBox="0 0 16 16" fill="none"><path d="M2 12L5 7l3 3 2.5-4 3.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Input nilai</a>
+  <div class="ns">Lainnya</div>
+  <a class="ni" href="guru_forum_diskusi.html"><svg viewBox="0 0 16 16" fill="none"><path d="M2 11V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7l-3 2v-2H4a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="1.3"/></svg>Forum diskusi</a>
+  <a class="ni" href="guru_jadwal_mengajar.html"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 3V2M11 3V2M2 7h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Jadwal mengajar</a>
+  <div class="ns">Akun</div>
+  <a class="ni" href="guru_profil_saya.html"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Profil saya</a>
+</aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div class="page-title">Dashboard Guru</div>
+        <div class="page-sub">Sabtu, 12 April 2026 · Semester Genap 2025/2026</div>
+      </div>
+      <div class="page-actions">
+        <button class="btn">+ Buat kuis</button>
+        <button class="btn btn-primary">+ Upload materi</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Total siswa</div>
+        <div class="stat-val">128</div>
+        <span class="stat-tag tag-teal">4 kelas aktif</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Tugas belum dinilai</div>
+        <div class="stat-val">23</div>
+        <span class="stat-tag tag-coral">Perlu ditinjau</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rata-rata nilai kelas</div>
+        <div class="stat-val">81,4</div>
+        <span class="stat-tag tag-green">+3,2 dari UTS</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Materi terupload</div>
+        <div class="stat-val">34</div>
+        <span class="stat-tag tag-purple">Semester ini</span>
+      </div>
+    </div>
+
+    <!-- Kelas yang diajar -->
+    <section>
+      <div class="sec-head">
+        <div class="sec-title">Kelas yang diajar</div>
+        <div class="sec-link">Kelola kelas</div>
+      </div>
+      <div class="class-grid">
+
+        <div class="class-card">
+          <div class="card-top">
+            <div class="card-icon" style="background:var(--purple-50)">
+              <svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M4 6h10M4 12h6" stroke="#534AB7" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="card-name">Matematika 7A</div>
+              <div class="card-sub">32 siswa</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-stats">
+              <div class="cs-item"><div class="cs-val">88%</div><div class="cs-lbl">Hadir</div></div>
+              <div class="cs-item"><div class="cs-val">83,2</div><div class="cs-lbl">Rata nilai</div></div>
+              <div class="cs-item"><div class="cs-val">7</div><div class="cs-lbl">Tugas aktif</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="class-card">
+          <div class="card-top">
+            <div class="card-icon" style="background:var(--purple-50)">
+              <svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M4 6h10M4 12h6" stroke="#534AB7" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="card-name">Matematika 7B</div>
+              <div class="card-sub">31 siswa</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-stats">
+              <div class="cs-item"><div class="cs-val">85%</div><div class="cs-lbl">Hadir</div></div>
+              <div class="cs-item"><div class="cs-val">79,8</div><div class="cs-lbl">Rata nilai</div></div>
+              <div class="cs-item"><div class="cs-val">7</div><div class="cs-lbl">Tugas aktif</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="class-card">
+          <div class="card-top">
+            <div class="card-icon" style="background:var(--teal-50)">
+              <svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M4 6h10M4 12h6" stroke="#1D9E75" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="card-name">Matematika 8A</div>
+              <div class="card-sub">33 siswa</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-stats">
+              <div class="cs-item"><div class="cs-val">91%</div><div class="cs-lbl">Hadir</div></div>
+              <div class="cs-item"><div class="cs-val">85,0</div><div class="cs-lbl">Rata nilai</div></div>
+              <div class="cs-item"><div class="cs-val">5</div><div class="cs-lbl">Tugas aktif</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Status tugas -->
+    <section>
+      <div class="sec-head">
+        <div class="sec-title">Status tugas & kuis</div>
+        <div class="sec-link">Lihat semua</div>
+      </div>
+      <div class="tugas-list">
+
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--red-400)"></div>
+          <div class="tl-info">
+            <div class="tl-name">Kuis Bab 4 — Persamaan Kuadrat</div>
+            <div class="tl-meta">Matematika 8A · Deadline 14 Apr</div>
+          </div>
+          <div class="tl-prog">
+            <div class="tl-bar"><div class="tl-fill" style="width:45%;background:var(--red-400)"></div></div>
+            <div class="tl-pct">45%</div>
+          </div>
+          <span class="tl-badge" style="background:var(--red-50);color:var(--red-800)">Perlu tinjau</span>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--amber-400)"></div>
+          <div class="tl-info">
+            <div class="tl-name">Latihan soal aljabar lanjutan</div>
+            <div class="tl-meta">Matematika 7A & 7B · Deadline 18 Apr</div>
+          </div>
+          <div class="tl-prog">
+            <div class="tl-bar"><div class="tl-fill" style="width:72%;background:var(--amber-400)"></div></div>
+            <div class="tl-pct">72%</div>
+          </div>
+          <span class="tl-badge" style="background:var(--amber-50);color:var(--amber-600)">Berjalan</span>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--teal-400)"></div>
+          <div class="tl-info">
+            <div class="tl-name">PR Bab 3 — Fungsi Linear</div>
+            <div class="tl-meta">Matematika 7A · Deadline 10 Apr</div>
+          </div>
+          <div class="tl-prog">
+            <div class="tl-bar"><div class="tl-fill" style="width:100%;background:var(--teal-400)"></div></div>
+            <div class="tl-pct">100%</div>
+          </div>
+          <span class="tl-badge" style="background:var(--teal-50);color:var(--teal-800)">Selesai</span>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--purple-400)"></div>
+          <div class="tl-info">
+            <div class="tl-name">Ujian Tengah Semester</div>
+            <div class="tl-meta">Semua kelas · 25–29 Apr</div>
+          </div>
+          <div class="tl-prog">
+            <div class="tl-bar"><div class="tl-fill" style="width:0%;background:var(--purple-400)"></div></div>
+            <div class="tl-pct">0%</div>
+          </div>
+          <span class="tl-badge" style="background:var(--purple-50);color:var(--purple-800)">Belum mulai</span>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Right panel -->
+  <aside class="right">
+
+    <div>
+      <div class="rp-title">Jadwal mengajar hari ini</div>
+      <div class="jadwal-list">
+        <div class="jl-item">
+          <div class="jl-time">07.30</div>
+          <div class="jl-dot" style="background:var(--purple-400)"></div>
+          <div class="jl-label">Matematika</div>
+          <span class="jl-kelas" style="background:var(--purple-50);color:var(--purple-800)">Kelas 7A</span>
+        </div>
+        <div class="jl-item">
+          <div class="jl-time">09.00</div>
+          <div class="jl-dot" style="background:var(--purple-400)"></div>
+          <div class="jl-label">Matematika</div>
+          <span class="jl-kelas" style="background:var(--purple-50);color:var(--purple-800)">Kelas 7B</span>
+        </div>
+        <div class="jl-item">
+          <div class="jl-time">10.30</div>
+          <div class="jl-dot" style="background:var(--teal-400)"></div>
+          <div class="jl-label">Matematika</div>
+          <span class="jl-kelas" style="background:var(--teal-50);color:var(--teal-800)">Kelas 8A</span>
+        </div>
+        <div class="jl-item">
+          <div class="jl-time">13.00</div>
+          <div class="jl-dot" style="background:var(--amber-400)"></div>
+          <div class="jl-label">Remedial</div>
+          <span class="jl-kelas" style="background:var(--amber-50);color:var(--amber-600)">Kelas 9B</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="rp-title">Nilai tertinggi & terendah</div>
+      <div class="siswa-list">
+        <div class="sl-item">
+          <div class="sl-av" style="background:var(--purple-50);color:var(--purple-800)">NF</div>
+          <div class="sl-name">Nadia Fitri · 7A</div>
+          <div class="sl-score" style="color:var(--teal-400)">96</div>
+          <div class="sl-trend" style="color:var(--teal-400)">▲</div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-av" style="background:var(--teal-50);color:var(--teal-600)">DK</div>
+          <div class="sl-name">Dimas K. · 8A</div>
+          <div class="sl-score" style="color:var(--teal-400)">94</div>
+          <div class="sl-trend" style="color:var(--teal-400)">▲</div>
+        </div>
+        <div class="sl-divider"></div>
+        <div class="sl-item">
+          <div class="sl-av" style="background:var(--red-50);color:var(--red-800)">BP</div>
+          <div class="sl-name">Bagas P. · 7B</div>
+          <div class="sl-score" style="color:var(--red-400)">52</div>
+          <div class="sl-trend" style="color:var(--red-400)">▼</div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-av" style="background:var(--amber-50);color:var(--amber-600)">MS</div>
+          <div class="sl-name">Maya S. · 7A</div>
+          <div class="sl-score" style="color:var(--amber-400)">58</div>
+          <div class="sl-trend" style="color:var(--amber-400)">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="rp-title">Notifikasi terbaru</div>
+      <div class="notif-list">
+        <div class="notif-item">
+          <div class="notif-icon" style="background:var(--coral-50)">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M2 11V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7l-3 2v-2H4a2 2 0 0 1-2-2z" stroke="#D85A30" stroke-width="1.2"/></svg>
+          </div>
+          <div>
+            <div class="notif-text">Rafi A. mengajukan pertanyaan di forum Matematika 8A</div>
+            <div class="notif-time">5 menit lalu</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon" style="background:var(--teal-50)">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M13 4L6 11l-3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="notif-text">28 siswa 7A telah mengumpulkan tugas Bab 3</div>
+            <div class="notif-time">1 jam lalu</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon" style="background:var(--amber-50)">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v5l3 3" stroke="#BA7517" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="6" stroke="#BA7517" stroke-width="1.3"/></svg>
+          </div>
+          <div>
+            <div class="notif-text">Deadline upload RPP semester genap: 18 April</div>
+            <div class="notif-time">Kemarin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<script>
+  const menuBtn = document.getElementById('menuBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+
+  function openMenu() {
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+  }
+  function closeMenu() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  overlay.addEventListener('click', closeMenu);
+
+  });
+</script>
+
+<script src="auth.js"></script></body>
+</html>
+

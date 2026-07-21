@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14.23-alpine
+    container_name: master_data_db
+    environment:
+      POSTGRES_USER: master_bn
+      POSTGRES_PASSWORD: master_bn_123
+      POSTGRES_DB: master_bn
+    ports:
+      - "9090:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U master_bn -d master_bn"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: master_data_redis
+    ports:
+      - "9092:6379"
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  be:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    image: rizzzdev/master-bn:backend
+    container_name: master_data_be
+    environment:
+      - NODE_ENV=production
+      - PORT=9091
+      - DATABASE_URL=postgresql://master_bn:master_bn_123@db:5432/master_bn?schema=public
+      - REDIS_URL=redis://redis:6379
+      - CLIENT_URL=http://localhost:9093
+      - CORS_ORIGIN=*
+      - JWT_ACCESS_EXPIRES_IN=5m
+      - JWT_REFRESH_EXPIRES_IN=1d
+      - SALT_ROUNDS=12
+      - API_KEY=master-data-bn-api-key
+    ports:
+      - "9091:9091"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  fe:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    image: rizzzdev/master-bn:frontend
+    container_name: master_data_fe
+    environment:
+      - NODE_ENV=production
+      - PORT=9093
+      - PUBLIC_API_URL=http://localhost:9091/api/v1
+      - INTERNAL_API_BASE=http://be:9091
+    ports:
+      - "9093:9093"
+    depends_on:
+      - be
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduSpace — Dashboard Murid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & tokens ─────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --purple-50:  #EEEDFE; --purple-200: #AFA9EC; --purple-400: #7F77DD;
+    --purple-600: #534AB7; --purple-800: #3C3489; --purple-900: #26215C;
+    --teal-50:    #E1F5EE; --teal-400:   #1D9E75; --teal-600:   #0F6E56; --teal-800: #085041;
+    --amber-50:   #FAEEDA; --amber-400:  #BA7517; --amber-600:  #854F0B;
+    --coral-50:   #FAECE7; --coral-400:  #D85A30; --coral-600:  #993C1D;
+    --blue-50:    #E6F1FB; --blue-400:   #378ADD; --blue-600:   #185FA5;
+    --green-50:   #EAF3DE; --green-400:  #639922; --green-800:  #27500A;
+    --red-400:    #E24B4A; --red-50:     #FCEBEB;
+    --gray-100:   #D3D1C7; --gray-400:   #888780; --gray-800:   #444441;
+
+    --bg:         #FAFAF8;
+    --surface:    #FFFFFF;
+    --surface-2:  #F4F3EF;
+    --border:     rgba(0,0,0,0.08);
+    --border-med: rgba(0,0,0,0.14);
+    --text-1:     #1A1918;
+    --text-2:     #5F5E5A;
+    --text-3:     #9B9A95;
+    --accent:     var(--purple-600);
+    --radius-sm:  6px;
+    --radius-md:  10px;
+    --radius-lg:  14px;
+    --radius-xl:  20px;
+    --font-sans:  'DM Sans', sans-serif;
+    --font-mono:  'DM Mono', monospace;
+    --sidebar-w:  220px;
+    --right-w:    224px;
+    --topbar-h:   52px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:        #111110;
+      --surface:   #1C1B1A;
+      --surface-2: #252422;
+      --border:    rgba(255,255,255,0.08);
+      --border-med:rgba(255,255,255,0.14);
+      --text-1:    #E8E7E2;
+      --text-2:    #9B9A95;
+      --text-3:    #5F5E5A;
+      --purple-50: #2A2660; --purple-200:#534AB7;
+      --teal-50:   #063528; --teal-400:  #1D9E75;
+      --amber-50:  #3A2200; --amber-400: #EF9F27;
+      --coral-50:  #3A1508; --coral-400: #F0997B;
+      --blue-50:   #062240; --blue-400:  #85B7EB;
+      --green-50:  #162400; --green-400: #97C459;
+      --red-50:    #3A0A0A; --red-400:   #F09595;
+    }
+  }
+
+  html { font-family: var(--font-sans); background: var(--bg); color: var(--text-1); font-size: 14px; }
+  body { min-height: 100vh; }
+
+  /* ── Topbar ─────────────────────────────────── */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    height: var(--topbar-h);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .brand { font-size: 15px; font-weight: 500; color: var(--text-1); letter-spacing: -.3px; }
+  .brand span { color: var(--purple-600); }
+  .role-pill {
+    font-size: 10px; font-weight: 500; padding: 2px 8px;
+    border-radius: 20px; background: var(--purple-50); color: var(--purple-800);
+  }
+  .nav-links { display: flex; gap: 2px; }
+  .nav-link {
+    font-size: 12px; padding: 5px 10px; border-radius: var(--radius-sm);
+    color: var(--text-2); cursor: pointer; transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--text-1); }
+  .nav-link.active { background: var(--purple-50); color: var(--purple-800); font-weight: 500; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .icon-btn {
+    width: 32px; height: 32px; border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border); display: flex; align-items: center;
+    justify-content: center; cursor: pointer; color: var(--text-2);
+    background: transparent; position: relative; transition: background .15s;
+  }
+  .icon-btn:hover { background: var(--surface-2); }
+  .notif-dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--red-400);
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%; font-size: 11px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--purple-50); color: var(--purple-800); cursor: pointer;
+    flex-shrink: 0;
+  }
+  .hamburger {
+    display: none; flex-direction: column; gap: 4px; cursor: pointer;
+    padding: 6px; border-radius: var(--radius-sm);
+  }
+  .hamburger span {
+    display: block; width: 18px; height: 1.5px;
+    background: var(--text-2); border-radius: 2px; transition: .3s;
+  }
+
+  /* ── Layout shell ────────────────────────────── */
+  .shell {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) 1fr var(--right-w);
+    min-height: calc(100vh - var(--topbar-h));
+  }
+
+  /* ── Sidebar ─────────────────────────────────── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 0.5px solid var(--border);
+    padding: 14px 0;
+    display: flex; flex-direction: column;
+    position: sticky; top: var(--topbar-h);
+    height: calc(100vh - var(--topbar-h));
+    overflow-y: auto;
+    transition: transform .3s ease;
+  }
+  .profile-block {
+    padding: 10px 14px 14px;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .profile-av {
+    width: 42px; height: 42px; border-radius: 50%; font-size: 14px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--purple-50); color: var(--purple-800); margin-bottom: 8px;
+  }
+  .profile-name { font-size: 13px; font-weight: 500; color: var(--text-1); }
+  .profile-sub { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+  .xp-wrap { margin-top: 9px; }
+  .xp-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-2); margin-bottom: 3px; }
+  .xp-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .xp-fill  { height: 100%; border-radius: 2px; background: var(--amber-400); width: 68%; }
+
+  .nav-section { font-size: 10px; font-weight: 500; color: var(--text-3); padding: 8px 14px 3px; letter-spacing: .06em; }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 14px; font-size: 12px; color: var(--text-2); cursor: pointer;
+    border-right: 2px solid transparent;
+    transition: background .15s, color .15s;
+  }
+  .nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+  .nav-item.active { background: var(--surface-2); color: var(--text-1); font-weight: 500; border-right-color: var(--purple-600); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; opacity: .65; }
+  .nav-item.active svg { opacity: 1; }
+  .nav-badge { margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 8px; background: var(--coral-50); color: var(--coral-600); }
+
+  /* ── Main ────────────────────────────────────── */
+  .main { padding: 20px 22px; display: flex; flex-direction: column; gap: 18px; overflow-x: hidden; }
+
+  .page-head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .page-title { font-size: 16px; font-weight: 500; color: var(--text-1); }
+  .page-sub { font-size: 12px; color: var(--text-2); margin-top: 3px; }
+  .search-box {
+    display: flex; align-items: center; gap: 7px;
+    border: 0.5px solid var(--border-med); border-radius: var(--radius-md);
+    padding: 6px 12px; font-size: 12px; color: var(--text-3); cursor: text;
+    background: var(--surface); white-space: nowrap;
+  }
+  .search-box svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+  .stat-card { background: var(--surface-2); border-radius: var(--radius-md); padding: 11px 13px; }
+  .stat-label { font-size: 11px; color: var(--text-2); }
+  .stat-val { font-size: 20px; font-weight: 500; color: var(--text-1); line-height: 1.2; margin-top: 3px; }
+  .stat-tag { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 8px; margin-top: 3px; }
+  .tag-purple { background: var(--purple-50); color: var(--purple-800); }
+  .tag-coral  { background: var(--coral-50);  color: var(--coral-600); }
+  .tag-green  { background: var(--green-50);  color: var(--green-800); }
+  .tag-teal   { background: var(--teal-50);   color: var(--teal-600); }
+
+  /* Section head */
+  .sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .sec-title { font-size: 13px; font-weight: 500; color: var(--text-1); }
+  .sec-link { font-size: 11px; color: var(--purple-600); cursor: pointer; }
+  .sec-link:hover { text-decoration: underline; }
+
+  /* Class cards */
+  .class-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+  .class-card {
+    border: 0.5px solid var(--border); border-radius: var(--radius-lg);
+    overflow: hidden; cursor: pointer; background: var(--surface);
+    transition: border-color .15s, transform .15s;
+  }
+  .class-card:hover { border-color: var(--border-med); transform: translateY(-1px); }
+  .card-top { padding: 11px 13px; display: flex; align-items: center; gap: 9px; }
+  .card-icon {
+    width: 34px; height: 34px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .card-icon svg { width: 18px; height: 18px; }
+  .card-name { font-size: 12px; font-weight: 500; color: var(--text-1); }
+  .card-guru { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+  .card-body { padding: 9px 13px; border-top: 0.5px solid var(--border); }
+  .prog-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-2); margin-bottom: 4px; }
+  .prog-track { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+  .prog-bar { height: 100%; border-radius: 2px; }
+  .card-footer { display: flex; justify-content: space-between; margin-top: 9px; }
+  .cf-item { text-align: center; }
+  .cf-val { font-size: 12px; font-weight: 500; color: var(--text-1); }
+  .cf-lbl { font-size: 10px; color: var(--text-2); }
+
+  /* Activity */
+  .activity-list { display: flex; flex-direction: column; }
+  .act-item {
+    display: flex; align-items: center; gap: 11px;
+    padding: 9px 0; border-bottom: 0.5px solid var(--border);
+  }
+  .act-item:last-child { border-bottom: none; }
+  .act-icon {
+    width: 32px; height: 32px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .act-icon svg { width: 13px; height: 13px; }
+  .act-info { flex: 1; min-width: 0; }
+  .act-name { font-size: 12px; font-weight: 500; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .act-meta { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+  .act-right { text-align: right; flex-shrink: 0; }
+  .act-score { font-size: 13px; font-weight: 500; }
+  .act-time { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+
+  /* ── Right panel ─────────────────────────────── */
+  .right { border-left: 0.5px solid var(--border); background: var(--surface); padding: 14px 13px; display: flex; flex-direction: column; gap: 16px; position: sticky; top: var(--topbar-h); height: calc(100vh - var(--topbar-h)); overflow-y: auto; }
+  .rp-title { font-size: 12px; font-weight: 500; color: var(--text-1); margin-bottom: 8px; }
+
+  /* Calendar */
+  .cal { background: var(--surface-2); border-radius: var(--radius-lg); padding: 11px 12px; }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .cal-title { font-size: 12px; font-weight: 500; color: var(--text-1); }
+  .cal-nav { font-size: 14px; color: var(--text-2); cursor: pointer; line-height: 1; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; text-align: center; }
+  .cdn { font-size: 9px; color: var(--text-3); padding: 2px 0; }
+  .cd { font-size: 11px; color: var(--text-2); padding: 3px 1px; border-radius: 4px; cursor: pointer; position: relative; }
+  .cd:hover { background: var(--border); }
+  .cd.today { background: var(--purple-600); color: #fff; font-weight: 500; border-radius: 50%; }
+  .cd.ev::after  { content:''; position:absolute; bottom:1px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background: var(--teal-400); }
+  .cd.ev2::after { content:''; position:absolute; bottom:1px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background: var(--red-400); }
+  .cal-legend { display: flex; gap: 10px; margin-top: 8px; }
+  .cal-legend span { display: flex; align-items: center; gap: 3px; font-size: 10px; color: var(--text-2); }
+  .cal-legend i { width: 6px; height: 6px; border-radius: 50%; }
+
+  /* Tasks */
+  .task-list { display: flex; flex-direction: column; gap: 5px; }
+  .task-item {
+    display: flex; align-items: flex-start; gap: 7px;
+    padding: 7px 9px; background: var(--surface-2);
+    border-radius: var(--radius-md);
+  }
+  .task-urgency { width: 3px; border-radius: 2px; align-self: stretch; flex-shrink: 0; }
+  .task-check {
+    width: 14px; height: 14px; border-radius: 3px;
+    border: 1.5px solid var(--border-med); flex-shrink: 0; margin-top: 1px;
+    cursor: pointer;
+  }
+  .task-check.done {
+    background: var(--teal-400); border-color: var(--teal-400);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .task-check.done::after {
+    content: ''; width: 7px; height: 4px;
+    border-left: 1.5px solid #E1F5EE; border-bottom: 1.5px solid #E1F5EE;
+    transform: rotate(-45deg) translate(1px,-1px);
+  }
+  .task-body { flex: 1; min-width: 0; }
+  .task-name { font-size: 11px; color: var(--text-1); line-height: 1.4; }
+  .task-name.done { text-decoration: line-through; color: var(--text-3); }
+  .task-due { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+  /* Leaderboard */
+  .leader-list { display: flex; flex-direction: column; gap: 5px; }
+  .leader-item { display: flex; align-items: center; gap: 7px; padding: 5px 7px; border-radius: var(--radius-md); }
+  .leader-item.me { background: var(--purple-50); }
+  .leader-rank { font-size: 11px; font-weight: 500; color: var(--text-3); width: 14px; text-align: center; flex-shrink: 0; }
+  .leader-item.me .leader-rank { color: var(--purple-800); }
+  .leader-av { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+  .leader-name { font-size: 11px; color: var(--text-1); flex: 1; }
+  .leader-item.me .leader-name { font-weight: 500; color: var(--purple-800); }
+  .leader-pts { font-size: 11px; font-weight: 500; color: var(--purple-600); font-family: var(--font-mono); }
+
+  /* ── Overlay for mobile sidebar ─────────────── */
+  .overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    z-index: 90; opacity: 0; transition: opacity .3s;
+  }
+  .overlay.show { display: block; opacity: 1; }
+
+  /* ── RESPONSIVE ──────────────────────────────── */
+
+  /* Tablet (≤900px): hide right panel, 2-col class grid */
+  @media (max-width: 900px) {
+    :root { --right-w: 0px; }
+    .shell { grid-template-columns: var(--sidebar-w) 1fr; }
+    .right { display: none; }
+    .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .class-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .nav-links { display: none; }
+  }
+
+  /* Mobile (≤640px): collapse sidebar, single col, floating right panel */
+  @media (max-width: 640px) {
+    :root { --sidebar-w: 0px; }
+    .shell { grid-template-columns: 1fr; }
+    .sidebar {
+      position: fixed; top: var(--topbar-h); left: 0; z-index: 95;
+      width: 240px; transform: translateX(-100%); height: calc(100vh - var(--topbar-h));
+    }
+    .sidebar.open { transform: translateX(0); }
+    .hamburger { display: flex; }
+    .stats { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+    .class-grid { grid-template-columns: 1fr; }
+    .main { padding: 14px 14px; gap: 14px; }
+    .page-head { flex-direction: column; align-items: flex-start; }
+    .search-box { width: 100%; }
+    .act-name { font-size: 11px; }
+  }
+
+  /* Very small (≤380px) */
+  @media (max-width: 380px) {
+    .stats { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .stat-val { font-size: 17px; }
+  }
+
+  /* Wide (≥1280px): wider columns */
+  @media (min-width: 1280px) {
+    :root { --sidebar-w: 240px; --right-w: 244px; }
+  }
+
+  /* ── Sidebar nav links ── */
+  .ni {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 14px; font-size: 12px; color: var(--text-2);
+    cursor: pointer; text-decoration: none;
+    border-right: 2px solid transparent;
+    transition: background .15s, color .15s;
+  }
+  .ni:hover { background: var(--surface-2); color: var(--text-1); }
+  .ni svg { width: 14px; height: 14px; flex-shrink: 0; opacity: .65; }
+  .ni-badge { margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 8px; background: var(--coral-50, #FAECE7); color: var(--coral-600, #993C1D); flex-shrink:0; }
+  .ns { font-size: 10px; font-weight: 500; color: var(--text-3); padding: 8px 14px 3px; letter-spacing: .06em; }
+  .prof-av { width: 40px; height: 40px; border-radius: 50%; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; margin-bottom: 7px; }
+  .prof-name { font-size: 13px; font-weight: 500; color: var(--text-1); }
+  .prof-sub { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+  .prof-block { padding: 12px 14px 14px; border-bottom: 0.5px solid var(--border); margin-bottom: 6px; }
+  .ni.active { background: var(--surface-2); color: var(--text-1); font-weight: 500; border-right-color: var(--purple-600); }
+  .ni.active svg { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger" id="menuBtn" aria-label="Buka menu">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="index.html" style="text-decoration:none"><div class="brand">Edu<span>Space</span></div></a>
+    <div class="role-pill">Portal Murid</div>
+    <nav class="nav-links">
+      <div class="nav-link active">Dashboard</div>
+      <div class="nav-link">Kelas saya</div>
+      <div class="nav-link">Materi</div>
+      <div class="nav-link">Tugas</div>
+      <div class="nav-link">Nilai</div>
+    </nav>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" aria-label="Notifikasi">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+        <path d="M8 2a4 4 0 0 1 4 4v2l1.5 2.5H2.5L4 8V6a4 4 0 0 1 4-4zM6.5 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="notif-dot"></div>
+    </button>
+    <div class="avatar">RA</div>
+  </div>
+</header>
+
+<!-- Mobile overlay -->
+<div class="overlay" id="overlay"></div>
+
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+  <div class="prof-block">
+    <div class="prof-av" style="background:var(--purple-50);color:var(--purple-800)">RA</div>
+    <div class="prof-name">Rafi Ananda</div>
+    <div class="prof-sub">Kelas 8A · No. Absen 22</div>
+    <div class="xp-wrap">
+      <div class="xp-row"><span>Level 12 · 2.840 XP</span><span>→ 3.000</span></div>
+      <div class="xp-track"><div class="xp-fill"></div></div>
+    </div>
+  </div>
+  <div class="ns">Menu utama</div>
+  <a class="ni active" href="homepage_eduspace.html"><svg viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/></svg>Dashboard</a>
+  <a class="ni" href="kelas_saya.html"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Kelas saya</a>
+  <a class="ni" href="materi_pelajaran.html"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h10M3 12h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Materi pelajaran</a>
+  <a class="ni" href="tugas_kuis.html"><svg viewBox="0 0 16 16" fill="none"><path d="M13 4L6 11l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Tugas & kuis<span class="ni-badge">4</span></a>
+  <a class="ni" href="nilai_saya.html"><svg viewBox="0 0 16 16" fill="none"><path d="M2 12L5 7l3 3 2.5-4 3.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Nilai saya</a>
+  <div class="ns">Komunitas</div>
+  <a class="ni" href="forum_diskusi.html"><svg viewBox="0 0 16 16" fill="none"><path d="M2 11V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7l-3 2v-2H4a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="1.3"/></svg>Forum diskusi</a>
+  <a class="ni" href="teman_sekelas.html"><svg viewBox="0 0 16 16" fill="none"><circle cx="6" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><circle cx="11" cy="5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M1 13c0-2.5 2.2-4 5-4s5 1.5 5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M13 9c1.3.4 2 1.4 2 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Teman sekelas</a>
+  <div class="ns">Akun</div>
+  <a class="ni" href="profil_saya.html"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Profil saya</a>
+</aside>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div class="page-title">Dashboard Murid</div>
+        <div class="page-sub">Sabtu, 12 April 2026 · Semester Genap 2025/2026</div>
+      </div>
+      <div class="search-box">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Cari materi atau kelas...
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Poin XP</div>
+        <div class="stat-val">2.840</div>
+        <span class="stat-tag tag-purple">+120 minggu ini</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Tugas selesai</div>
+        <div class="stat-val">14 / 18</div>
+        <span class="stat-tag tag-coral">4 belum dikerjakan</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rata-rata nilai</div>
+        <div class="stat-val">84,5</div>
+        <span class="stat-tag tag-green">+2,3 dari UTS</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Peringkat kelas</div>
+        <div class="stat-val">#3</div>
+        <span class="stat-tag tag-teal">dari 33 siswa</span>
+      </div>
+    </div>
+
+    <!-- Classes -->
+    <section>
+      <div class="sec-head">
+        <div class="sec-title">Kelas saya</div>
+        <div class="sec-link">Lihat semua</div>
+      </div>
+      <div class="class-grid">
+
+        <div class="class-card">
+          <div class="card-top">
+            <div class="card-icon" style="background:var(--purple-50)">
+              <svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M4 6h10M4 12h6" stroke="#534AB7" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="card-name">Matematika</div>
+              <div class="card-guru">Bu Siti Rahayu</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="prog-row"><span>Progress materi</span><span>75%</span></div>
+            <div class="prog-track"><div class="prog-bar" style="width:75%;background:var(--purple-600)"></div></div>
+            <div class="card-footer">
+              <div class="cf-item"><div class="cf-val">88</div><div class="cf-lbl">Nilai terakhir</div></div>
+              <div class="cf-item"><div class="cf-val">2</div><div class="cf-lbl">Tugas aktif</div></div>
+              <div class="cf-item"><div class="cf-val">9/12</div><div class="cf-lbl">Materi</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="class-card">
+          <div class="card-top">
+            <div class="card-icon" style="background:var(--teal-50)">
+              <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="5.5" stroke="#1D9E75" stroke-width="1.3"/><path d="M9 6v3l2 2" stroke="#1D9E75" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="card-name">IPA Terpadu</div>
+              <div class="card-guru">Pak Budi Prasetyo</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="prog-row"><span>Progress materi</span><span>60%</span></div>
+            <div class="prog-track"><div class="prog-bar" style="width:60%;background:var(--teal-400)"></div></div>
+            <div class="card-footer">
+              <div class="cf-item"><div class="cf-val">82</div><div class="cf-lbl">Nilai terakhir</div></div>
+              <div class="cf-item"><div class="cf-val">1</div><div class="cf-lbl">Tugas aktif</div></div>
+              <div class="cf-item"><div class="cf-val">6/10</div><div class="cf-lbl">Materi</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="class-card">
+          <div class="card-top">
+            <div class="card-icon" style="background:var(--blue-50)">
+              <svg viewBox="0 0 18 18" fill="none"><path d="M4 6h10M4 9h7M4 12h4" stroke="#378ADD" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="card-name">Bahasa Inggris</div>
+              <div class="card-guru">Bu Dewi Nurhayati</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="prog-row"><span>Progress materi</span><span>88%</span></div>
+            <div class="prog-track"><div class="prog-bar" style="width:88%;background:var(--blue-400)"></div></div>
+            <div class="card-footer">
+              <div class="cf-item"><div class="cf-val">91</div><div class="cf-lbl">Nilai terakhir</div></div>
+              <div class="cf-item"><div class="cf-val">1</div><div class="cf-lbl">Tugas aktif</div></div>
+              <div class="cf-item"><div class="cf-val">8/9</div><div class="cf-lbl">Materi</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Activity -->
+    <section>
+      <div class="sec-head">
+        <div class="sec-title">Aktivitas terbaru</div>
+        <div class="sec-link">Lihat semua</div>
+      </div>
+      <div class="activity-list">
+
+        <div class="act-item">
+          <div class="act-icon" style="background:var(--teal-50)">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M13 4L6 11l-3-3" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="act-info">
+            <div class="act-name">Kuis Bab 3 — Fungsi Linear dikumpulkan</div>
+            <div class="act-meta">Matematika · Sudah dinilai guru</div>
+          </div>
+          <div class="act-right">
+            <div class="act-score" style="color:var(--teal-400)">92 / 100</div>
+            <div class="act-time">Kemarin</div>
+          </div>
+        </div>
+
+        <div class="act-item">
+          <div class="act-icon" style="background:var(--blue-50)">
+            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5" stroke="#378ADD" stroke-width="1.2"/><path d="M6.5 6l3 2-3 2V6z" fill="#378ADD"/></svg>
+          </div>
+          <div class="act-info">
+            <div class="act-name">Video "Cara memfaktorkan" selesai ditonton</div>
+            <div class="act-meta">Matematika Bab 4 · +30 XP didapat</div>
+          </div>
+          <div class="act-right">
+            <div class="act-score" style="color:var(--purple-600)">+30 XP</div>
+            <div class="act-time">Hari ini, 09.14</div>
+          </div>
+        </div>
+
+        <div class="act-item">
+          <div class="act-icon" style="background:var(--coral-50)">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M2 11V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7l-3 2v-2H4a2 2 0 0 1-2-2z" stroke="#D85A30" stroke-width="1.2"/></svg>
+          </div>
+          <div class="act-info">
+            <div class="act-name">Bu Siti membalas pertanyaanmu di forum</div>
+            <div class="act-meta">Matematika 8A · "Betul Rafi, jika D &lt; 0..."</div>
+          </div>
+          <div class="act-right">
+            <div class="act-score" style="color:var(--coral-400)">Forum</div>
+            <div class="act-time">Hari ini, 08.47</div>
+          </div>
+        </div>
+
+        <div class="act-item">
+          <div class="act-icon" style="background:var(--amber-50)">
+            <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#BA7517" stroke-width="1.2"/><path d="M5 3V2M11 3V2M2 7h12" stroke="#BA7517" stroke-width="1.1" stroke-linecap="round"/></svg>
+          </div>
+          <div class="act-info">
+            <div class="act-name">Materi baru diupload: "Fotosintesis Bab 5"</div>
+            <div class="act-meta">IPA Terpadu · PDF · 8 halaman</div>
+          </div>
+          <div class="act-right">
+            <div class="act-score" style="color:var(--amber-400)">Baru</div>
+            <div class="act-time">Kemarin, 14.20</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Right panel -->
+  <aside class="right">
+
+    <div>
+      <div class="rp-title">April 2026</div>
+      <div class="cal">
+        <div class="cal-head">
+          <div class="cal-title">April 2026</div>
+          <div class="cal-nav">›</div>
+        </div>
+        <div class="cal-grid">
+          <div class="cdn">M</div><div class="cdn">S</div><div class="cdn">S</div><div class="cdn">R</div><div class="cdn">K</div><div class="cdn">J</div><div class="cdn">S</div>
+          <div class="cd"></div><div class="cd"></div><div class="cd">1</div><div class="cd">2</div><div class="cd">3</div><div class="cd">4</div><div class="cd">5</div>
+          <div class="cd">6</div><div class="cd">7</div><div class="cd">8</div><div class="cd">9</div><div class="cd">10</div><div class="cd">11</div><div class="cd today">12</div>
+          <div class="cd">13</div><div class="cd ev">14</div><div class="cd">15</div><div class="cd">16</div><div class="cd">17</div><div class="cd ev2">18</div><div class="cd">19</div>
+          <div class="cd">20</div><div class="cd">21</div><div class="cd">22</div><div class="cd">23</div><div class="cd ev2">24</div><div class="cd ev">25</div><div class="cd">26</div>
+          <div class="cd">27</div><div class="cd">28</div><div class="cd">29</div><div class="cd">30</div>
+        </div>
+        <div class="cal-legend">
+          <span><i style="background:var(--teal-400)"></i>Jadwal</span>
+          <span><i style="background:var(--red-400)"></i>Deadline</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="rp-title">Tugas mendatang</div>
+      <div class="task-list">
+        <div class="task-item">
+          <div class="task-urgency" style="background:var(--teal-400)"></div>
+          <div class="task-check done"></div>
+          <div class="task-body">
+            <div class="task-name done">Latihan soal aljabar</div>
+            <div class="task-due">Matematika · Selesai</div>
+          </div>
+        </div>
+        <div class="task-item">
+          <div class="task-urgency" style="background:var(--red-400)"></div>
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-name">Laporan praktikum IPA</div>
+            <div class="task-due">Deadline 14 Apr · 2 hari lagi</div>
+          </div>
+        </div>
+        <div class="task-item">
+          <div class="task-urgency" style="background:var(--amber-400)"></div>
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-name">Essay B. Inggris: My future goals</div>
+            <div class="task-due">Deadline 18 Apr · 6 hari lagi</div>
+          </div>
+        </div>
+        <div class="task-item">
+          <div class="task-urgency" style="background:var(--amber-400)"></div>
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-name">Kuis online IPS Bab 5</div>
+            <div class="task-due">Deadline 24 Apr · 12 hari lagi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="rp-title">Papan peringkat kelas</div>
+      <div class="leader-list">
+        <div class="leader-item">
+          <div class="leader-rank">1</div>
+          <div class="leader-av" style="background:var(--amber-50);color:var(--amber-600)">NF</div>
+          <div class="leader-name">Nadia Fitri</div>
+          <div class="leader-pts">3.210</div>
+        </div>
+        <div class="leader-item">
+          <div class="leader-rank">2</div>
+          <div class="leader-av" style="background:var(--teal-50);color:var(--teal-600)">DK</div>
+          <div class="leader-name">Dimas Kurnia</div>
+          <div class="leader-pts">3.050</div>
+        </div>
+        <div class="leader-item me">
+          <div class="leader-rank">3</div>
+          <div class="leader-av" style="background:var(--purple-600);color:var(--purple-50)">RA</div>
+          <div class="leader-name">Rafi Ananda</div>
+          <div class="leader-pts">2.840</div>
+        </div>
+        <div class="leader-item">
+          <div class="leader-rank">4</div>
+          <div class="leader-av" style="background:var(--coral-50);color:var(--coral-600)">SP</div>
+          <div class="leader-name">Sari Pratiwi</div>
+          <div class="leader-pts">2.710</div>
+        </div>
+        <div class="leader-item">
+          <div class="leader-rank">5</div>
+          <div class="leader-av" style="background:var(--blue-50);color:var(--blue-600)">AR</div>
+          <div class="leader-name">Aldi Rahman</div>
+          <div class="leader-pts">2.680</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<script>
+  const menuBtn = document.getElementById('menuBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+
+  function openMenu() {
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+  }
+  function closeMenu() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  overlay.addEventListener('click', closeMenu);
+
+  });
+
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+</script>
+
+<script src="auth.js"></script></body>
+</html>
+

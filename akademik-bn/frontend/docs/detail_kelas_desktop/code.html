@@ -1,0 +1,576 @@
+<!doctype html>
+
+<html class="light" lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+		<title>Academia ERP - Kelas Murid Detail</title>
+		<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+		<script id="tailwind-config">
+			tailwind.config = {
+				darkMode: 'class',
+				theme: {
+					extend: {
+						colors: {
+							'secondary-fixed-dim': '#abd600',
+							'outline-variant': '#e4beb8',
+							'on-primary-fixed': '#410100',
+							'on-tertiary-container': '#d3cbaa',
+							'on-tertiary-fixed': '#1f1c06',
+							'secondary-fixed': '#c3f400',
+							'on-tertiary': '#ffffff',
+							'on-error': '#ffffff',
+							'surface-dim': '#ddd9d8',
+							'on-secondary-fixed': '#161e00',
+							background: '#fdf8f8',
+							'tertiary-fixed-dim': '#cec7a5',
+							'surface-variant': '#e6e1e1',
+							'surface-container-low': '#f7f2f2',
+							outline: '#8f706a',
+							error: '#ba1a1a',
+							'on-secondary': '#ffffff',
+							'tertiary-fixed': '#ebe3c0',
+							'on-surface': '#1c1b1b',
+							'on-secondary-fixed-variant': '#3c4d00',
+							surface: '#fdf8f8',
+							'surface-container-lowest': '#ffffff',
+							'on-primary-fixed-variant': '#930300',
+							'error-container': '#ffdad6',
+							'on-secondary-container': '#546b00',
+							'primary-fixed': '#ffdad4',
+							primary: '#830300',
+							'surface-container-highest': '#e6e1e1',
+							'on-error-container': '#93000a',
+							'primary-fixed-dim': '#ffb4a8',
+							'surface-container': '#f1edec',
+							'on-tertiary-fixed-variant': '#4b472d',
+							'primary-container': '#ab1509',
+							secondary: '#506600',
+							'on-background': '#1c1b1b',
+							'inverse-surface': '#313030',
+							'surface-bright': '#fdf8f8',
+							'tertiary-container': '#5b563b',
+							tertiary: '#433f26',
+							'on-surface-variant': '#5b403c',
+							'surface-container-high': '#ece7e7',
+							'secondary-container': '#c1f100',
+							'on-primary-container': '#ffbbaf',
+							'surface-tint': '#b82012',
+							'on-primary': '#ffffff',
+							'inverse-primary': '#ffb4a8',
+							'inverse-on-surface': '#f4f0ef'
+						},
+						borderRadius: {
+							DEFAULT: '0.25rem',
+							lg: '0.5rem',
+							xl: '0.75rem',
+							full: '9999px'
+						},
+						spacing: {
+							gutter: '24px',
+							'border-width': '4px',
+							'shadow-offset': '8px',
+							'container-max': '1280px',
+							unit: '8px',
+							margin: '32px'
+						},
+						fontFamily: {
+							'headline-xl': ['Outfit', 'sans-serif'],
+							'headline-md': ['Outfit', 'sans-serif'],
+							'headline-lg-mobile': ['Outfit', 'sans-serif'],
+							'body-lg': ['Outfit', 'sans-serif'],
+							'data-mono': ['Space Mono', 'monospace'],
+							'headline-lg': ['Outfit', 'sans-serif'],
+							'label-caps': ['Space Mono', 'monospace'],
+							'body-md': ['Outfit', 'sans-serif']
+						},
+						fontSize: {
+							'headline-xl': [
+								'64px',
+								{ lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '800' }
+							],
+							'headline-md': ['24px', { lineHeight: '1.3', fontWeight: '700' }],
+							'headline-lg-mobile': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
+							'body-lg': ['18px', { lineHeight: '1.6', fontWeight: '400' }],
+							'data-mono': [
+								'14px',
+								{ lineHeight: '1.5', letterSpacing: '0.05em', fontWeight: '500' }
+							],
+							'headline-lg': [
+								'40px',
+								{ lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }
+							],
+							'label-caps': ['12px', { lineHeight: '1.2', fontWeight: '700' }],
+							'body-md': ['16px', { lineHeight: '1.6', fontWeight: '400' }]
+						}
+					}
+				}
+			};
+		</script>
+		<link href="https://fonts.googleapis.com" rel="preconnect" />
+		<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&amp;family=Space+Mono:wght@400;700&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			body {
+				font-family: 'Outfit', sans-serif;
+				background-color: #fdf8f8;
+				color: #1c1b1b;
+			}
+			.material-symbols-outlined {
+				font-variation-settings: 'FILL' 1;
+			}
+			/* Custom scrollbar for rigid brutalist feel */
+			::-webkit-scrollbar {
+				width: 12px;
+				border-left: 4px solid #1c1b1b;
+				background: #ebe3c0;
+			}
+			::-webkit-scrollbar-thumb {
+				background: #ab1509;
+				border: 4px solid #1c1b1b;
+			}
+		</style>
+	</head>
+	<body class="flex h-screen w-full overflow-hidden bg-surface">
+		<!-- SideNavBar (Predicted & Strict Rendering) -->
+		<nav
+			class="relative z-40 hidden h-full w-64 flex-shrink-0 flex-col gap-unit border-r-4 border-on-surface bg-tertiary-fixed px-4 py-margin shadow-[8px_0px_0px_0px_#1C1B1B] md:flex dark:bg-tertiary-container"
+		>
+			<div class="mb-margin">
+				<h1
+					class="font-headline-md text-headline-md font-black text-primary dark:text-primary-fixed"
+				>
+					Academia ERP
+				</h1>
+				<p class="mt-1 font-data-mono text-data-mono text-on-surface-variant uppercase">
+					Data Mapping System
+				</p>
+			</div>
+			<div class="flex flex-1 flex-col gap-unit">
+				<!-- Inactive Tab -->
+				<a
+					class="flex items-center gap-3 border-4 border-transparent p-3 font-headline-md text-[18px] text-headline-md text-on-surface-variant transition-all hover:translate-x-1 hover:translate-y-1 hover:border-on-surface hover:bg-surface-variant"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">school</span>
+					Jurusan Murid
+				</a>
+				<!-- Active Tab: "Kelas Murid" matches the detail screen intent -->
+				<a
+					class="flex translate-x-[-2px] translate-y-[-2px] items-center gap-3 border-4 border-on-surface bg-secondary-container p-3 font-headline-md text-[18px] text-headline-md text-on-secondary-container shadow-[4px_4px_0px_0px_#1C1B1B] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">groups</span>
+					Kelas Murid
+				</a>
+				<!-- Inactive Tabs -->
+				<a
+					class="flex items-center gap-3 border-4 border-transparent p-3 font-headline-md text-[18px] text-headline-md text-on-surface-variant transition-all hover:translate-x-1 hover:translate-y-1 hover:border-on-surface hover:bg-surface-variant"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">supervisor_account</span>
+					Wali Kelas
+				</a>
+				<a
+					class="flex items-center gap-3 border-4 border-transparent p-3 font-headline-md text-[18px] text-headline-md text-on-surface-variant transition-all hover:translate-x-1 hover:translate-y-1 hover:border-on-surface hover:bg-surface-variant"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">menu_book</span>
+					Guru Mapel
+				</a>
+				<a
+					class="flex items-center gap-3 border-4 border-transparent p-3 font-headline-md text-[18px] text-headline-md text-on-surface-variant transition-all hover:translate-x-1 hover:translate-y-1 hover:border-on-surface hover:bg-surface-variant"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[24px]">calendar_today</span>
+					Schedules
+				</a>
+			</div>
+			<button
+				class="mb-margin w-full border-4 border-on-surface bg-primary-container px-4 py-3 font-label-caps text-label-caps tracking-widest text-on-primary uppercase shadow-[4px_4px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:translate-x-2 active:translate-y-2"
+			>
+				Quick Action
+			</button>
+			<div class="flex flex-col gap-unit border-t-4 border-on-surface pt-unit">
+				<a
+					class="flex items-center gap-3 p-2 font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[20px]">settings</span>
+					Settings
+				</a>
+				<a
+					class="flex items-center gap-3 p-2 font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary"
+					href="#"
+				>
+					<span class="material-symbols-outlined text-[20px]">logout</span>
+					Logout
+				</a>
+			</div>
+		</nav>
+		<!-- Main Content Area Wrapper -->
+		<div class="relative flex h-full flex-1 flex-col overflow-hidden">
+			<!-- TopNavBar (Predicted & Strict Rendering) -->
+			<header
+				class="sticky top-0 z-50 flex h-20 w-full flex-shrink-0 items-center justify-between border-b-4 border-on-surface bg-surface px-gutter shadow-[0px_8px_0px_0px_#1C1B1B] dark:bg-surface-dim"
+			>
+				<div class="flex items-center gap-gutter">
+					<!-- Mobile Menu Trigger -->
+					<button
+						class="border-4 border-on-surface p-2 transition-transform hover:bg-surface-variant active:scale-95 md:hidden"
+					>
+						<span class="material-symbols-outlined">menu</span>
+					</button>
+					<div
+						class="font-headline-md text-headline-md font-black text-primary dark:text-primary-fixed"
+					>
+						System Console
+					</div>
+				</div>
+				<!-- Search Bar (Right aligned per JSON) -->
+				<div class="mr-gutter hidden flex-1 items-center justify-end gap-gutter md:flex">
+					<div class="relative w-64">
+						<input
+							class="w-full border-4 border-on-surface bg-surface-container-lowest py-2 pr-4 pl-10 font-data-mono text-data-mono transition-shadow focus:shadow-[4px_4px_0px_0px_#1C1B1B] focus:outline-none"
+							placeholder="Search data..."
+							type="text"
+						/>
+						<span class="material-symbols-outlined absolute top-2.5 left-3 text-on-surface-variant"
+							>search</span
+						>
+					</div>
+					<nav class="flex items-center gap-6">
+						<a
+							class="font-label-caps text-label-caps font-medium tracking-wider text-on-surface-variant uppercase transition-colors hover:text-primary"
+							href="#"
+							>Dashboard</a
+						>
+						<a
+							class="font-label-caps text-label-caps font-medium tracking-wider text-on-surface-variant uppercase transition-colors hover:text-primary"
+							href="#"
+							>Reports</a
+						>
+					</nav>
+				</div>
+				<div class="flex items-center gap-4">
+					<button
+						class="hidden border-4 border-on-surface bg-secondary-container px-6 py-2 font-label-caps text-label-caps tracking-widest text-on-secondary-container uppercase shadow-[4px_4px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:scale-95 sm:block"
+					>
+						Add New
+					</button>
+					<button
+						class="border-4 border-transparent p-2 transition-all hover:border-on-surface hover:bg-surface-variant active:scale-95"
+					>
+						<span class="material-symbols-outlined">notifications</span>
+					</button>
+					<button
+						class="border-4 border-transparent p-2 transition-all hover:border-on-surface hover:bg-surface-variant active:scale-95"
+					>
+						<span class="material-symbols-outlined text-primary">account_circle</span>
+					</button>
+				</div>
+			</header>
+			<!-- Page Canvas -->
+			<main class="flex-1 overflow-y-auto p-gutter pb-margin">
+				<div class="mx-auto max-w-container-max">
+					<!-- Page Header -->
+					<div class="mb-margin border-b-4 border-on-surface pb-unit">
+						<h2
+							class="font-headline-xl text-headline-xl font-black tracking-tighter text-primary uppercase"
+						>
+							Detail Kelas: 10-A
+						</h2>
+						<p class="mt-2 font-data-mono text-data-mono text-on-surface-variant">
+							Academic Year 2024/2025 • Semester 1
+						</p>
+					</div>
+					<!-- 12-Column Grid Layout -->
+					<div class="grid grid-cols-2 gap-gutter md:grid-cols-6 lg:grid-cols-12">
+						<!-- Left Column: Wali Kelas (Homeroom Teacher) Card -->
+						<div class="col-span-2 flex flex-col gap-gutter md:col-span-6 lg:col-span-4">
+							<!-- Rigid Brutalist Card -->
+							<div
+								class="flex flex-col border-4 border-on-surface bg-tertiary-fixed p-6 shadow-[8px_8px_0px_0px_#1C1B1B]"
+							>
+								<div
+									class="mb-4 flex items-center justify-between border-b-4 border-on-surface pb-4"
+								>
+									<h3
+										class="font-headline-lg text-headline-lg leading-none font-bold text-on-surface"
+									>
+										Wali Kelas
+									</h3>
+									<span class="material-symbols-outlined text-[32px] text-primary"
+										>shield_person</span
+									>
+								</div>
+								<div
+									class="mb-6 aspect-square w-full overflow-hidden border-4 border-on-surface bg-surface-variant"
+								>
+									<img
+										class="h-full w-full object-cover grayscale transition-all duration-300 hover:grayscale-0"
+										data-alt="A brightly lit, high contrast professional portrait of an Indonesian male teacher wearing a neat brown uniform. The background is a flat, stark cream color. The lighting casts a harsh, dramatic shadow to one side, fitting a highly structured neobrutalist aesthetic."
+										src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRxs2ueRZgOgPmEVtI2d5VlwNuohwREEx5HpwEU-29pwsV3A98koB_cqLBaeuph5YsAEK1WmKh55aldt2ApV8SAnPavurjgcU65Mt2jxH6XS-OlOi6cgqv7O6H29Zb7XSCv60B4Dd24dGQ0nUDbFSQ2x_0lRYgkvv99R-VZkFtniNC2okC0BYS2E2pdhmsDEbm-aVTfRVG-w64_TQ9eoD5XuaKCLA-z_4ulN57Sy6y9qrI47pwy3T-"
+									/>
+								</div>
+								<div class="flex-1 space-y-4">
+									<div>
+										<h4 class="font-headline-md text-headline-md font-bold uppercase">
+											Budi Santoso, S.Pd
+										</h4>
+										<div
+											class="mt-2 inline-block border-2 border-on-surface bg-secondary-container px-3 py-1 font-label-caps text-label-caps font-bold"
+										>
+											NIP: 19800512 200501 1 004
+										</div>
+									</div>
+									<div
+										class="space-y-2 border-t-2 border-dashed border-on-surface pt-4 font-data-mono text-data-mono"
+									>
+										<p class="flex justify-between">
+											<span>Subject:</span> <span class="font-bold">Matematika</span>
+										</p>
+										<p class="flex justify-between">
+											<span>Room:</span> <span class="font-bold">Ruang Guru 2</span>
+										</p>
+										<p class="flex justify-between">
+											<span>Status:</span> <span class="font-bold text-secondary">Active</span>
+										</p>
+									</div>
+								</div>
+								<button
+									class="mt-6 flex w-full items-center justify-center gap-2 border-4 border-on-surface bg-primary py-4 font-label-caps text-label-caps tracking-widest text-on-primary uppercase shadow-[4px_4px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:bg-primary-container"
+								>
+									<span class="material-symbols-outlined text-[20px]">mail</span>
+									Hubungi Wali Kelas
+								</button>
+							</div>
+							<!-- Secondary Stats Card -->
+							<div
+								class="flex items-center justify-between border-4 border-on-surface bg-surface-container p-4 shadow-[8px_8px_0px_0px_#1C1B1B]"
+							>
+								<span class="font-headline-md text-headline-md font-bold">Total Murid</span>
+								<span
+									class="font-headline-xl text-headline-xl font-black text-secondary-container drop-shadow-[2px_2px_0px_#1C1B1B]"
+									>32</span
+								>
+							</div>
+						</div>
+						<!-- Right Column: Students Grid -->
+						<div class="col-span-2 flex flex-col md:col-span-6 lg:col-span-8">
+							<div class="mb-6 flex items-center justify-between border-b-4 border-on-surface pb-2">
+								<h3 class="font-headline-lg text-headline-lg font-bold">Daftar Murid</h3>
+								<button
+									class="border-4 border-on-surface bg-surface p-2 shadow-[4px_4px_0px_0px_#1C1B1B] transition-colors hover:bg-secondary-container"
+								>
+									<span class="material-symbols-outlined">filter_list</span>
+								</button>
+							</div>
+							<!-- Inner Grid for Students -->
+							<div class="grid auto-rows-max grid-cols-1 gap-gutter sm:grid-cols-2 xl:grid-cols-3">
+								<!-- Student Card 1 -->
+								<div
+									class="group relative flex flex-col overflow-hidden border-4 border-on-surface bg-surface shadow-[6px_6px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_#1C1B1B]"
+								>
+									<div class="h-40 overflow-hidden border-b-4 border-on-surface bg-tertiary-fixed">
+										<img
+											class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+											data-alt="A stark, high-contrast portrait of a female Indonesian high school student in a white and grey uniform. Flat cream background, harsh lighting casting a sharp diagonal shadow, matching a neobrutalist geometric aesthetic."
+											src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdMpZaXHGSWoDPhOP7tCnCkL7u3KjXXvFiRqN3A-gYz0FPS3NfyUuAn9vG5E0zhAag9tqkSAiuJCB12DlhGAXgU0qEadZRR4Brk0L6QEIAPjmBZBEs3_N89YinXkPp0iHXblTW1sw8uzOenQjYXosJXT2BpdFOXooqbEQdFnH8Ew_qzmj3yatYV0NPSRy7-YwRifasc2O1HRBpQv_jF-KB0mmRDFDclJsRRFg-p51lgWq6U7oQ2w-i"
+										/>
+									</div>
+									<div class="flex flex-1 flex-col justify-between gap-2 bg-surface p-4">
+										<h4 class="font-headline-md text-headline-md leading-tight font-bold">
+											Aditya Kurniawan
+										</h4>
+										<div class="mt-2 flex items-center justify-between">
+											<span class="font-data-mono text-data-mono text-on-surface-variant"
+												>NIS:</span
+											>
+											<span
+												class="border-2 border-on-surface bg-secondary-fixed px-2 py-0.5 font-data-mono text-data-mono font-bold"
+												>20230101</span
+											>
+										</div>
+									</div>
+								</div>
+								<!-- Student Card 2 -->
+								<div
+									class="group relative flex flex-col overflow-hidden border-4 border-on-surface bg-surface shadow-[6px_6px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_#1C1B1B]"
+								>
+									<div class="h-40 overflow-hidden border-b-4 border-on-surface bg-tertiary-fixed">
+										<img
+											class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+											data-alt="A stark, high-contrast portrait of a male Indonesian high school student with short neat hair in a white uniform. Flat cream background, harsh lighting casting a sharp diagonal shadow, matching a neobrutalist geometric aesthetic."
+											src="https://lh3.googleusercontent.com/aida-public/AB6AXuBO5BOpm7TBLn7IcNt00vFkz0MNCsQEfDxjKiw6qmrJnoR5CUGvYtMqfZcN45aSbicg6Po_rm399KEfj2YDwdU2uWuQa8sfVoNDAt9Fd_J7dBFJywln5jA9zWCdcHSEjSoL1MU1JgksbqGi8Be_puDA2tELcW4YehHDlQG8wozCTd75WaLOsQvk7tK6Y01gSFfG1Mbj_ywXQpIX2_1icwVR1Ze9xElq-D5V1BDP9H4Kvq5iu7NXCOqE"
+										/>
+									</div>
+									<div class="flex flex-1 flex-col justify-between gap-2 bg-surface p-4">
+										<h4 class="font-headline-md text-headline-md leading-tight font-bold">
+											Bunga Citra
+										</h4>
+										<div class="mt-2 flex items-center justify-between">
+											<span class="font-data-mono text-data-mono text-on-surface-variant"
+												>NIS:</span
+											>
+											<span
+												class="border-2 border-on-surface bg-secondary-fixed px-2 py-0.5 font-data-mono text-data-mono font-bold"
+												>20230102</span
+											>
+										</div>
+									</div>
+								</div>
+								<!-- Student Card 3 -->
+								<div
+									class="group relative flex flex-col overflow-hidden border-4 border-on-surface bg-surface shadow-[6px_6px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_#1C1B1B]"
+								>
+									<div class="h-40 overflow-hidden border-b-4 border-on-surface bg-tertiary-fixed">
+										<img
+											class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+											data-alt="A stark, high-contrast portrait of a female Indonesian high school student wearing a hijab in a standard uniform. Flat cream background, harsh lighting casting a sharp diagonal shadow, matching a neobrutalist geometric aesthetic."
+											src="https://lh3.googleusercontent.com/aida-public/AB6AXuBN4KtmffuN0kUapAC0kT84tusY5yH9j853qeJK9LB_hcKFn3TlvLGL1kjfGKW54zo6MHPLywbOeNQBETRzfZ4IxaujJNOvIIlCI5XGostG9_i1ssrtTUl_uOKmzUac3jMN_CtjdOZ--wOViNgB9iZnr0OzX5KIn8o5TpX8xiU0eMe2--GhsqUz5O-S94SuOrlcHXhOdYC1DDdJ35N_g8THwUnLbOcpe3-PI6QApPK8FPNhayJqGtwh"
+										/>
+									</div>
+									<div class="flex flex-1 flex-col justify-between gap-2 bg-surface p-4">
+										<h4 class="font-headline-md text-headline-md leading-tight font-bold">
+											Candra Wijaya
+										</h4>
+										<div class="mt-2 flex items-center justify-between">
+											<span class="font-data-mono text-data-mono text-on-surface-variant"
+												>NIS:</span
+											>
+											<span
+												class="border-2 border-on-surface bg-secondary-fixed px-2 py-0.5 font-data-mono text-data-mono font-bold"
+												>20230103</span
+											>
+										</div>
+									</div>
+								</div>
+								<!-- Student Card 4 -->
+								<div
+									class="group relative flex flex-col overflow-hidden border-4 border-on-surface bg-surface shadow-[6px_6px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_#1C1B1B]"
+								>
+									<div class="h-40 overflow-hidden border-b-4 border-on-surface bg-tertiary-fixed">
+										<img
+											class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+											data-alt="A stark, high-contrast portrait of a male Indonesian high school student with glasses in a white uniform. Flat cream background, harsh lighting casting a sharp diagonal shadow, matching a neobrutalist geometric aesthetic."
+											src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyCG5UNud93wYAMJnefrkkBQqXQA1D-TOQXr31qeC3oq9_-FL55z108p2gblJSkErJMVO5RnU53pOLs8UdEtYGAyVB7wn3pH0shbF5pcJDBtbY2g1984qusuW_AIq7sRdPw7z5-K7BJha9P28-kSmeKy3Vk1dn0W6Nb-_rUy5yu-8d8Zsxa5ARUN6vcgPB8pJpfK41xJcbClt6a1jSsooL1Tpg1LdSBPAQFE75ntlqNAuqwDiYtVE2"
+										/>
+									</div>
+									<div class="flex flex-1 flex-col justify-between gap-2 bg-surface p-4">
+										<h4 class="font-headline-md text-headline-md leading-tight font-bold">
+											Dian Sastro
+										</h4>
+										<div class="mt-2 flex items-center justify-between">
+											<span class="font-data-mono text-data-mono text-on-surface-variant"
+												>NIS:</span
+											>
+											<span
+												class="border-2 border-on-surface bg-secondary-fixed px-2 py-0.5 font-data-mono text-data-mono font-bold"
+												>20230104</span
+											>
+										</div>
+									</div>
+								</div>
+								<!-- Student Card 5 -->
+								<div
+									class="group relative flex flex-col overflow-hidden border-4 border-on-surface bg-surface shadow-[6px_6px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_#1C1B1B]"
+								>
+									<div class="h-40 overflow-hidden border-b-4 border-on-surface bg-tertiary-fixed">
+										<img
+											class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+											data-alt="A stark, high-contrast portrait of a female Indonesian high school student smiling slightly in uniform. Flat cream background, harsh lighting casting a sharp diagonal shadow, matching a neobrutalist geometric aesthetic."
+											src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6A7wqPVlwm1Kk01bnFTdyj1QFToOiD2QXncvC6Pd5cIonTJkRVsJ5cxis_fCgXYeN49HaRnNn1C58k-17ddqDbZoR9a3DcIK7P4DpQeGM_8oL71tJJhl0Ir2e3gXcEaRx79j-1PehSqQw72qt82m1eCwkwLVu2F1DG8sg0h6YGoCX3dUGiakFp1LDAO-3iCpwGOeom3431G0s29N49QgN9B4P7uHJiwqjizvSwFwEZmdCwETZJiET"
+										/>
+									</div>
+									<div class="flex flex-1 flex-col justify-between gap-2 bg-surface p-4">
+										<h4 class="font-headline-md text-headline-md leading-tight font-bold">
+											Eka Prasetya
+										</h4>
+										<div class="mt-2 flex items-center justify-between">
+											<span class="font-data-mono text-data-mono text-on-surface-variant"
+												>NIS:</span
+											>
+											<span
+												class="border-2 border-on-surface bg-secondary-fixed px-2 py-0.5 font-data-mono text-data-mono font-bold"
+												>20230105</span
+											>
+										</div>
+									</div>
+								</div>
+								<!-- Student Card 6 -->
+								<div
+									class="group relative flex flex-col overflow-hidden border-4 border-on-surface bg-surface shadow-[6px_6px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_#1C1B1B]"
+								>
+									<div
+										class="flex h-40 items-center justify-center overflow-hidden border-b-4 border-on-surface bg-surface-variant bg-tertiary-fixed"
+									>
+										<span
+											class="material-symbols-outlined text-[64px] text-on-surface-variant opacity-50"
+											>person</span
+										>
+									</div>
+									<div class="flex flex-1 flex-col justify-between gap-2 bg-surface p-4">
+										<h4 class="font-headline-md text-headline-md leading-tight font-bold">
+											Fajar Ramadhan
+										</h4>
+										<div class="mt-2 flex items-center justify-between">
+											<span class="font-data-mono text-data-mono text-on-surface-variant"
+												>NIS:</span
+											>
+											<span
+												class="border-2 border-on-surface bg-secondary-fixed px-2 py-0.5 font-data-mono text-data-mono font-bold"
+												>20230106</span
+											>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- Pagination Block -->
+							<div class="mt-margin flex justify-center gap-2 font-label-caps text-label-caps">
+								<button
+									class="flex h-10 w-10 items-center justify-center border-4 border-on-surface bg-surface shadow-[4px_4px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-secondary-container hover:shadow-[0px_0px_0px_0px_#1C1B1B] disabled:opacity-50"
+									disabled=""
+								>
+									<span class="material-symbols-outlined">chevron_left</span>
+								</button>
+								<button
+									class="flex h-10 w-10 items-center justify-center border-4 border-on-surface bg-primary font-bold text-on-primary shadow-[4px_4px_0px_0px_#1C1B1B]"
+								>
+									1
+								</button>
+								<button
+									class="flex h-10 w-10 items-center justify-center border-4 border-on-surface bg-surface font-bold shadow-[4px_4px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-secondary-container hover:shadow-[0px_0px_0px_0px_#1C1B1B]"
+								>
+									2
+								</button>
+								<button
+									class="flex h-10 w-10 items-center justify-center border-4 border-on-surface bg-surface font-bold shadow-[4px_4px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-secondary-container hover:shadow-[0px_0px_0px_0px_#1C1B1B]"
+								>
+									3
+								</button>
+								<span class="flex h-10 w-10 items-center justify-center">...</span>
+								<button
+									class="flex h-10 w-10 items-center justify-center border-4 border-on-surface bg-surface shadow-[4px_4px_0px_0px_#1C1B1B] transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-secondary-container hover:shadow-[0px_0px_0px_0px_#1C1B1B]"
+								>
+									<span class="material-symbols-outlined">chevron_right</span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	</body>
+</html>

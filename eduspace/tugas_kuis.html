@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EduSpace — Tugas & Kuis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --purple-50:#EEEDFE;--purple-200:#AFA9EC;--purple-400:#7F77DD;--purple-600:#534AB7;--purple-800:#3C3489;--purple-900:#26215C;
+    --teal-50:#E1F5EE;--teal-400:#1D9E75;--teal-600:#0F6E56;--teal-800:#085041;
+    --amber-50:#FAEEDA;--amber-400:#BA7517;--amber-600:#854F0B;--amber-800:#633806;
+    --coral-50:#FAECE7;--coral-400:#D85A30;--coral-600:#993C1D;
+    --blue-50:#E6F1FB;--blue-100:#B5D4F4;--blue-400:#378ADD;--blue-600:#185FA5;--blue-800:#0C447C;
+    --green-50:#EAF3DE;--green-400:#639922;--green-800:#27500A;
+    --red-50:#FCEBEB;--red-400:#E24B4A;--red-600:#A32D2D;--red-800:#791F1F;
+    --bg:#FAFAF8;--surface:#FFFFFF;--surface-2:#F4F3EF;
+    --border:rgba(0,0,0,0.08);--border-med:rgba(0,0,0,0.14);
+    --text-1:#1A1918;--text-2:#5F5E5A;--text-3:#9B9A95;
+    --radius-sm:6px;--radius-md:10px;--radius-lg:14px;--radius-xl:20px;
+    --font-sans:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace;
+    --sidebar-w:220px;--topbar-h:52px;
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#111110;--surface:#1C1B1A;--surface-2:#252422;
+    --border:rgba(255,255,255,0.08);--border-med:rgba(255,255,255,0.14);
+    --text-1:#E8E7E2;--text-2:#9B9A95;--text-3:#5F5E5A;
+    --purple-50:#2A2660;--purple-200:#534AB7;--purple-400:#AFA9EC;
+    --teal-50:#063528;--teal-400:#1D9E75;
+    --amber-50:#3A2200;--amber-400:#EF9F27;
+    --coral-50:#3A1508;--coral-400:#F0997B;
+    --blue-50:#062240;--blue-400:#85B7EB;
+    --green-50:#162400;--green-400:#97C459;
+    --red-50:#3A0A0A;--red-400:#F09595;
+  }}
+  html{font-family:var(--font-sans);background:var(--bg);color:var(--text-1);font-size:14px}
+  body{min-height:100vh}
+  .topbar{position:sticky;top:0;z-index:100;height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--surface);border-bottom:0.5px solid var(--border)}
+  .brand{font-size:15px;font-weight:500;color:var(--text-1);letter-spacing:-.3px}
+  .brand span{color:var(--purple-600)}
+  .role-pill{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--purple-50);color:var(--purple-800)}
+  .topbar-right{display:flex;align-items:center;gap:10px}
+  .icon-btn{width:32px;height:32px;border-radius:var(--radius-sm);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-2);background:transparent;position:relative;transition:background .15s}
+  .icon-btn:hover{background:var(--surface-2)}
+  .notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--red-400)}
+  .av{width:32px;height:32px;border-radius:50%;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;background:var(--purple-50);color:var(--purple-800);cursor:pointer;flex-shrink:0}
+  .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:6px;border-radius:var(--radius-sm)}
+  .hamburger span{display:block;width:18px;height:1.5px;background:var(--text-2);border-radius:2px;transition:.3s}
+  .shell{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:calc(100vh - var(--topbar-h))}
+  .sidebar{background:var(--surface);border-right:0.5px solid var(--border);padding:14px 0;display:flex;flex-direction:column;position:sticky;top:var(--topbar-h);height:calc(100vh - var(--topbar-h));overflow-y:auto;transition:transform .3s ease}
+  .prof-block{padding:10px 14px 14px;border-bottom:0.5px solid var(--border);margin-bottom:8px}
+  .prof-av{width:42px;height:42px;border-radius:50%;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;background:var(--purple-50);color:var(--purple-800);margin-bottom:8px}
+  .prof-name{font-size:13px;font-weight:500;color:var(--text-1)}
+  .prof-sub{font-size:11px;color:var(--text-2);margin-top:2px}
+  .xp-wrap{margin-top:9px}
+  .xp-row{display:flex;justify-content:space-between;font-size:10px;color:var(--text-2);margin-bottom:3px}
+  .xp-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+  .xp-fill{height:100%;border-radius:2px;background:var(--amber-400);width:68%}
+  .ns{font-size:10px;font-weight:500;color:var(--text-3);padding:8px 14px 3px;letter-spacing:.06em}
+  .ni{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12px;color:var(--text-2);cursor:pointer;border-right:2px solid transparent;transition:background .15s,color .15s;text-decoration:none}
+  .ni:hover{background:var(--surface-2);color:var(--text-1)}
+  .ni.active{background:var(--surface-2);color:var(--text-1);font-weight:500;border-right-color:var(--purple-600)}
+  .ni svg{width:14px;height:14px;flex-shrink:0;opacity:.65}
+  .ni.active svg{opacity:1}
+  .ni-badge{margin-left:auto;font-size:10px;padding:1px 6px;border-radius:8px;background:var(--coral-50);color:var(--coral-600)}
+  .main{padding:20px 22px;display:flex;flex-direction:column;gap:16px;background:var(--surface);overflow-x:hidden}
+  .page-title{font-size:16px;font-weight:500;color:var(--text-1)}
+  .page-sub{font-size:12px;color:var(--text-2);margin-top:3px}
+  .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .sec-title{font-size:13px;font-weight:500;color:var(--text-1)}
+  .sec-link{font-size:11px;color:var(--purple-600);cursor:pointer}
+  .sec-link:hover{text-decoration:underline}
+  .badge{font-size:10px;padding:2px 7px;border-radius:7px}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:90;opacity:0;transition:opacity .3s}
+  .overlay.show{display:block;opacity:1}
+  .btn{font-size:12px;padding:6px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--border-med);background:transparent;color:var(--text-1);cursor:pointer;transition:background .15s;white-space:nowrap}
+  .btn:hover{background:var(--surface-2)}
+  .btn-primary{background:var(--purple-600);color:var(--purple-50);border-color:var(--purple-600)}
+  .btn-primary:hover{background:var(--purple-800);border-color:var(--purple-800)}
+  @media(max-width:640px){
+    :root{--sidebar-w:0px}
+    .shell{grid-template-columns:1fr}
+    .sidebar{position:fixed;top:var(--topbar-h);left:0;z-index:95;width:240px;transform:translateX(-100%);height:calc(100vh - var(--topbar-h))}
+    .sidebar.open{transform:translateX(0)}
+    .hamburger{display:flex}
+    .main{padding:14px;gap:13px}
+  }
+  @media(min-width:1280px){:root{--sidebar-w:240px}}
+.tab-bar{display:flex;gap:2px;border-bottom:0.5px solid var(--border);margin-bottom:16px}
+.tab{font-size:12px;padding:8px 14px;cursor:pointer;color:var(--text-2);border-bottom:2px solid transparent;margin-bottom:-0.5px;transition:color .15s}
+.tab:hover{color:var(--text-1)}
+.tab.on{color:var(--purple-600);font-weight:500;border-bottom-color:var(--purple-600)}
+.tugas-list{display:flex;flex-direction:column;gap:8px}
+.tugas-card{border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);overflow:hidden}
+.tugas-card-head{padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+.tc-left{flex:1;min-width:0}
+.tc-title{font-size:13px;font-weight:500;color:var(--text-1)}
+.tc-meta{font-size:11px;color:var(--text-2);margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tc-sep{color:var(--border-med)}
+.tc-right{flex-shrink:0;text-align:right}
+.tc-deadline{font-size:11px;font-weight:500;color:var(--text-1)}
+.tc-hari{font-size:10px;margin-top:2px}
+.tugas-card-foot{padding:9px 14px;border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface-2)}
+.tc-status{font-size:11px;color:var(--text-2)}
+.tc-btn{font-size:11px;padding:5px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--border-med);background:var(--surface);color:var(--text-1);cursor:pointer;transition:background .15s}
+.tc-btn:hover{background:var(--surface-2)}
+.tc-btn.primary{background:var(--purple-600);color:var(--purple-50);border-color:var(--purple-600)}
+.tc-btn.primary:hover{background:var(--purple-800)}
+.urgency-bar{width:4px;border-radius:2px;align-self:stretch;flex-shrink:0}
+.done-list{display:flex;flex-direction:column;gap:8px}
+.done-card{border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);padding:12px 14px;display:flex;gap:12px;align-items:center}
+.done-score{font-size:22px;font-weight:500;min-width:44px;text-align:center}
+.done-info{flex:1;min-width:0}
+.done-title{font-size:12px;font-weight:500;color:var(--text-1)}
+.done-meta{font-size:11px;color:var(--text-2);margin-top:2px}
+.done-bar-wrap{margin-top:6px}
+.done-bar-track{height:4px;background:var(--surface-2);border-radius:2px;overflow:hidden}
+.done-bar-fill{height:100%;border-radius:2px}
+.done-bar-lbl{font-size:10px;color:var(--text-2);margin-top:3px}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="hamburger" id="menuBtn"><span></span><span></span><span></span></button>
+    <a href="index.html" style="text-decoration:none"><div class="brand">Edu<span>Space</span></div></a><div class="role-pill">Portal Murid</div>
+  </div>
+  <div class="topbar-right">
+    <div class="icon-btn"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 0 1 4 4v2l1.5 2.5H2.5L4 8V6a4 4 0 0 1 4-4zM6.5 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="notif-dot"></div></div>
+    <div class="av">RA</div>
+  </div>
+</header>
+<div class="overlay" id="overlay"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="prof-block">
+    <div class="prof-av">RA</div>
+    <div class="prof-name">Rafi Ananda</div>
+    <div class="prof-sub">Kelas 8A · No. Absen 22</div>
+    <div class="xp-wrap">
+      <div class="xp-row"><span>Level 12 · 2.840 XP</span><span>→ 3.000</span></div>
+      <div class="xp-track"><div class="xp-fill"></div></div>
+    </div>
+  </div>
+  <div class="ns">Menu utama</div>
+  <a class="ni" href="homepage_eduspace.html"><svg viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/></svg>Dashboard</a>
+  <a class="ni" href="kelas_saya.html"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Kelas saya</a>
+  <a class="ni" href="materi_pelajaran.html"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h10M3 12h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Materi pelajaran</a>
+  <a class="ni" href="tugas_kuis.html"><svg viewBox="0 0 16 16" fill="none"><path d="M13 4L6 11l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Tugas & kuis<span class="ni-badge">4</span></a>
+  <a class="ni" href="nilai_saya.html"><svg viewBox="0 0 16 16" fill="none"><path d="M2 12L5 7l3 3 2.5-4 3.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Nilai saya</a>
+  <div class="ns">Komunitas</div>
+  <a class="ni" href="forum_diskusi.html"><svg viewBox="0 0 16 16" fill="none"><path d="M2 11V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7l-3 2v-2H4a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="1.3"/></svg>Forum diskusi</a>
+  <a class="ni" href="teman_sekelas.html"><svg viewBox="0 0 16 16" fill="none"><circle cx="6" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><circle cx="11" cy="5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M1 13c0-2.5 2.2-4 5-4s5 1.5 5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M13 9c1.3.4 2 1.4 2 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Teman sekelas</a>
+  <div class="ns">Akun</div>
+  <a class="ni" href="profil_saya.html"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Profil saya</a>
+</aside>
+<main class="main">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <div><div class="page-title">Tugas & kuis</div><div class="page-sub">4 tugas belum dikerjakan · 14 sudah selesai</div></div>
+    <div style="display:flex;gap:6px">
+      <select style="font-size:11px;padding:5px 9px;border-radius:var(--radius-sm);border:0.5px solid var(--border-med);background:var(--surface-2);color:var(--text-1)"><option>Semua mapel</option><option>Matematika</option><option>IPA</option><option>B. Inggris</option></select>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab on" id="tab1">Belum dikerjakan (4)</div>
+    <div class="tab" id="tab2">Sudah selesai (14)</div>
+  </div>
+
+  <div id="panel1">
+    <div class="tugas-list">
+      <div class="tugas-card">
+        <div class="tugas-card-head">
+          <div class="urgency-bar" style="background:var(--red-400)"></div>
+          <div class="tc-left">
+            <div class="tc-title">Laporan praktikum fotosintesis</div>
+            <div class="tc-meta">
+              <span style="display:flex;align-items:center;gap:4px"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="var(--text-3)" stroke-width="1.3"/><path d="M5 6h6M5 9h4" stroke="var(--text-3)" stroke-width="1.2" stroke-linecap="round"/></svg>IPA Terpadu</span>
+              <span class="tc-sep">·</span><span>Pak Budi Prasetyo</span>
+              <span class="tc-sep">·</span><span style="background:var(--red-50);color:var(--red-600);padding:1px 6px;border-radius:6px;font-size:10px">2 hari lagi</span>
+            </div>
+          </div>
+          <div class="tc-right">
+            <div class="tc-deadline">14 Apr</div>
+            <div class="tc-hari" style="color:var(--red-400)">Senin</div>
+          </div>
+        </div>
+        <div class="tugas-card-foot">
+          <div class="tc-status">Belum dikumpulkan · Unggah file PDF/Word</div>
+          <button class="tc-btn primary">Kumpulkan</button>
+        </div>
+      </div>
+
+      <div class="tugas-card">
+        <div class="tugas-card-head">
+          <div class="urgency-bar" style="background:var(--amber-400)"></div>
+          <div class="tc-left">
+            <div class="tc-title">Essay B. Inggris: My future goals</div>
+            <div class="tc-meta">
+              <span style="display:flex;align-items:center;gap:4px"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1.5" stroke="var(--text-3)" stroke-width="1.2"/></svg>Bahasa Inggris</span>
+              <span class="tc-sep">·</span><span>Bu Dewi Nurhayati</span>
+              <span class="tc-sep">·</span><span style="background:var(--amber-50);color:var(--amber-800);padding:1px 6px;border-radius:6px;font-size:10px">6 hari lagi</span>
+            </div>
+          </div>
+          <div class="tc-right">
+            <div class="tc-deadline">18 Apr</div>
+            <div class="tc-hari" style="color:var(--amber-400)">Jumat</div>
+          </div>
+        </div>
+        <div class="tugas-card-foot">
+          <div class="tc-status">Min. 250 kata · Tulis di kolom atau unggah file</div>
+          <button class="tc-btn primary">Mulai tulis</button>
+        </div>
+      </div>
+
+      <div class="tugas-card">
+        <div class="tugas-card-head">
+          <div class="urgency-bar" style="background:var(--amber-400)"></div>
+          <div class="tc-left">
+            <div class="tc-title">Kuis online IPS Bab 5 — Perang Dunia</div>
+            <div class="tc-meta">
+              <span>IPS Terpadu</span><span class="tc-sep">·</span><span>Pak Rudi Hartono</span>
+              <span class="tc-sep">·</span><span style="background:var(--amber-50);color:var(--amber-800);padding:1px 6px;border-radius:6px;font-size:10px">12 hari lagi</span>
+            </div>
+          </div>
+          <div class="tc-right">
+            <div class="tc-deadline">24 Apr</div>
+            <div class="tc-hari" style="color:var(--text-2)">Kamis</div>
+          </div>
+        </div>
+        <div class="tugas-card-foot">
+          <div class="tc-status">20 soal pilihan ganda · Waktu 45 menit</div>
+          <button class="tc-btn">Mulai kuis</button>
+        </div>
+      </div>
+
+      <div class="tugas-card">
+        <div class="tugas-card-head">
+          <div class="urgency-bar" style="background:var(--blue-400)"></div>
+          <div class="tc-left">
+            <div class="tc-title">Kuis Bab 4 — Persamaan Kuadrat</div>
+            <div class="tc-meta">
+              <span>Matematika</span><span class="tc-sep">·</span><span>Bu Siti Rahayu</span>
+              <span class="tc-sep">·</span><span style="background:var(--blue-50);color:var(--blue-800);padding:1px 6px;border-radius:6px;font-size:10px">Setelah materi selesai</span>
+            </div>
+          </div>
+          <div class="tc-right">
+            <div class="tc-deadline">Belum</div>
+            <div class="tc-hari" style="color:var(--text-3)">tersedia</div>
+          </div>
+        </div>
+        <div class="tugas-card-foot">
+          <div class="tc-status">Selesaikan modul 4.3 terlebih dahulu</div>
+          <button class="tc-btn" style="opacity:.5;cursor:not-allowed">Terkunci</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="panel2" style="display:none">
+    <div class="done-list">
+      <div class="done-card">
+        <div class="done-score" style="color:var(--teal-400)">92</div>
+        <div class="done-info">
+          <div class="done-title">Kuis Bab 3 — Fungsi Linear</div>
+          <div class="done-meta">Matematika · Dikumpulkan 10 Apr · Sudah dinilai</div>
+          <div class="done-bar-wrap"><div class="done-bar-track"><div class="done-bar-fill" style="width:92%;background:var(--teal-400)"></div></div><div class="done-bar-lbl">92 / 100 · Di atas rata-rata kelas (84)</div></div>
+        </div>
+        <span class="badge" style="background:var(--teal-50);color:var(--teal-800)">Dinilai</span>
+      </div>
+      <div class="done-card">
+        <div class="done-score" style="color:var(--teal-400)">88</div>
+        <div class="done-info">
+          <div class="done-title">Latihan Reading Comprehension</div>
+          <div class="done-meta">B. Inggris · Dikumpulkan 7 Apr · Sudah dinilai</div>
+          <div class="done-bar-wrap"><div class="done-bar-track"><div class="done-bar-fill" style="width:88%;background:var(--teal-400)"></div></div><div class="done-bar-lbl">88 / 100 · Di atas rata-rata kelas (80)</div></div>
+        </div>
+        <span class="badge" style="background:var(--teal-50);color:var(--teal-800)">Dinilai</span>
+      </div>
+      <div class="done-card">
+        <div class="done-score" style="color:var(--amber-400)">75</div>
+        <div class="done-info">
+          <div class="done-title">Latihan soal aljabar lanjutan</div>
+          <div class="done-meta">Matematika · Dikumpulkan 5 Apr · Sudah dinilai</div>
+          <div class="done-bar-wrap"><div class="done-bar-track"><div class="done-bar-fill" style="width:75%;background:var(--amber-400)"></div></div><div class="done-bar-lbl">75 / 100 · Setara rata-rata kelas (76)</div></div>
+        </div>
+        <span class="badge" style="background:var(--teal-50);color:var(--teal-800)">Dinilai</span>
+      </div>
+      <div class="done-card">
+        <div class="done-score" style="color:var(--text-3)">—</div>
+        <div class="done-info">
+          <div class="done-title">Laporan observasi lingkungan</div>
+          <div class="done-meta">IPS Terpadu · Dikumpulkan 2 Apr · Menunggu penilaian</div>
+        </div>
+        <span class="badge" style="background:var(--amber-50);color:var(--amber-800)">Menunggu</span>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+<script>
+const btn=document.getElementById('menuBtn'),sb=document.getElementById('sidebar'),ov=document.getElementById('overlay');
+function open(){sb.classList.add('open');ov.classList.add('show')}
+function close(){sb.classList.remove('open');ov.classList.remove('show')}
+btn.addEventListener('click',()=>sb.classList.contains('open')?close():open());
+ov.addEventListener('click',close);
+document.getElementById('tab1').addEventListener('click',()=>{
+  document.getElementById('tab1').classList.add('on');document.getElementById('tab2').classList.remove('on');
+  document.getElementById('panel1').style.display='';document.getElementById('panel2').style.display='none';
+});
+document.getElementById('tab2').addEventListener('click',()=>{
+  document.getElementById('tab2').classList.add('on');document.getElementById('tab1').classList.remove('on');
+  document.getElementById('panel2').style.display='';document.getElementById('panel1').style.display='none';
+});
+document.querySelectorAll('.ni').forEach(n=>{if(n.href&&n.href.includes(location.pathname.split('/').pop()))n.classList.add('active')});
+</script>
+
+<script src="auth.js"></script></body></html>
+

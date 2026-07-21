@@ -1,0 +1,358 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/database/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// ENUM TYPES
+// ============================================================
+
+enum PlacementStatus {
+  active
+  completed
+  cancelled
+  discontinued
+
+  @@map("placement_status")
+}
+
+enum AttendanceType {
+  check_in
+  check_out
+
+  @@map("attendance_type")
+}
+
+enum AttendanceStatus {
+  accepted
+  declined
+
+  @@map("attendance_status")
+}
+
+enum LogbookApprovalStatus {
+  pending
+  approved
+
+  @@map("logbook_approval_status")
+}
+
+enum ReviewActionType {
+  revision
+  approved
+
+  @@map("review_action_type")
+}
+
+enum AssessorType {
+  teacher
+  industry_mentor
+
+  @@map("assessor_type")
+}
+
+enum ActorType {
+  admin
+  teacher
+  student
+  industry_mentor
+
+  @@map("actor_type")
+}
+
+enum TargetType {
+  assessment
+  attachment
+  attendance
+  company
+  daily_logbook
+  industry_mentor
+  internship_placement
+  student
+  teacher
+
+  @@map("target_type")
+}
+
+// ============================================================
+// MODELS
+// ============================================================
+
+model Student {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  email     String    @db.VarChar(100)
+  nisn      String?   @db.VarChar(20)
+  name      String    @db.VarChar(150)
+  className String?   @map("class_name") @db.VarChar(50)
+  major     String?   @db.VarChar(100)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  internshipPlacements InternshipPlacement[]
+  attendances          Attendance[]
+
+  @@index([userId])
+  @@index([deletedAt])
+  @@unique([email, deletedAt])
+  @@unique([userId, deletedAt])
+  @@unique([nisn, deletedAt])
+  @@map("students")
+}
+
+model Teacher {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  email       String    @db.VarChar(100)
+  name        String    @db.VarChar(150)
+  nip         String?   @map("nip") @db.VarChar(30)
+  prefixTitle String?   @map("prefix_title") @db.VarChar(50)
+  suffixTitle String?   @map("suffix_title") @db.VarChar(50)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz
+
+  internshipPlacements InternshipPlacement[]
+  assessments          Assessment[]
+  approvedLogbooks     DailyLogbook[]        @relation("TeacherApproval")
+
+  @@index([userId])
+  @@index([deletedAt])
+  @@unique([email, deletedAt])
+  @@unique([userId, deletedAt])
+  @@map("teachers")
+}
+
+model Company {
+  id               String    @id @default(cuid())
+  name             String    @db.VarChar(200)
+  address          String?   @db.Text
+  contactPerson    String?   @map("contact_person") @db.VarChar(150)
+  phone            String?   @db.VarChar(30)
+  quota            Int?      @default(0)
+  locationMetadata Json?     @map("location_metadata")
+  checkInTime      String?   @map("check_in_time") @db.VarChar(10)
+  checkOutTime     String?   @map("check_out_time") @db.VarChar(10)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz
+
+  industryMentors      IndustryMentor[]
+  internshipPlacements InternshipPlacement[]
+
+  @@index([deletedAt])
+  @@map("companies")
+}
+
+model IndustryMentor {
+  id          String    @id @default(cuid())
+  companyId   String?   @map("company_id")
+  userId      String?   @map("user_id")
+  email       String   @db.VarChar(100)
+  name        String    @db.VarChar(150)
+  prefixTitle String?   @map("prefix_title") @db.VarChar(50)
+  suffixTitle String?   @map("suffix_title") @db.VarChar(50)
+  position    String?   @db.VarChar(100)
+  phone       String?   @db.VarChar(30)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz
+
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  internshipPlacements InternshipPlacement[]
+  approvedLogbooks     DailyLogbook[]        @relation("MentorApproval")
+  assessments          Assessment[]
+
+  @@index([companyId])
+  @@index([userId])
+  @@index([deletedAt])
+  @@unique([email, deletedAt])
+  @@unique([userId, deletedAt])
+  @@unique([companyId, deletedAt])
+  @@map("industry_mentors")
+}
+
+model InternshipPlacement {
+  id               String          @id @default(cuid())
+  studentId        String          @map("student_id")
+  companyId        String          @map("company_id")
+  teacherId        String          @map("teacher_id")
+  industryMentorId String          @map("industry_mentor_id")
+  startDate        DateTime        @map("start_date") @db.Date
+  endDate          DateTime        @map("end_date") @db.Date
+  startTime        DateTime?       @map("start_time") @db.Time
+  endTime          DateTime?       @map("end_time") @db.Time
+  durationDays     Int             @map("duration_days")
+  status           PlacementStatus @default(active)
+  isAssessable     Boolean         @default(false) @map("is_assessable")
+  certificateUrl   String?         @map("certificate_url")
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt        DateTime?       @map("deleted_at") @db.Timestamptz
+
+  student        Student        @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  company        Company        @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  teacher        Teacher        @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  industryMentor IndustryMentor @relation(fields: [industryMentorId], references: [id], onDelete: Restrict)
+
+  dailyLogbooks DailyLogbook[]
+  assessments   Assessment[]
+  attendances   Attendance[]
+
+  @@unique([studentId, companyId, startDate, status])
+  @@index([studentId])
+  @@index([teacherId])
+  @@index([industryMentorId])
+  @@index([deletedAt])
+  @@map("internship_placements")
+}
+
+model DailyLogbook {
+  id                String                @id @default(cuid())
+  placementId       String                @map("placement_id")
+  date              DateTime              @db.Date
+  activityTitle     String                @map("activity_title") @db.VarChar(200)
+  description       String?               @db.Text
+  mentorStatus      LogbookApprovalStatus @default(pending) @map("mentor_status")
+  teacherStatus     LogbookApprovalStatus @default(pending) @map("teacher_status")
+  mentorId          String?               @map("mentor_id")
+  teacherId         String?               @map("teacher_id")
+  mentorApprovedAt  DateTime?             @map("mentor_approved_at") @db.Timestamptz
+  teacherApprovedAt DateTime?             @map("teacher_approved_at") @db.Timestamptz
+  mentorFeedback    String?               @map("mentor_feedback") @db.Text
+  teacherNotes      String?               @map("teacher_notes") @db.Text
+  createdAt         DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime              @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime?             @map("deleted_at") @db.Timestamptz
+
+  placement         InternshipPlacement @relation(fields: [placementId], references: [id], onDelete: Restrict)
+  approvedByMentor  IndustryMentor?     @relation("MentorApproval", fields: [mentorId], references: [id], onDelete: SetNull)
+  approvedByTeacher Teacher?            @relation("TeacherApproval", fields: [teacherId], references: [id], onDelete: SetNull)
+
+  attachments Attachment[]
+  reviews     LogbookReview[]
+
+  @@index([placementId])
+  @@index([placementId, date])
+  @@index([mentorStatus])
+  @@index([teacherStatus])
+  @@index([deletedAt])
+  @@map("daily_logbooks")
+}
+
+model Assessment {
+  id                String       @id @default(cuid())
+  placementId       String       @map("placement_id")
+  assessorType      AssessorType @map("assessor_type")
+  teacherId         String?      @map("teacher_id")
+  industryMentorId  String?      @map("industry_mentor_id")
+  technicalScore    Decimal?     @map("technical_score") @db.Decimal(5, 2)
+  nonTechnicalScore Decimal?     @map("non_technical_score") @db.Decimal(5, 2)
+  finalScore        Decimal?     @map("final_score") @db.Decimal(5, 2)
+  notes             String?      @db.Text
+  attachmentId      String?      @unique @map("attachment_id")
+  createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime?    @map("deleted_at") @db.Timestamptz
+
+  placement      InternshipPlacement @relation(fields: [placementId], references: [id], onDelete: Restrict)
+  teacher        Teacher?            @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  industryMentor IndustryMentor?     @relation(fields: [industryMentorId], references: [id], onDelete: SetNull)
+  attachment     Attachment?         @relation(fields: [attachmentId], references: [id], onDelete: SetNull)
+
+  @@unique([placementId, assessorType])
+  @@index([placementId])
+  @@index([deletedAt])
+  @@map("assessments")
+}
+
+model Attachment {
+  id        String    @id @default(cuid())
+  filename  String    @db.VarChar(255)
+  format    String    @db.VarChar(50)
+  size      Decimal   @db.Decimal(10, 2)
+  url       String?
+  logbookId String?   @map("logbook_id")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  logbook    DailyLogbook? @relation(fields: [logbookId], references: [id], onDelete: SetNull)
+  assessment Assessment?
+
+  @@index([deletedAt])
+  @@index([logbookId])
+  @@map("attachments")
+}
+
+
+model LogbookReview {
+  id               String           @id @default(cuid())
+  logbookId        String           @map("logbook_id")
+  reviewerId       String           @map("reviewer_id")
+  action           ReviewActionType
+  content          String?          @db.Text
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt        DateTime?        @map("deleted_at") @db.Timestamptz
+
+  logbook          DailyLogbook     @relation(fields: [logbookId], references: [id], onDelete: Cascade)
+
+  @@index([logbookId])
+  @@index([reviewerId])
+  @@index([deletedAt])
+  @@map("logbook_reviews")
+}
+
+model Activity {
+  id          String    @id @default(cuid())
+  actorId     String?   @map("actor_id") // Optional, referensi ke User
+  description String    @db.Text
+  targetId    String?   @map("target_id") // Optional, referensi ke User
+  action      String?   @db.VarChar(100) // Khusus untuk ikon
+  isForAdmin  Boolean   @default(false) @map("is_for_admin")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz
+
+
+
+  @@index([actorId])
+  @@index([targetId])
+  @@index([isForAdmin])
+  @@index([deletedAt])
+  @@map("activities")
+}
+
+model Attendance {
+  id               String           @id @default(cuid())
+  placementId      String           @map("placement_id")
+  studentId        String           @map("student_id")
+  type             AttendanceType
+  date             DateTime         @db.Date
+  time             DateTime         @db.Time
+  locationMetadata Json             @map("location_metadata")
+  status           AttendanceStatus
+  description      String?          @db.Text
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt        DateTime?        @map("deleted_at") @db.Timestamptz
+
+  placement InternshipPlacement @relation(fields: [placementId], references: [id], onDelete: Restrict)
+  student   Student             @relation(fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@index([placementId])
+  @@index([studentId])
+  @@index([placementId, date])
+  @@index([deletedAt])
+  @@map("attendances")
+}

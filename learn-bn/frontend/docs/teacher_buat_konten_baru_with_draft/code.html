@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduBrutal - Buat Konten</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "tertiary-fixed": "#e2e2e2",
+                    "outline-variant": "#c1caae",
+                    "inverse-primary": "#8fdb00",
+                    "primary-container": "#adff2f",
+                    "secondary": "#5e5e5e",
+                    "on-primary-container": "#497300",
+                    "outline": "#717a62",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed-variant": "#474747",
+                    "surface-container-lowest": "#ffffff",
+                    "background": "#f9f9f9",
+                    "secondary-container": "#e2e2e2",
+                    "primary-fixed": "#a8f928",
+                    "on-background": "#1a1c1c",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "surface-dim": "#dadada",
+                    "surface-variant": "#e2e2e2",
+                    "surface-container": "#eeeeee",
+                    "surface": "#f9f9f9",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed": "#112000",
+                    "error": "#ba1a1a",
+                    "surface-container-high": "#e8e8e8",
+                    "surface-bright": "#f9f9f9",
+                    "on-surface-variant": "#414a35",
+                    "primary": "#426900",
+                    "inverse-surface": "#2f3131",
+                    "inverse-on-surface": "#f1f1f1",
+                    "primary-fixed-dim": "#8fdb00",
+                    "on-secondary-fixed": "#1b1b1b",
+                    "surface-tint": "#426900",
+                    "on-tertiary-container": "#666868",
+                    "on-secondary-container": "#646464",
+                    "tertiary-container": "#e8e8e8",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "on-primary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#314f00",
+                    "on-surface": "#1a1c1c",
+                    "secondary-fixed-dim": "#c6c6c6",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#5d5f5f",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#e2e2e2",
+                    "surface-container-low": "#f3f3f3",
+                    "surface-container-highest": "#e2e2e2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "container-max": "1280px",
+                    "base": "8px",
+                    "stack-lg": "48px",
+                    "stack-sm": "12px",
+                    "margin-desktop": "40px",
+                    "gutter": "24px",
+                    "stack-md": "24px"
+            },
+            "fontFamily": {
+                    "headline-md": [
+                            "Space Grotesk"
+                    ],
+                    "label-bold": [
+                            "Space Grotesk"
+                    ],
+                    "display-lg-mobile": [
+                            "Space Grotesk"
+                    ],
+                    "display-lg": [
+                            "Space Grotesk"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-bold": [
+                            "14px",
+                            {
+                                    "lineHeight": "1",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg-mobile": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "500"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline-md, .font-label-bold { font-family: 'Space Grotesk', sans-serif; }
+        
+        /* Neobrutalist Input Focus */
+        .neo-input:focus {
+            box-shadow: 4px 4px 0px 0px #adff2f;
+            outline: none;
+        }
+        
+        /* Neobrutalist Button States */
+        .neo-btn {
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+        }
+        .neo-btn:hover {
+            box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
+            transform: translate(-2px, -2px);
+        }
+        .neo-btn:active {
+            box-shadow: none;
+            transform: translate(4px, 4px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background flex min-h-screen">
+<!-- SideNavBar (Hidden on Mobile, Flex on Desktop) -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full p-stack-md bg-surface border-r-2 border-on-surface shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-64 z-50">
+<!-- Header -->
+<div class="mb-stack-lg flex items-center gap-3">
+<div class="w-12 h-12 rounded-full border-2 border-on-surface bg-surface-container overflow-hidden">
+<img alt="Teacher Profile Picture" class="w-full h-full object-cover" data-alt="A bold, high-contrast, minimalist avatar image for a teacher profile in a modern neobrutalist LMS application. Stark black and white with a pop of neon green." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMehsWJy49UfWeZ0LBqimDDbBiOthZ_LWIEcZ3Th5aZrkxm4UsIeVW8sMLG-2jXt3sXwUNc_U30kyFRrCQPuUo89tm76JI3i58An3ZZ1GgFO4JG6QXrIYZwd7e2FvD0j_xjUD2IsBIbVqNGP1DqX_id_sNAfqe7slnQGDsmq6adtm0LcYRPBb6ySLG2iwPDDA7sCeD4PEP0lBvgSM0sffeJAFlMrdUYvUjmXwFvQUCjcldXzHcThem0w"/>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-black text-on-surface">EduBrutal</h1>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">LMS Platform</p>
+</div>
+</div>
+<!-- Tabs -->
+<ul class="flex-1 flex flex-col gap-2">
+<li>
+<a class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface hover:bg-surface-container transition-all duration-100 hover:translate-x-1 hover:translate-y-1 hover:shadow-none font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface hover:bg-surface-container transition-all duration-100 hover:translate-x-1 hover:translate-y-1 hover:shadow-none font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined">school</span>
+                    My Classes
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface hover:bg-surface-container transition-all duration-100 hover:translate-x-1 hover:translate-y-1 hover:shadow-none font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+                    Calendar
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface hover:bg-surface-container transition-all duration-100 hover:translate-x-1 hover:translate-y-1 hover:shadow-none font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined">grade</span>
+                    Grades
+                </a>
+</li>
+</ul>
+<!-- CTA -->
+<div class="mt-auto pt-stack-md border-t-2 border-on-surface">
+<button class="w-full bg-primary-container text-on-primary-container border-2 border-on-surface font-label-bold text-label-bold py-3 px-4 rounded-DEFAULT shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:translate-x-1 active:translate-y-1 active:shadow-none transition-all duration-100 text-center flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                Create Content
+            </button>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-64 w-full">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-margin-desktop h-20 sticky top-0 z-40 bg-surface border-b-2 border-on-surface shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]">
+<div class="flex items-center gap-4">
+<h2 class="font-headline-md text-headline-md font-black text-on-surface hidden sm:block">Math 101 - Advanced Algebra</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 border-2 border-on-surface bg-surface-container-lowest rounded-full neo-input text-on-surface font-body-md w-64 transition-all" placeholder="Search..." type="text"/>
+</div>
+<button class="bg-primary-container text-on-primary-container border-2 border-on-surface font-label-bold text-label-bold py-2 px-4 rounded-DEFAULT shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-primary-container hover:text-on-primary-container transition-colors active:scale-95">
+                    Join Class
+                </button>
+<div class="w-10 h-10 rounded-full border-2 border-on-surface bg-surface-container overflow-hidden cursor-pointer">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A clean, modern avatar illustration for a user profile in a neobrutalist LMS interface. Simple geometry, high contrast black outlines." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH7dNauQEnJtCSxfg0FDN3D851_9ATbkLfLDZrIvwcyFrS5XHfoVmTV6QXGndoLco_WpXen53GqwCKoo91_dZvrf5PiniNOqU2D1ZTUWWztxISqg2MTpMN9hxevWJj9qiRJwVCmdDgiv1KzRjItgnIt_9wPK66u69Z1oCXqKACs8zWiWXR9t1qaY7wGZF4wgB46trY4HEGnttGk2HnBM08OtaJtF0vN2MQDsgtL4KVNzORvvGOlo5Ipw"/>
+</div>
+</div>
+</header>
+<!-- Canvas / Form Area -->
+<main class="flex-1 p-margin-mobile md:p-margin-desktop overflow-y-auto bg-surface-container-lowest">
+<div class="max-w-3xl mx-auto w-full">
+<div class="mb-stack-md">
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">Buat Konten Baru</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Tambahkan tugas atau materi pembelajaran baru untuk kelas Anda, atau simpan sebagai draf untuk nanti.</p>
+</div>
+<!-- Main Form Card -->
+<form class="bg-surface border-2 border-on-surface shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-stack-md md:p-stack-lg rounded-DEFAULT flex flex-col gap-stack-md">
+<!-- Content Type Selection (Bento-ish Grid) -->
+<div>
+<label class="font-label-bold text-label-bold text-on-surface block mb-3">Tipe Konten</label>
+<div class="grid grid-cols-2 gap-4">
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="content_type" type="radio"/>
+<div class="border-2 border-on-surface p-4 text-center rounded-DEFAULT bg-surface-container-lowest peer-checked:bg-primary-container peer-checked:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-3xl">assignment</span>
+<span class="font-label-bold text-label-bold">Tugas</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="content_type" type="radio"/>
+<div class="border-2 border-on-surface p-4 text-center rounded-DEFAULT bg-surface-container-lowest peer-checked:bg-primary-container peer-checked:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-3xl">menu_book</span>
+<span class="font-label-bold text-label-bold">Materi</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Title & Class Selector -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<div class="flex flex-col gap-2">
+<label class="font-label-bold text-label-bold text-on-surface" for="judul">Judul Konten</label>
+<input class="border-2 border-on-surface bg-surface-container-lowest p-3 font-body-md text-on-surface rounded-DEFAULT neo-input transition-all w-full" id="judul" placeholder="Masukkan judul..." type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-bold text-label-bold text-on-surface" for="kelas">Pilih Kelas</label>
+<div class="relative">
+<select class="border-2 border-on-surface bg-surface-container-lowest p-3 font-body-md text-on-surface rounded-DEFAULT neo-input transition-all w-full appearance-none cursor-pointer" id="kelas">
+<option>Math 101 - Advanced Algebra</option>
+<option>Physics 202 - Mechanics</option>
+<option>History 105 - World War II</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Rich Text Description -->
+<div class="flex flex-col gap-2">
+<label class="font-label-bold text-label-bold text-on-surface" for="deskripsi">Deskripsi</label>
+<!-- Fake Toolbar for aesthetics -->
+<div class="border-2 border-on-surface border-b-0 bg-surface-container rounded-t-DEFAULT p-2 flex gap-2 overflow-x-auto">
+<button class="p-1 hover:bg-surface-container-highest rounded" type="button"><span class="material-symbols-outlined text-sm">format_bold</span></button>
+<button class="p-1 hover:bg-surface-container-highest rounded" type="button"><span class="material-symbols-outlined text-sm">format_italic</span></button>
+<button class="p-1 hover:bg-surface-container-highest rounded" type="button"><span class="material-symbols-outlined text-sm">format_list_bulleted</span></button>
+<button class="p-1 hover:bg-surface-container-highest rounded" type="button"><span class="material-symbols-outlined text-sm">link</span></button>
+</div>
+<textarea class="border-2 border-on-surface bg-surface-container-lowest p-4 font-body-md text-on-surface rounded-b-DEFAULT neo-input transition-all w-full resize-y" id="deskripsi" placeholder="Tulis instruksi atau materi di sini..." rows="6"></textarea>
+</div>
+<!-- File Upload Zone -->
+<div class="flex flex-col gap-2">
+<label class="font-label-bold text-label-bold text-on-surface">Unggah File (Opsional)</label>
+<div class="border-4 border-dashed border-on-surface bg-surface-container-lowest p-stack-lg flex flex-col items-center justify-center gap-3 cursor-pointer hover:bg-surface-container transition-colors group rounded-DEFAULT text-center relative overflow-hidden">
+<input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" type="file"/>
+<div class="w-16 h-16 bg-surface-container border-2 border-on-surface rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl text-on-surface">cloud_upload</span>
+</div>
+<p class="font-body-md text-on-surface">Tarik &amp; Lepas file ke sini, atau <span class="font-bold underline decoration-2 underline-offset-4">Jelajahi</span></p>
+<p class="font-body-md text-sm text-on-surface-variant">Maks 50MB (PDF, DOCX, ZIP, MP4)</p>
+</div>
+</div>
+<!-- Submit Actions -->
+<div class="mt-stack-sm flex flex-col sm:flex-row justify-end gap-4 border-t-2 border-on-surface pt-stack-md">
+<button class="font-label-bold text-label-bold text-on-surface py-3 px-6 hover:bg-surface-container transition-colors rounded-DEFAULT" type="button">
+                            Batal
+                        </button>
+<button class="bg-surface-container-lowest text-on-surface border-2 border-on-surface font-label-bold text-label-bold py-3 px-8 rounded-DEFAULT neo-btn transition-all flex items-center justify-center gap-2" type="button"><span class="material-symbols-outlined">draft</span>Simpan sebagai Draft</button><button class="bg-primary-container text-on-primary-container border-2 border-on-surface font-label-bold text-label-bold py-3 px-8 rounded-DEFAULT neo-btn transition-all flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined">send</span>
+                            Posting Sekarang
+                        </button>
+</div>
+</form>
+</div>
+</main>
+</div>
+</body></html>

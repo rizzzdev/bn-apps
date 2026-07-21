@@ -1,0 +1,27 @@
+/* EduSpace Shared Styles v1.0 */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --purple-50:#EEEDFE;--purple-200:#AFA9EC;--purple-400:#7F77DD;--purple-600:#534AB7;--purple-800:#3C3489;--purple-900:#26215C;
+  --teal-50:#E1F5EE;--teal-100:#9FE1CB;--teal-400:#1D9E75;--teal-600:#0F6E56;--teal-800:#085041;
+  --blue-50:#E6F1FB;--blue-100:#B5D4F4;--blue-400:#378ADD;--blue-600:#185FA5;--blue-800:#0C447C;
+  --amber-50:#FAEEDA;--amber-400:#BA7517;--amber-600:#854F0B;--amber-800:#633806;
+  --coral-50:#FAECE7;--coral-400:#D85A30;--coral-600:#993C1D;
+  --green-50:#EAF3DE;--green-400:#639922;--green-800:#27500A;
+  --red-50:#FCEBEB;--red-400:#E24B4A;--red-600:#A32D2D;--red-800:#791F1F;
+  --gray-50:#F1EFE8;--gray-400:#888780;--gray-800:#444441;
+  --bg:#FAFAF8;--surface:#FFFFFF;--surface-2:#F4F3EF;
+  --border:rgba(0,0,0,0.08);--border-med:rgba(0,0,0,0.14);
+  --text-1:#1A1918;--text-2:#5F5E5A;--text-3:#9B9A95;
+  --radius-sm:6px;--radius-md:10px;--radius-lg:14px;--radius-xl:20px;
+  --font-sans:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace;
+  --topbar-h:52px; --sidebar-w:220px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#111110;--surface:#1C1B1A;--surface-2:#252422;
+  --border:rgba(255,255,255,0.08);--border-med:rgba(255,255,255,0.14);
+  --text-1:#E8E7E2;--text-2:#9B9A95;--text-3:#5F5E5A;
+  --purple-50:#2A2660;--teal-50:#063528;--blue-50:#062240;
+  --amber-50:#3A2200;--coral-50:#3A1508;--green-50:#162400;--red-50:#3A0A0A;
+}}
+html { font-family: var(--font-sans); background: var(--bg); color: var(--text-1); font-size:14px; }
+body { min-height: 100vh; }

@@ -1,0 +1,613 @@
+<!doctype html>
+
+<html lang="id">
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+		<title>Kelas Murid - SIS Management</title>
+		<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;family=Outfit:wght@400;500;700;800&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<script id="tailwind-config">
+			tailwind.config = {
+				darkMode: 'class',
+				theme: {
+					extend: {
+						colors: {
+							'surface-container-lowest': '#ffffff',
+							'outline-variant': '#e4beb8',
+							outline: '#8f706a',
+							'on-secondary-fixed': '#161e00',
+							'on-tertiary-fixed': '#1f1c06',
+							'on-error': '#ffffff',
+							'surface-container-highest': '#e6e1e1',
+							'on-tertiary-fixed-variant': '#4b472d',
+							'surface-dim': '#ddd9d8',
+							'surface-container': '#f1edec',
+							'secondary-fixed': '#c3f400',
+							primary: '#830300',
+							'tertiary-fixed-dim': '#cec7a5',
+							'on-primary-fixed': '#410100',
+							'error-container': '#ffdad6',
+							'on-secondary': '#ffffff',
+							'surface-bright': '#fdf8f8',
+							'on-primary': '#ffffff',
+							surface: '#fdf8f8',
+							'secondary-fixed-dim': '#abd600',
+							'on-tertiary': '#ffffff',
+							tertiary: '#433f26',
+							'surface-container-low': '#f7f2f2',
+							'primary-fixed-dim': '#ffb4a8',
+							'primary-fixed': '#ffdad4',
+							'on-secondary-fixed-variant': '#3c4d00',
+							'on-secondary-container': '#546b00',
+							'on-surface-variant': '#5b403c',
+							'on-primary-container': '#ffbbaf',
+							'surface-variant': '#e6e1e1',
+							'on-tertiary-container': '#d3cbaa',
+							'on-primary-fixed-variant': '#930300',
+							background: '#fdf8f8',
+							'surface-container-high': '#ece7e7',
+							secondary: '#506600',
+							'on-background': '#1c1b1b',
+							'on-surface': '#1c1b1b',
+							'primary-container': '#ab1509',
+							'tertiary-fixed': '#ebe3c0',
+							'tertiary-container': '#5b563b',
+							'secondary-container': '#c1f100',
+							'inverse-surface': '#313030',
+							'on-error-container': '#93000a',
+							error: '#ba1a1a',
+							'surface-tint': '#b82012',
+							'inverse-on-surface': '#f4f0ef',
+							'inverse-primary': '#ffb4a8'
+						},
+						borderRadius: {
+							DEFAULT: '0.25rem',
+							lg: '0.5rem',
+							xl: '0.75rem',
+							full: '9999px'
+						},
+						spacing: {
+							unit: '8px',
+							margin: '32px',
+							'container-max': '1280px',
+							'shadow-offset': '8px',
+							gutter: '24px',
+							'border-width': '4px'
+						},
+						fontFamily: {
+							'headline-md': ['Outfit'],
+							'headline-xl': ['Outfit'],
+							'data-mono': ['Space Mono'],
+							'headline-lg': ['Outfit'],
+							'label-caps': ['Space Mono'],
+							'headline-lg-mobile': ['Outfit'],
+							'body-md': ['Outfit'],
+							'body-lg': ['Outfit']
+						},
+						fontSize: {
+							'headline-md': ['24px', { lineHeight: '1.3', fontWeight: '700' }],
+							'headline-xl': [
+								'64px',
+								{ lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '800' }
+							],
+							'data-mono': [
+								'14px',
+								{ lineHeight: '1.5', letterSpacing: '0.05em', fontWeight: '500' }
+							],
+							'headline-lg': [
+								'40px',
+								{ lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }
+							],
+							'label-caps': ['12px', { lineHeight: '1.2', fontWeight: '700' }],
+							'headline-lg-mobile': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
+							'body-md': ['16px', { lineHeight: '1.6', fontWeight: '400' }],
+							'body-lg': ['18px', { lineHeight: '1.6', fontWeight: '400' }]
+						}
+					}
+				}
+			};
+		</script>
+		<style>
+			.neo-shadow {
+				box-shadow: 8px 8px 0px 0px rgba(28, 27, 27, 1);
+			}
+			.neo-shadow-interactive:active {
+				box-shadow: 2px 2px 0px 0px rgba(28, 27, 27, 1);
+				transform: translate(6px, 6px);
+			}
+			.neo-shadow-interactive:hover {
+				transform: translate(4px, 4px);
+				box-shadow: 4px 4px 0px 0px rgba(28, 27, 27, 1);
+			}
+			.neo-border {
+				border: 4px solid #1c1b1b;
+			}
+			.neo-border-b {
+				border-bottom: 4px solid #1c1b1b;
+			}
+			.neo-border-r {
+				border-right: 4px solid #1c1b1b;
+			}
+			.grid-12 {
+				display: grid;
+				grid-template-columns: repeat(12, minmax(0, 1fr));
+				gap: 24px;
+			}
+		</style>
+	</head>
+	<body
+		class="flex min-h-screen bg-surface font-body-md text-on-background selection:bg-primary selection:text-on-primary"
+	>
+		<!-- Top Navigation (Mobile Only) -->
+		<nav
+			class="sticky top-0 z-50 flex w-full items-center justify-between border-b-[4px] border-on-background bg-surface px-margin py-4 shadow-[8px_8px_0px_0px_rgba(28,27,27,1)] md:hidden"
+		>
+			<div class="font-headline-md text-headline-md font-bold text-primary">SIS Management</div>
+			<button
+				class="neo-shadow-interactive bg-surface-container-highest p-2 transition-all neo-border"
+			>
+				<span class="material-symbols-outlined" data-icon="menu">menu</span>
+			</button>
+		</nav>
+		<!-- SideNavBar (Desktop) -->
+		<aside
+			class="fixed top-0 left-0 z-40 hidden h-full w-64 flex-col gap-4 border-r-[4px] border-on-background bg-surface-container p-4 shadow-[8px_0px_0px_0px_rgba(28,27,27,1)] md:flex"
+		>
+			<!-- Header -->
+			<div class="mb-6 flex items-center gap-3 border-on-background pb-4 neo-border-b">
+				<div class="flex h-12 w-12 items-center justify-center bg-primary neo-shadow neo-border">
+					<span class="material-symbols-outlined text-on-primary" data-icon="account_balance"
+						>account_balance</span
+					>
+				</div>
+				<div>
+					<h1 class="font-headline-md text-headline-md tracking-tighter text-primary uppercase">
+						SIS Management
+					</h1>
+					<p class="font-data-mono text-xs text-data-mono text-on-surface-variant">
+						Admin Terminal v1.0
+					</p>
+				</div>
+			</div>
+			<!-- Navigation Links -->
+			<nav class="flex flex-1 flex-col gap-2">
+				<a
+					class="flex items-center gap-3 p-3 font-label-caps text-label-caps text-on-surface-variant uppercase transition-all neo-border hover:border-[4px] hover:border-on-background hover:bg-surface-container-highest hover:shadow-[4px_4px_0px_0px_rgba(28,27,27,1)]"
+					href="#"
+				>
+					<span class="material-symbols-outlined" data-icon="school">school</span>
+					Jurusan Murid
+				</a>
+				<a
+					class="flex items-center gap-3 border-[4px] border-on-background bg-secondary-container p-3 font-label-caps text-label-caps font-bold text-on-secondary-container uppercase shadow-[4px_4px_0px_0px_rgba(28,27,27,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined" data-icon="groups">groups</span>
+					Kelas Murid
+				</a>
+				<a
+					class="flex items-center gap-3 p-3 font-label-caps text-label-caps text-on-surface-variant uppercase transition-all neo-border hover:border-[4px] hover:border-on-background hover:bg-surface-container-highest hover:shadow-[4px_4px_0px_0px_rgba(28,27,27,1)]"
+					href="#"
+				>
+					<span class="material-symbols-outlined" data-icon="supervisor_account"
+						>supervisor_account</span
+					>
+					Wali Kelas
+				</a>
+				<a
+					class="flex items-center gap-3 p-3 font-label-caps text-label-caps text-on-surface-variant uppercase transition-all neo-border hover:border-[4px] hover:border-on-background hover:bg-surface-container-highest hover:shadow-[4px_4px_0px_0px_rgba(28,27,27,1)]"
+					href="#"
+				>
+					<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+					Guru Mapel
+				</a>
+				<a
+					class="flex items-center gap-3 p-3 font-label-caps text-label-caps text-on-surface-variant uppercase transition-all neo-border hover:border-[4px] hover:border-on-background hover:bg-surface-container-highest hover:shadow-[4px_4px_0px_0px_rgba(28,27,27,1)]"
+					href="#"
+				>
+					<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+					Jadwal Piket
+				</a>
+			</nav>
+			<!-- CTA & Footer -->
+			<div class="mt-auto flex flex-col gap-4 border-on-background pt-4 neo-border-t">
+				<button
+					class="neo-shadow-interactive flex w-full items-center justify-center gap-2 bg-primary-container p-3 font-label-caps text-label-caps text-on-primary-container uppercase transition-all neo-border"
+				>
+					<span class="material-symbols-outlined" data-icon="add">add</span>
+					Add New Record
+				</button>
+				<div class="flex flex-col gap-2">
+					<a
+						class="flex items-center gap-3 p-2 font-label-caps text-label-caps text-on-surface-variant uppercase transition-colors hover:bg-surface-container-highest"
+						href="#"
+					>
+						<span class="material-symbols-outlined" data-icon="settings">settings</span>
+						Settings
+					</a>
+					<a
+						class="flex items-center gap-3 p-2 font-label-caps text-label-caps text-on-surface-variant uppercase transition-colors hover:bg-surface-container-highest"
+						href="#"
+					>
+						<span class="material-symbols-outlined" data-icon="logout">logout</span>
+						Logout
+					</a>
+				</div>
+			</div>
+		</aside>
+		<!-- Main Content Canvas -->
+		<main
+			class="mx-auto w-full max-w-container-max flex-1 overflow-x-hidden p-margin md:ml-64 md:p-12"
+		>
+			<!-- Header Section -->
+			<header class="mb-12 flex items-end justify-between border-b-[8px] border-on-background pb-6">
+				<div>
+					<h1 class="text-headline-lg-mobile font-headline-xl text-primary md:text-headline-xl">
+						KELAS MURID
+					</h1>
+					<p
+						class="mt-2 inline-block border-[2px] border-on-background bg-secondary-container px-2 py-1 font-data-mono text-data-mono text-on-surface-variant"
+					>
+						DATA_TABLE // ACTIVE_SESSIONS: 42
+					</p>
+				</div>
+				<div class="hidden md:block">
+					<div class="flex items-center gap-2 bg-surface-container-highest px-4 py-2 neo-border">
+						<span class="material-symbols-outlined" data-icon="search">search</span>
+						<input
+							class="w-48 border-none bg-transparent font-data-mono text-data-mono outline-none focus:ring-0"
+							placeholder="Search Class..."
+							type="text"
+						/>
+					</div>
+				</div>
+			</header>
+			<!-- Table Section -->
+			<section class="mb-16">
+				<div class="overflow-x-auto bg-[#fff7d3] neo-shadow neo-border">
+					<table class="w-full text-left font-data-mono text-data-mono whitespace-nowrap">
+						<thead class="bg-primary font-label-caps text-on-primary uppercase neo-border-b">
+							<tr>
+								<th class="w-16 p-4 text-center neo-border-r">No</th>
+								<th class="p-4 neo-border-r">Kode Kelas</th>
+								<th class="p-4 neo-border-r">Nama Kelas</th>
+								<th class="w-32 p-4 text-center neo-border-r">Tingkat</th>
+								<th class="w-64 p-4 text-center">Aksi</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y-[4px] divide-[#1c1b1b]">
+							<tr class="transition-colors hover:bg-surface-container">
+								<td class="p-4 text-center font-bold neo-border-r">01</td>
+								<td class="bg-opacity-30 bg-secondary-container p-4 neo-border-r">CLS-10A</td>
+								<td class="p-4 font-headline-md text-lg neo-border-r">X IPA 1 (10-A)</td>
+								<td
+									class="text-on-secondary-fixed border-l-[4px] border-[#1c1b1b] bg-secondary-fixed p-4 text-center font-bold neo-border-r"
+								>
+									10
+								</td>
+								<td class="flex justify-center gap-2 p-4">
+									<button
+										class="neo-shadow-interactive flex items-center gap-1 bg-primary-container px-3 py-1 font-label-caps text-[10px] text-on-primary-container uppercase transition-all neo-border"
+									>
+										<span class="material-symbols-outlined text-[14px]" data-icon="visibility"
+											>visibility</span
+										>
+										Lihat Detail
+									</button>
+									<button
+										class="neo-shadow-interactive flex items-center gap-1 bg-surface-container-highest px-3 py-1 font-label-caps text-[10px] text-on-surface uppercase transition-all neo-border"
+									>
+										<span class="material-symbols-outlined text-[14px]" data-icon="edit">edit</span>
+										Update
+									</button>
+									<button
+										class="neo-shadow-interactive flex items-center gap-1 bg-error px-3 py-1 font-label-caps text-[10px] text-on-error uppercase transition-all neo-border"
+									>
+										<span class="material-symbols-outlined text-[14px]" data-icon="delete"
+											>delete</span
+										>
+										Delete
+									</button>
+								</td>
+							</tr>
+							<tr class="transition-colors hover:bg-surface-container">
+								<td class="p-4 text-center font-bold neo-border-r">02</td>
+								<td class="bg-opacity-30 bg-secondary-container p-4 neo-border-r">CLS-10B</td>
+								<td class="p-4 font-headline-md text-lg neo-border-r">X IPA 2 (10-B)</td>
+								<td
+									class="text-on-secondary-fixed border-l-[4px] border-[#1c1b1b] bg-secondary-fixed p-4 text-center font-bold neo-border-r"
+								>
+									10
+								</td>
+								<td class="flex justify-center gap-2 p-4">
+									<button
+										class="flex items-center gap-1 bg-surface-container-highest px-3 py-1 font-label-caps text-[10px] text-on-surface uppercase transition-all neo-border hover:bg-primary-container hover:text-on-primary-container"
+									>
+										<span class="material-symbols-outlined text-[14px]" data-icon="visibility"
+											>visibility</span
+										>
+										Detail
+									</button>
+								</td>
+							</tr>
+							<tr class="transition-colors hover:bg-surface-container">
+								<td class="p-4 text-center font-bold neo-border-r">03</td>
+								<td class="bg-opacity-30 bg-secondary-container p-4 neo-border-r">CLS-11A</td>
+								<td class="p-4 font-headline-md text-lg neo-border-r">XI IPS 1 (11-A)</td>
+								<td
+									class="text-on-tertiary-fixed border-l-[4px] border-[#1c1b1b] bg-tertiary-fixed p-4 text-center font-bold neo-border-r"
+								>
+									11
+								</td>
+								<td class="flex justify-center gap-2 p-4">
+									<button
+										class="flex items-center gap-1 bg-surface-container-highest px-3 py-1 font-label-caps text-[10px] text-on-surface uppercase transition-all neo-border hover:bg-primary-container hover:text-on-primary-container"
+									>
+										<span class="material-symbols-outlined text-[14px]" data-icon="visibility"
+											>visibility</span
+										>
+										Detail
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!-- Pagination Mockup -->
+				<div class="mt-6 flex items-center justify-between font-data-mono text-data-mono">
+					<span class="bg-surface-container px-3 py-1 neo-border">Showing 1-3 of 42</span>
+					<div class="flex gap-2">
+						<button
+							class="flex h-8 w-8 items-center justify-center bg-surface-container-highest transition-colors neo-border hover:bg-secondary-container"
+						>
+							&lt;
+						</button>
+						<button
+							class="flex h-8 w-8 items-center justify-center bg-primary font-bold text-on-primary neo-border"
+						>
+							1
+						</button>
+						<button
+							class="flex h-8 w-8 items-center justify-center bg-surface-container-highest transition-colors neo-border hover:bg-secondary-container"
+						>
+							2
+						</button>
+						<button
+							class="flex h-8 w-8 items-center justify-center bg-surface-container-highest transition-colors neo-border hover:bg-secondary-container"
+						>
+							3
+						</button>
+						<button
+							class="flex h-8 w-8 items-center justify-center bg-surface-container-highest transition-colors neo-border hover:bg-secondary-container"
+						>
+							&gt;
+						</button>
+					</div>
+				</div>
+			</section>
+			<!-- Divider -->
+			<div class="my-12 w-full border-t-[8px] border-dashed border-on-background"></div>
+			<!-- Detail Section Header -->
+			<div class="mb-8 flex items-center gap-4">
+				<div class="inline-flex bg-primary p-3 text-on-primary neo-shadow neo-border">
+					<span class="material-symbols-outlined text-3xl" data-icon="dashboard">dashboard</span>
+				</div>
+				<h2 class="text-headline-lg-mobile font-headline-lg md:text-headline-lg">
+					DETAIL KELAS:
+					<span class="border-[4px] border-[#1c1b1b] bg-secondary-container px-2">10-A</span>
+				</h2>
+			</div>
+			<!-- 12-Column Grid Layout -->
+			<div class="grid-12">
+				<!-- Left Column: Wali Kelas Card (Spans 4 cols on desktop) -->
+				<div class="col-span-12 flex flex-col gap-6 md:col-span-4">
+					<div
+						class="group relative flex h-full flex-col overflow-hidden bg-[#fff7d3] neo-shadow neo-border"
+					>
+						<!-- Geometric Accent -->
+						<div
+							class="absolute -top-12 -right-12 z-0 h-32 w-32 rounded-full bg-primary opacity-50 mix-blend-multiply"
+						></div>
+						<div
+							class="relative z-10 flex items-center justify-between bg-primary p-3 font-label-caps text-label-caps text-on-primary uppercase neo-border-b"
+						>
+							<span>Wali Kelas Profile</span>
+							<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+						</div>
+						<div class="relative z-10 flex flex-1 flex-col items-center p-6">
+							<div class="mb-6 h-32 w-32 overflow-hidden bg-surface neo-shadow neo-border">
+								<img
+									class="h-full w-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0"
+									data-alt="A highly detailed portrait photograph of a middle-aged Indonesian school teacher wearing a formal grey uniform with a name tag. They have a stern but kind expression, short neat hair, standing in front of a slightly blurred classroom background with bright, natural lighting and a neo-brutalist aesthetic."
+									src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDW0XFHAulxxUNNo0yvWiZc68eOOehotjjKdZvoADc8ITjEn5Qi0ewpyLZTM-Jx51GbmMhKW27yqk4_W0J0snQl17b-glJByvLLZ8u54OpOr5ixRNNkKJ4ydD4pIM2b71psTz5eppD1WJ87-09b9VqML4TojibBbC3pGTsun2pgbaeXCrHALzfQCP1FV2sWIL5lAvWIB8HxxjJnPoSQr3Q9Mr_1VXbv0Etrw5k6BFIjEgT91wFORb2"
+								/>
+							</div>
+							<h3 class="mb-1 text-center font-headline-md text-headline-md">Bpk. Budi Santoso</h3>
+							<div
+								class="mb-4 bg-surface-container px-3 py-1 font-data-mono text-xs text-data-mono neo-border"
+							>
+								NIP: 19800512 200501 1 003
+							</div>
+							<div
+								class="mt-4 flex w-full flex-1 flex-col gap-2 font-data-mono text-sm text-data-mono"
+							>
+								<div
+									class="flex items-center justify-between border-b-2 border-dashed border-on-background pb-1"
+								>
+									<span class="text-on-surface-variant">Mata Pelajaran:</span>
+									<span class="font-bold">Fisika</span>
+								</div>
+								<div
+									class="flex items-center justify-between border-b-2 border-dashed border-on-background pb-1"
+								>
+									<span class="text-on-surface-variant">Status:</span>
+									<span class="border-2 border-on-background bg-secondary-container px-2"
+										>Aktif Mengajar</span
+									>
+								</div>
+								<div class="flex items-center justify-between pb-1">
+									<span class="text-on-surface-variant">Kontak:</span>
+									<span>Ext. 402</span>
+								</div>
+							</div>
+						</div>
+						<button
+							class="relative z-10 flex justify-center gap-2 bg-on-background p-4 font-label-caps text-label-caps tracking-widest text-surface uppercase transition-colors hover:bg-primary"
+						>
+							<span class="material-symbols-outlined" data-icon="mail">mail</span> Hubungi
+						</button>
+					</div>
+				</div>
+				<!-- Right Column: Student Grid (Spans 8 cols on desktop) -->
+				<div class="col-span-12 flex flex-col md:col-span-8">
+					<div
+						class="mb-4 flex items-end justify-between bg-surface-container-highest p-4 neo-border"
+					>
+						<h3 class="font-headline-md text-xl uppercase">Daftar Murid</h3>
+						<span class="bg-on-background px-2 py-1 font-data-mono text-data-mono text-surface"
+							>TOTAL: 32</span
+						>
+					</div>
+					<!-- Inner Grid for Student Cards -->
+					<div class="grid flex-1 grid-cols-1 gap-6 sm:grid-cols-2">
+						<!-- Student Card 1 -->
+						<div
+							class="neo-shadow-interactive flex cursor-pointer items-stretch bg-surface transition-all neo-border hover:bg-surface-container-low"
+						>
+							<div
+								class="relative flex w-24 flex-shrink-0 items-center justify-center overflow-hidden border-r-[4px] border-on-background bg-[#fff7d3] p-2"
+							>
+								<!-- Number Watermark -->
+								<span
+									class="absolute -bottom-4 -left-2 font-headline-xl text-6xl text-primary opacity-20"
+									>01</span
+								>
+								<img
+									class="relative z-10 h-16 w-16 rounded-none object-cover neo-border"
+									data-alt="A highly detailed close-up portrait of a young male Indonesian high school student in a white uniform with a school badge. He looks directly at the camera with a confident expression. High-contrast lighting, sharp focus, set against a stark white background fitting a neo-brutalist UI."
+									src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCYBU9SxVUDhLhQTL_1GgnxktjF3AIW2WJnn89GW14bSmvmba3pcRFwxJ3EAOHqjYCSINJQjdUXL0Yh1M5pAsmEpsZilbC8AkM6Gz_5sbO1HcG-E8p_2HkoY0-IiNpfxWiQwKMXPcfVRg8H0Bdq4-IRLkvxmOsb_KyGVhrGjZ0u84Nmt80SQaS1XZeV1payrKLnT1s5pAXk8n-Ce996qyYh1mgeNrmvyxOdurFjXDB5U9pZ8uTMj8r"
+								/>
+							</div>
+							<div class="flex w-full flex-col justify-center p-4">
+								<h4 class="mb-1 truncate font-headline-md text-lg">Ahmad Dhani R.</h4>
+								<div class="flex w-full items-center justify-between">
+									<span
+										class="border-2 border-on-background bg-surface-container px-2 font-data-mono text-xs text-data-mono"
+										>NIS: 10293</span
+									>
+									<span
+										class="h-3 w-3 rounded-none border-2 border-on-background bg-secondary-fixed"
+									></span>
+								</div>
+							</div>
+						</div>
+						<!-- Student Card 2 -->
+						<div
+							class="neo-shadow-interactive flex cursor-pointer items-stretch bg-surface transition-all neo-border hover:bg-surface-container-low"
+						>
+							<div
+								class="relative flex w-24 flex-shrink-0 items-center justify-center overflow-hidden border-r-[4px] border-on-background bg-[#fff7d3] p-2"
+							>
+								<span
+									class="absolute -bottom-4 -left-2 font-headline-xl text-6xl text-primary opacity-20"
+									>02</span
+								>
+								<img
+									class="relative z-10 h-16 w-16 rounded-none object-cover neo-border"
+									data-alt="A highly detailed close-up portrait of a young female Indonesian high school student wearing a white uniform and a neat hijab. She has a bright, intelligent expression. High-contrast lighting, sharp focus, stark white background, neo-brutalist aesthetic."
+									src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK2_fqfsZonEQtzpVt45at0MvcGIErAvAbIEPqJEKfl7A0QZMgOnfr0qj0oW-4DcQOcBBvBtk2tIBXuLMKuWR03iJQNYSpSvXWuxKWjuwhD9WzdUybDx_dWjvFcR8t0mhL6pXWg-nZxoLdkIOEReDHGVMsdayGcHJt357a7B9CL3-s76HVyHY-mIderhY_DQNuE842i0QoGmkQ7hXIMKmcRQWJWtEX0n_l9OCb9zAGZVHbssuEJr5J"
+								/>
+							</div>
+							<div class="flex w-full flex-col justify-center p-4">
+								<h4 class="mb-1 truncate font-headline-md text-lg">Bunga Citra</h4>
+								<div class="flex w-full items-center justify-between">
+									<span
+										class="border-2 border-on-background bg-surface-container px-2 font-data-mono text-xs text-data-mono"
+										>NIS: 10294</span
+									>
+									<span
+										class="h-3 w-3 rounded-none border-2 border-on-background bg-secondary-fixed"
+									></span>
+								</div>
+							</div>
+						</div>
+						<!-- Student Card 3 -->
+						<div
+							class="neo-shadow-interactive flex cursor-pointer items-stretch bg-surface transition-all neo-border hover:bg-surface-container-low"
+						>
+							<div
+								class="relative flex w-24 flex-shrink-0 items-center justify-center overflow-hidden border-r-[4px] border-on-background bg-surface-dim p-2"
+							>
+								<span
+									class="absolute -bottom-4 -left-2 font-headline-xl text-6xl text-on-surface opacity-20"
+									>03</span
+								>
+								<div
+									class="relative z-10 flex h-16 w-16 items-center justify-center rounded-none bg-surface-variant neo-border"
+								>
+									<span
+										class="material-symbols-outlined text-3xl text-on-surface-variant"
+										data-icon="person_off"
+										>person_off</span
+									>
+								</div>
+							</div>
+							<div class="flex w-full flex-col justify-center p-4">
+								<h4
+									class="mb-1 truncate font-headline-md text-lg text-on-surface-variant line-through"
+								>
+									Cakra Khan
+								</h4>
+								<div class="flex w-full items-center justify-between">
+									<span
+										class="border-2 border-on-background bg-error-container px-2 font-data-mono text-xs text-data-mono text-on-error-container"
+										>PINDAH</span
+									>
+									<span class="h-3 w-3 rounded-none border-2 border-on-background bg-error"></span>
+								</div>
+							</div>
+						</div>
+						<!-- Student Card 4 -->
+						<div
+							class="neo-shadow-interactive flex cursor-pointer items-stretch border-dashed border-on-background bg-surface opacity-70 transition-all neo-border hover:bg-surface-container-low"
+						>
+							<div class="flex w-full flex-col items-center justify-center gap-2 p-6">
+								<span
+									class="material-symbols-outlined text-4xl text-on-surface-variant"
+									data-icon="add_circle"
+									>add_circle</span
+								>
+								<span class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+									>Tambah Murid</span
+								>
+							</div>
+						</div>
+					</div>
+					<!-- View All Button -->
+					<button
+						class="group mt-6 flex w-full items-center justify-center gap-2 border-[4px] border-dashed border-on-background py-4 font-headline-md text-lg transition-colors hover:bg-surface-container-highest"
+					>
+						LIHAT SEMUA 32 MURID
+						<span
+							class="material-symbols-outlined transition-transform group-hover:translate-x-2"
+							data-icon="arrow_forward"
+							>arrow_forward</span
+						>
+					</button>
+				</div>
+			</div>
+		</main>
+	</body>
+</html>

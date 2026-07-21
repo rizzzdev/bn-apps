@@ -1,0 +1,491 @@
+<!doctype html>
+
+<html lang="id">
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+		<title>Academia ERP - Detail Jurusan: Teknik Informatika</title>
+		<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&amp;family=Space+Mono:wght@400;700&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<script id="tailwind-config">
+			tailwind.config = {
+				darkMode: 'class',
+				theme: {
+					extend: {
+						colors: {
+							'secondary-fixed-dim': '#abd600',
+							'outline-variant': '#e4beb8',
+							'on-primary-fixed': '#410100',
+							'on-tertiary-container': '#d3cbaa',
+							'on-tertiary-fixed': '#1f1c06',
+							'secondary-fixed': '#c3f400',
+							'on-tertiary': '#ffffff',
+							'on-error': '#ffffff',
+							'surface-dim': '#ddd9d8',
+							'on-secondary-fixed': '#161e00',
+							background: '#fdf8f8',
+							'tertiary-fixed-dim': '#cec7a5',
+							'surface-variant': '#e6e1e1',
+							'surface-container-low': '#f7f2f2',
+							outline: '#8f706a',
+							error: '#ba1a1a',
+							'on-secondary': '#ffffff',
+							'tertiary-fixed': '#ebe3c0',
+							'on-surface': '#1c1b1b',
+							'on-secondary-fixed-variant': '#3c4d00',
+							surface: '#fdf8f8',
+							'surface-container-lowest': '#ffffff',
+							'on-primary-fixed-variant': '#930300',
+							'error-container': '#ffdad6',
+							'on-secondary-container': '#546b00',
+							'primary-fixed': '#ffdad4',
+							primary: '#830300',
+							'surface-container-highest': '#e6e1e1',
+							'on-error-container': '#93000a',
+							'primary-fixed-dim': '#ffb4a8',
+							'surface-container': '#f1edec',
+							'on-tertiary-fixed-variant': '#4b472d',
+							'primary-container': '#ab1509',
+							secondary: '#506600',
+							'on-background': '#1c1b1b',
+							'inverse-surface': '#313030',
+							'surface-bright': '#fdf8f8',
+							'tertiary-container': '#5b563b',
+							tertiary: '#433f26',
+							'on-surface-variant': '#5b403c',
+							'surface-container-high': '#ece7e7',
+							'secondary-container': '#c1f100',
+							'on-primary-container': '#ffbbaf',
+							'surface-tint': '#b82012',
+							'on-primary': '#ffffff',
+							'inverse-primary': '#ffb4a8',
+							'inverse-on-surface': '#f4f0ef'
+						},
+						borderRadius: {
+							DEFAULT: '0.25rem',
+							lg: '0.5rem',
+							xl: '0.75rem',
+							full: '9999px'
+						},
+						spacing: {
+							gutter: '24px',
+							'border-width': '4px',
+							'shadow-offset': '8px',
+							'container-max': '1280px',
+							unit: '8px',
+							margin: '32px'
+						},
+						fontFamily: {
+							'headline-xl': ['Outfit'],
+							'headline-md': ['Outfit'],
+							'headline-lg-mobile': ['Outfit'],
+							'body-lg': ['Outfit'],
+							'data-mono': ['Space Mono'],
+							'headline-lg': ['Outfit'],
+							'label-caps': ['Space Mono'],
+							'body-md': ['Outfit']
+						},
+						fontSize: {
+							'headline-xl': [
+								'64px',
+								{ lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '800' }
+							],
+							'headline-md': ['24px', { lineHeight: '1.3', fontWeight: '700' }],
+							'headline-lg-mobile': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
+							'body-lg': ['18px', { lineHeight: '1.6', fontWeight: '400' }],
+							'data-mono': [
+								'14px',
+								{ lineHeight: '1.5', letterSpacing: '0.05em', fontWeight: '500' }
+							],
+							'headline-lg': [
+								'40px',
+								{ lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }
+							],
+							'label-caps': ['12px', { lineHeight: '1.2', fontWeight: '700' }],
+							'body-md': ['16px', { lineHeight: '1.6', fontWeight: '400' }]
+						}
+					}
+				}
+			};
+		</script>
+		<style>
+			body {
+				background-color: #fdf8f8;
+				color: #1c1b1b;
+			}
+			.neobrutalist-border {
+				border: 4px solid #1c1b1b;
+			}
+			.neobrutalist-shadow {
+				box-shadow: 8px 8px 0px 0px #1c1b1b;
+			}
+			.neobrutalist-shadow-hover:hover {
+				box-shadow: 2px 2px 0px 0px #1c1b1b;
+				transform: translate(6px, 6px);
+				transition: all 0.2s ease-in-out;
+			}
+		</style>
+	</head>
+	<body class="flex min-h-screen font-body-md text-body-md">
+		<!-- SideNavBar -->
+		<aside
+			class="sticky top-0 z-40 flex hidden h-full h-screen w-64 shrink-0 flex-col gap-unit border-r-4 border-on-surface bg-tertiary-fixed px-4 py-margin shadow-[8px_0px_0px_0px_#1C1B1B] md:flex"
+		>
+			<div class="mb-8">
+				<div class="mb-4 flex items-center gap-4">
+					<img
+						class="neobrutalist-border h-12 w-12 rounded-none bg-white object-cover"
+						data-alt="A bold, high-contrast, minimalist school logo icon designed in a neobrutalist style with thick black borders and sharp geometric shapes, featuring primary red and lime green colors on a cream background."
+						src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwWheqmzWbChKGeyzEPuCYoZ6zs1svovQ-rHN4rR8hoqOQhWT4i_Rvh0hAmh2hzIQViCxf5RdxYD8Tro1PizpPeNX-QplA0t6bVzFcHNKPKS55OhujJ5bhdQvjpJw461e3AWYPgGepOlLDc20UjxPnLYAm5QOu_QL67Eq4_rmsF6PyLAJUsuAnExQQSliho6xoom9wyx14CDIv0LZ_ac8MpMW1JJCzQUEINR-gtZPb2pxWCzm-sEpR"
+					/>
+					<div>
+						<h1 class="font-headline-md text-headline-md font-black text-primary">Academia ERP</h1>
+						<p class="font-data-mono text-data-mono text-on-surface-variant">Data Mapping System</p>
+					</div>
+				</div>
+				<button
+					class="neobrutalist-border neobrutalist-shadow neobrutalist-shadow-hover mt-6 flex w-full items-center justify-center gap-2 bg-primary px-4 py-3 font-headline-md text-headline-md text-on-primary"
+				>
+					<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1"
+						>add</span
+					>
+					Quick Action
+				</button>
+			</div>
+			<nav class="flex flex-1 flex-col gap-2 font-headline-md text-headline-md">
+				<a
+					class="flex translate-x-[-2px] translate-y-[-2px] items-center gap-3 border-4 border-on-surface bg-secondary-container p-3 text-on-secondary-container shadow-[4px_4px_0px_0px_#1C1B1B]"
+					href="#"
+				>
+					<span
+						class="material-symbols-outlined"
+						data-icon="school"
+						style="font-variation-settings: 'FILL' 1"
+						>school</span
+					>
+					Jurusan Murid
+				</a>
+				<a
+					class="flex items-center gap-3 p-3 text-on-surface-variant transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-surface-variant hover:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined" data-icon="groups">groups</span>
+					Kelas Murid
+				</a>
+				<a
+					class="flex items-center gap-3 p-3 text-on-surface-variant transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-surface-variant hover:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined" data-icon="supervisor_account"
+						>supervisor_account</span
+					>
+					Wali Kelas
+				</a>
+				<a
+					class="flex items-center gap-3 p-3 text-on-surface-variant transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-surface-variant hover:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+					Guru Mapel
+				</a>
+				<a
+					class="flex items-center gap-3 p-3 text-on-surface-variant transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-surface-variant hover:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+					Schedules
+				</a>
+			</nav>
+			<div
+				class="mt-auto flex flex-col gap-2 border-t-4 border-on-surface pt-4 font-headline-md text-headline-md"
+			>
+				<a
+					class="flex items-center gap-3 p-3 text-on-surface-variant transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-surface-variant hover:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined" data-icon="settings">settings</span>
+					Settings
+				</a>
+				<a
+					class="flex items-center gap-3 p-3 text-on-surface-variant transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-surface-variant hover:shadow-none"
+					href="#"
+				>
+					<span class="material-symbols-outlined" data-icon="logout">logout</span>
+					Logout
+				</a>
+			</div>
+		</aside>
+		<!-- Main Content Area -->
+		<main class="flex min-w-0 flex-1 flex-col bg-background">
+			<!-- TopNavBar -->
+			<header
+				class="sticky top-0 z-50 flex h-20 w-full items-center justify-between border-b-4 border-on-surface bg-surface px-gutter shadow-[0px_8px_0px_0px_#1C1B1B]"
+			>
+				<div class="flex h-full items-center gap-8">
+					<span class="font-headline-md text-headline-md font-black text-primary"
+						>System Console</span
+					>
+					<nav
+						class="hidden h-full items-center gap-6 font-headline-md font-label-caps text-headline-md text-label-caps md:flex"
+					>
+						<a
+							class="flex h-full items-center px-2 font-medium text-on-surface-variant transition-colors hover:text-primary"
+							href="#"
+							>Dashboard</a
+						>
+						<a
+							class="flex h-full items-center px-2 font-medium text-on-surface-variant transition-colors hover:text-primary"
+							href="#"
+							>Reports</a
+						>
+					</nav>
+				</div>
+				<div class="flex items-center gap-6">
+					<!-- Search -->
+					<div class="relative hidden sm:block">
+						<input
+							class="neobrutalist-border w-64 bg-white py-2 pr-4 pl-10 font-data-mono text-data-mono transition-shadow focus:shadow-[4px_4px_0px_0px_#1C1B1B] focus:outline-none"
+							placeholder="Search..."
+							type="text"
+						/>
+						<span
+							class="material-symbols-outlined absolute top-1/2 left-3 -translate-y-1/2 text-on-surface"
+							>search</span
+						>
+					</div>
+					<div class="flex items-center gap-4">
+						<button class="text-on-surface transition-colors hover:text-primary">
+							<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+						</button>
+						<button class="text-on-surface transition-colors hover:text-primary">
+							<span class="material-symbols-outlined" data-icon="account_circle"
+								>account_circle</span
+							>
+						</button>
+						<button
+							class="neobrutalist-border neobrutalist-shadow neobrutalist-shadow-hover ml-2 bg-primary px-6 py-2 font-label-caps text-label-caps text-on-primary transition-transform active:scale-95"
+						>
+							Add New
+						</button>
+					</div>
+				</div>
+			</header>
+			<!-- Page Content -->
+			<div class="mx-auto w-full max-w-[1280px] p-gutter md:p-margin">
+				<!-- Header Section -->
+				<div
+					class="mb-12 flex flex-col justify-between gap-6 border-b-4 border-on-surface pb-6 md:flex-row md:items-end"
+				>
+					<div>
+						<div
+							class="neobrutalist-border mb-4 inline-block bg-secondary-container px-3 py-1 font-data-mono text-data-mono font-bold text-on-surface uppercase"
+						>
+							ID: JUR-001
+						</div>
+						<h2 class="font-headline-xl text-headline-xl text-primary-container">
+							Detail Jurusan:<br /><span class="text-on-surface">Teknik Informatika</span>
+						</h2>
+					</div>
+					<div class="flex gap-4">
+						<button
+							class="neobrutalist-border neobrutalist-shadow neobrutalist-shadow-hover flex items-center gap-2 bg-white px-6 py-3 font-headline-md text-headline-md"
+						>
+							<span class="material-symbols-outlined">edit</span> Edit
+						</button>
+					</div>
+				</div>
+				<!-- Stats Grid -->
+				<div class="mb-12 grid grid-cols-1 gap-gutter md:grid-cols-3">
+					<div
+						class="neobrutalist-border neobrutalist-shadow flex h-48 flex-col justify-between bg-tertiary-fixed p-6"
+					>
+						<span
+							class="inline-block w-fit border-b-4 border-on-surface pb-2 font-data-mono text-data-mono font-bold text-on-surface-variant uppercase"
+							>Total Students</span
+						>
+						<div class="font-headline-xl text-headline-xl text-primary">245</div>
+					</div>
+					<div
+						class="neobrutalist-border neobrutalist-shadow flex h-48 flex-col justify-between bg-tertiary-fixed p-6"
+					>
+						<span
+							class="inline-block w-fit border-b-4 border-on-surface pb-2 font-data-mono text-data-mono font-bold text-on-surface-variant uppercase"
+							>Accreditation</span
+						>
+						<div
+							class="neobrutalist-border w-fit border-white bg-on-surface px-4 font-headline-xl text-headline-xl text-secondary-container"
+						>
+							A
+						</div>
+					</div>
+					<div
+						class="neobrutalist-border neobrutalist-shadow flex h-48 flex-col justify-between bg-tertiary-fixed p-6"
+					>
+						<span
+							class="inline-block w-fit border-b-4 border-on-surface pb-2 font-data-mono text-data-mono font-bold text-on-surface-variant uppercase"
+							>Head of Dept</span
+						>
+						<div class="mt-auto font-headline-md text-headline-md leading-tight">
+							Dr. Budi Santoso<br /><span
+								class="font-data-mono text-sm text-data-mono text-on-surface-variant"
+								>NIP: 198005122005011002</span
+							>
+						</div>
+					</div>
+				</div>
+				<!-- Student Roster Header -->
+				<div class="mb-8 flex items-center justify-between border-b-4 border-on-surface pb-4">
+					<h3 class="font-headline-lg text-headline-lg text-on-surface">Student Roster</h3>
+					<div class="relative">
+						<input
+							class="neobrutalist-border w-full max-w-xs bg-white py-2 pr-4 pl-10 font-data-mono text-data-mono focus:shadow-[4px_4px_0px_0px_#1C1B1B] focus:outline-none"
+							placeholder="Filter NIS/Name..."
+							type="text"
+						/>
+						<span
+							class="material-symbols-outlined absolute top-1/2 left-3 -translate-y-1/2 text-on-surface"
+							>filter_list</span
+						>
+					</div>
+				</div>
+				<!-- Student Grid -->
+				<div class="grid grid-cols-1 gap-gutter sm:grid-cols-2 lg:grid-cols-4">
+					<!-- Student Card 1 -->
+					<div class="neobrutalist-border group bg-white">
+						<div
+							class="relative h-48 overflow-hidden border-b-4 border-on-surface bg-surface-variant"
+						>
+							<img
+								class="h-full w-full object-cover grayscale transition-all duration-300 group-hover:grayscale-0"
+								data-alt="A portrait of an Indonesian high school student in a neat uniform, looking directly at the camera with a neutral expression. Harsh studio lighting, sharp shadows, high contrast neobrutalist style aesthetic. White background."
+								src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNwBwYYic9TFqkwpvhBJ-TsRPtNYvjngfzWdR47lo84TQdYzaDzLRle0br2GLmkh6pJgRQrE-XSWQteTdC6hwaNJNQhMQJ_JO1ILwdaF1mBuxLqtWfYdZquFIG0WjmTkY2I2UwZdL6lvpTeb8MCyKOdGTwW-jrBv7u_7NsawN3YtVDjLhYtw1P_9qH-_AYD2klZ1PLrrr9nEHXRyaZ3Dgw1dbg93SO-tiSQnEmbqdJmEbhXjB5EoYh"
+							/>
+							<div
+								class="neobrutalist-border absolute top-2 right-2 bg-secondary-container px-2 py-1 font-data-mono text-xs font-bold"
+							>
+								XII-RPL-1
+							</div>
+						</div>
+						<div class="p-4">
+							<div class="mb-1 font-data-mono text-data-mono text-on-surface-variant">
+								NIS: 2021001
+							</div>
+							<h4 class="mb-2 font-headline-md text-headline-md leading-tight">Andi Pratama</h4>
+							<div class="mt-4 flex gap-2">
+								<span
+									class="border-2 border-on-surface bg-primary px-2 py-1 font-data-mono text-xs text-on-primary uppercase"
+									>Active</span
+								>
+							</div>
+						</div>
+					</div>
+					<!-- Student Card 2 -->
+					<div class="neobrutalist-border group bg-white">
+						<div
+							class="relative h-48 overflow-hidden border-b-4 border-on-surface bg-surface-variant"
+						>
+							<img
+								class="h-full w-full object-cover grayscale transition-all duration-300 group-hover:grayscale-0"
+								data-alt="A portrait of a female Indonesian high school student wearing a hijab and uniform, looking slightly off-camera. Strong directional lighting, raw and unpolished neobrutalist aesthetic, stark shadows. Light cream background."
+								src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB9MdqwQ6f026Mnt07M12GgcOZoxRfnA0doSQu6ZqbweUOStRdCdn-eDQMVKGFd1jyoH2m45ZwOyLblhbWsR4TAOm-0u1nAzYzBqRI-nIcJ5wy4ntF-nE1hwme8M7dy3Cci6EC3OiBCOfP8csV68AfrEPxolKsSgYMIsk7x7QzlEZ8Ek-GPMZtgITJTgYfvNf6o_oY32Lb6HH1ZlXD1_4ok84FDHnntUPh3_22ghEu6KxKWLQOBp4p"
+							/>
+							<div
+								class="neobrutalist-border absolute top-2 right-2 bg-secondary-container px-2 py-1 font-data-mono text-xs font-bold"
+							>
+								XII-RPL-1
+							</div>
+						</div>
+						<div class="p-4">
+							<div class="mb-1 font-data-mono text-data-mono text-on-surface-variant">
+								NIS: 2021002
+							</div>
+							<h4 class="mb-2 font-headline-md text-headline-md leading-tight">Siti Aminah</h4>
+							<div class="mt-4 flex gap-2">
+								<span
+									class="border-2 border-on-surface bg-primary px-2 py-1 font-data-mono text-xs text-on-primary uppercase"
+									>Active</span
+								>
+							</div>
+						</div>
+					</div>
+					<!-- Student Card 3 -->
+					<div class="neobrutalist-border group bg-white">
+						<div
+							class="relative h-48 overflow-hidden border-b-4 border-on-surface bg-surface-variant"
+						>
+							<img
+								class="h-full w-full object-cover grayscale transition-all duration-300 group-hover:grayscale-0"
+								data-alt="A portrait of a male Indonesian high school student with glasses in a school uniform. Stern expression. The image has a high-contrast, structured brutalist treatment with thick borders and heavy shadows implied by the lighting. Plain background."
+								src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0lFHu94OeZMH-ygsw76NYBDN2kuuTJ32bs_ARB2ct9I0GUVx1MFB6kSnBlBNRTBkUfDFvKZamyV85OBH_9LC2_jtnfV3CKsRAs8zp5QZBqqRN8oEGpOw-tTZ4LPpCk_MMyPQlwCBp-0qJ0-51yGwV8uWNCvtvA9BKbXYglNHx0-3RUW53sukhtZsffWMSyMZnAvRfBPStzjMvH9nraweRSVE4lP9xQwVgmIP3e5TsKrgTBreUvda2"
+							/>
+							<div
+								class="neobrutalist-border absolute top-2 right-2 bg-secondary-container px-2 py-1 font-data-mono text-xs font-bold"
+							>
+								XII-RPL-2
+							</div>
+						</div>
+						<div class="p-4">
+							<div class="mb-1 font-data-mono text-data-mono text-on-surface-variant">
+								NIS: 2021003
+							</div>
+							<h4 class="mb-2 font-headline-md text-headline-md leading-tight">Budi Setiawan</h4>
+							<div class="mt-4 flex gap-2">
+								<span
+									class="border-2 border-on-surface bg-primary px-2 py-1 font-data-mono text-xs text-on-primary uppercase"
+									>Active</span
+								>
+							</div>
+						</div>
+					</div>
+					<!-- Student Card 4 -->
+					<div class="neobrutalist-border group bg-white">
+						<div
+							class="relative h-48 overflow-hidden border-b-4 border-on-surface bg-surface-variant"
+						>
+							<img
+								class="h-full w-full object-cover grayscale transition-all duration-300 group-hover:grayscale-0"
+								data-alt="A portrait of a young female Indonesian student in uniform. Clear, sharp focus, high contrast lighting emphasizing angularity and structure. Neobrutalist design context. Solid off-white background."
+								src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeNiPj-Gz3hauDXHJH_R7ZtKqjlWyVgFiTxesSzQqqBDIAawevzuMDYK5bSmcavdzB4HVrZDeKUTYsZtNSKqDxOG5ELWNeiYiyUGunEuX2pTPXr_TUC71rnBjBkeh953j-BPZHNHG1qli66zMKMsIwBHIKNNTkRHUU1YVGbrX4EFirAIiEekgGwcUoDKsg62Pc7fN9o10QgTMHhcWnlIs3u-K_vFujt5AlYf94f7iRwDl-YCycOLGg"
+							/>
+							<div
+								class="neobrutalist-border absolute top-2 right-2 bg-secondary-container px-2 py-1 font-data-mono text-xs font-bold"
+							>
+								XII-RPL-2
+							</div>
+						</div>
+						<div class="p-4">
+							<div class="mb-1 font-data-mono text-data-mono text-on-surface-variant">
+								NIS: 2021004
+							</div>
+							<h4 class="mb-2 font-headline-md text-headline-md leading-tight">Rina Mulyani</h4>
+							<div class="mt-4 flex gap-2">
+								<span
+									class="border-2 border-on-surface bg-primary px-2 py-1 font-data-mono text-xs text-on-primary uppercase"
+									>Active</span
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="mt-8 flex justify-center">
+					<button
+						class="neobrutalist-border bg-surface-variant px-8 py-3 font-headline-md text-headline-md text-on-surface transition-colors hover:bg-secondary-container"
+					>
+						Load More Records
+					</button>
+				</div>
+			</div>
+		</main>
+	</body>
+</html>

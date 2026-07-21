@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Grade Assignment - EduBrutal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#1a1c1c",
+                      "tertiary-fixed": "#e2e2e2",
+                      "outline-variant": "#c1caae",
+                      "inverse-primary": "#8fdb00",
+                      "primary-container": "#adff2f",
+                      "secondary": "#5e5e5e",
+                      "on-primary-container": "#497300",
+                      "outline": "#717a62",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed-variant": "#474747",
+                      "surface-container-lowest": "#ffffff",
+                      "background": "#f9f9f9",
+                      "secondary-container": "#e2e2e2",
+                      "primary-fixed": "#a8f928",
+                      "on-background": "#1a1c1c",
+                      "tertiary-fixed-dim": "#c6c6c7",
+                      "surface-dim": "#dadada",
+                      "surface-variant": "#e2e2e2",
+                      "surface-container": "#eeeeee",
+                      "surface": "#f9f9f9",
+                      "on-error": "#ffffff",
+                      "on-primary-fixed": "#112000",
+                      "error": "#ba1a1a",
+                      "surface-container-high": "#e8e8e8",
+                      "surface-bright": "#f9f9f9",
+                      "on-surface-variant": "#414a35",
+                      "primary": "#426900",
+                      "inverse-surface": "#2f3131",
+                      "inverse-on-surface": "#f1f1f1",
+                      "primary-fixed-dim": "#8fdb00",
+                      "on-secondary-fixed": "#1b1b1b",
+                      "surface-tint": "#426900",
+                      "on-tertiary-container": "#666868",
+                      "on-secondary-container": "#646464",
+                      "tertiary-container": "#e8e8e8",
+                      "on-tertiary-fixed-variant": "#454747",
+                      "on-primary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed-variant": "#314f00",
+                      "on-surface": "#1a1c1c",
+                      "secondary-fixed-dim": "#c6c6c6",
+                      "on-secondary": "#ffffff",
+                      "tertiary": "#5d5f5f",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed": "#e2e2e2",
+                      "surface-container-low": "#f3f3f3",
+                      "surface-container-highest": "#e2e2e2"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "container-max": "1280px",
+                      "base": "8px",
+                      "stack-lg": "48px",
+                      "stack-sm": "12px",
+                      "margin-desktop": "40px",
+                      "gutter": "24px",
+                      "stack-md": "24px"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Space Grotesk"
+                      ],
+                      "label-bold": [
+                              "Space Grotesk"
+                      ],
+                      "display-lg-mobile": [
+                              "Space Grotesk"
+                      ],
+                      "display-lg": [
+                              "Space Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-bold": [
+                              "14px",
+                              {
+                                      "lineHeight": "1",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        /* Custom styles for Neobrutalism */
+        body {
+            background-color: #f9f9f9;
+        }
+        
+        .brutal-card {
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+            transition: all 0.1s ease;
+        }
+        
+        .brutal-card:hover {
+            box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
+            transform: translate(-2px, -2px);
+        }
+        
+        .brutal-button-primary {
+            background-color: #adff2f;
+            border: 2px solid #000000;
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+            transition: all 0.1s ease;
+            cursor: pointer;
+        }
+        
+        .brutal-button-primary:hover {
+            box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
+            transform: translate(-2px, -2px);
+        }
+        
+        .brutal-button-primary:active {
+            box-shadow: none;
+            transform: translate(4px, 4px);
+        }
+        
+        .brutal-input {
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            transition: all 0.1s ease;
+        }
+        
+        .brutal-input:focus {
+            outline: none;
+            box-shadow: 4px 4px 0px 0px #adff2f;
+        }
+
+        .brutal-chip-success {
+            background-color: #adff2f;
+            border: 2px solid #000000;
+            box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+        }
+        
+        .brutal-chip-pending {
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+        }
+
+        .brutal-table-header {
+            background-color: #e8e8e8;
+            border-bottom: 2px solid #000000;
+        }
+
+        .brutal-table-row {
+            border-bottom: 2px solid #000000;
+            transition: background-color 0.1s ease;
+        }
+
+        .brutal-table-row:hover {
+            background-color: #f3f3f3;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface bg-background antialiased flex">
+<!-- SideNavBar (from JSON) -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-screen w-64 border-r-2 border-on-surface shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-surface p-stack-md z-50">
+<div class="mb-stack-lg">
+<h1 class="font-headline-md text-headline-md font-black text-on-surface tracking-tighter">EduBrutal</h1>
+<p class="font-body-md text-body-md text-secondary mt-1">LMS Platform</p>
+</div>
+<ul class="flex flex-col gap-base flex-grow">
+<li>
+<a class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface hover:bg-surface-container hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all duration-100 font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface hover:bg-surface-container hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all duration-100 font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+                    My Classes
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-3 rounded-DEFAULT text-on-surface hover:bg-surface-container hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all duration-100 font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+                    Calendar
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 p-3 rounded-DEFAULT bg-primary-container text-on-primary-container border-2 border-on-surface shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="grade">grade</span>
+                    Grades
+                </a>
+</li>
+</ul>
+<button class="brutal-button-primary w-full py-3 px-4 rounded-DEFAULT font-label-bold text-label-bold text-on-surface mt-auto">
+            Create Content
+        </button>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 min-h-screen">
+<!-- TopAppBar (from JSON) -->
+<header class="flex justify-between items-center w-full px-margin-desktop h-20 sticky top-0 z-40 bg-surface border-b-2 border-on-surface shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]">
+<h2 class="font-headline-md text-headline-md font-black text-on-surface">Math 101 - Advanced Algebra</h2>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
+<input class="brutal-input pl-10 pr-4 py-2 rounded-DEFAULT font-body-md text-body-md w-64" placeholder="Search students..." type="text"/>
+</div>
+<button class="brutal-button-primary py-2 px-4 rounded-DEFAULT font-label-bold text-label-bold text-on-surface hidden md:block">
+                    Join Class
+                </button>
+<div class="w-10 h-10 rounded-full border-2 border-on-surface overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A small circular avatar placeholder for a teacher profile picture, high contrast, modern flat design aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm8xqlBUbGa0egNmEEbUPwy6_9n64Fjy5n0QSRWa_TdYEImekkGjSITveKCnSSDZON1gS2A35BDa30cDdzt-D-Lp_p6x35-0vPWOUvvnNSf8Uzv9QuMdV1s_PI_wSOAvOjIggoZ0NQzowSItOmQcbjTGuPTtcXtBGZXCgY4gLuDr5wkUYtv81uY7Ip4RMNmU2JH-w5KwJdT3cejxJe4dM_mToQ3xX0Q2t1onOpqTSmJJiNOXSK9dGM4Q"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto">
+<!-- Context Header -->
+<div class="mb-stack-lg">
+<h3 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">Penilaian Tugas</h3>
+<p class="font-body-lg text-body-lg text-secondary">Tugas 3: Persamaan Kuadrat Lanjutan</p>
+</div>
+<!-- Grade Table Section -->
+<div class="brutal-card rounded-DEFAULT overflow-hidden mb-stack-lg">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="brutal-table-header">
+<tr>
+<th class="p-4 font-label-bold text-label-bold border-r-2 border-on-surface">Nama Siswa</th>
+<th class="p-4 font-label-bold text-label-bold border-r-2 border-on-surface">Tanggal Pengumpulan</th>
+<th class="p-4 font-label-bold text-label-bold border-r-2 border-on-surface">Status</th>
+<th class="p-4 font-label-bold text-label-bold border-r-2 border-on-surface w-32">Nilai</th>
+<th class="p-4 font-label-bold text-label-bold w-24 text-center">Aksi</th>
+</tr>
+</thead>
+<tbody>
+<!-- Row 1 -->
+<tr class="brutal-table-row">
+<td class="p-4 border-r-2 border-on-surface font-body-md text-body-md font-bold">Budi Santoso</td>
+<td class="p-4 border-r-2 border-on-surface font-body-md text-body-md">12 Okt 2023, 14:30</td>
+<td class="p-4 border-r-2 border-on-surface">
+<span class="brutal-chip-success inline-block px-3 py-1 rounded-full font-label-bold text-[12px]">Terkumpul</span>
+</td>
+<td class="p-4 border-r-2 border-on-surface">
+<input class="brutal-input w-full p-2 rounded-DEFAULT font-label-bold text-label-bold text-center" max="100" min="0" type="number" value="85"/>
+</td>
+<td class="p-4 text-center">
+<button class="p-2 border-2 border-on-surface rounded-DEFAULT bg-surface hover:bg-primary-container transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]" title="Lihat Berkas">
+<span class="material-symbols-outlined block">visibility</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="brutal-table-row">
+<td class="p-4 border-r-2 border-on-surface font-body-md text-body-md font-bold">Siti Aminah</td>
+<td class="p-4 border-r-2 border-on-surface font-body-md text-body-md">12 Okt 2023, 16:15</td>
+<td class="p-4 border-r-2 border-on-surface">
+<span class="brutal-chip-success inline-block px-3 py-1 rounded-full font-label-bold text-[12px]">Terkumpul</span>
+</td>
+<td class="p-4 border-r-2 border-on-surface">
+<input class="brutal-input w-full p-2 rounded-DEFAULT font-label-bold text-label-bold text-center" max="100" min="0" type="number" value="92"/>
+</td>
+<td class="p-4 text-center">
+<button class="p-2 border-2 border-on-surface rounded-DEFAULT bg-surface hover:bg-primary-container transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]" title="Lihat Berkas">
+<span class="material-symbols-outlined block">visibility</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="brutal-table-row bg-surface-container-low">
+<td class="p-4 border-r-2 border-on-surface font-body-md text-body-md font-bold text-secondary">Ahmad Dhani</td>
+<td class="p-4 border-r-2 border-on-surface font-body-md text-body-md text-secondary">-</td>
+<td class="p-4 border-r-2 border-on-surface">
+<span class="brutal-chip-pending inline-block px-3 py-1 rounded-full font-label-bold text-[12px] text-secondary">Belum Terkumpul</span>
+</td>
+<td class="p-4 border-r-2 border-on-surface">
+<input class="brutal-input w-full p-2 rounded-DEFAULT font-label-bold text-label-bold text-center bg-surface-container text-secondary cursor-not-allowed" disabled="" max="100" min="0" placeholder="-" type="number"/>
+</td>
+<td class="p-4 text-center">
+<button class="p-2 border-2 border-secondary rounded-DEFAULT bg-surface-container text-secondary cursor-not-allowed" disabled="" title="Berkas tidak tersedia">
+<span class="material-symbols-outlined block">visibility_off</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="brutal-table-row">
+<td class="p-4 border-r-2 border-on-surface font-body-md text-body-md font-bold">Rina Nose</td>
+<td class="p-4 border-r-2 border-on-surface font-body-md text-body-md">13 Okt 2023, 08:00</td>
+<td class="p-4 border-r-2 border-on-surface">
+<span class="brutal-chip-success inline-block px-3 py-1 rounded-full font-label-bold text-[12px]">Terkumpul</span>
+</td>
+<td class="p-4 border-r-2 border-on-surface">
+<input class="brutal-input w-full p-2 rounded-DEFAULT font-label-bold text-label-bold text-center" max="100" min="0" placeholder="0" type="number"/>
+</td>
+<td class="p-4 text-center">
+<button class="p-2 border-2 border-on-surface rounded-DEFAULT bg-surface hover:bg-primary-container transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]" title="Lihat Berkas">
+<span class="material-symbols-outlined block">visibility</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="flex justify-end mt-stack-md">
+<button class="brutal-button-primary py-4 px-8 rounded-DEFAULT font-label-bold text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="save">save</span>
+                    Simpan Semua Nilai
+                </button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) - Using exact structural logic from prompt context, normally suppressed on desktop -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface border-t-2 border-on-surface shadow-[0px_-4px_0px_0px_rgba(0,0,0,1)] z-50 flex justify-around p-2">
+<a class="flex flex-col items-center p-2 text-on-surface hover:bg-surface-container rounded-DEFAULT transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+</a>
+<a class="flex flex-col items-center p-2 text-on-surface hover:bg-surface-container rounded-DEFAULT transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="school">school</span>
+</a>
+<a class="flex flex-col items-center p-2 bg-primary-container text-on-primary-container border-2 border-on-surface shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="grade">grade</span>
+</a>
+</nav>
+</body></html>

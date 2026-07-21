@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EduSpace — Teman Sekelas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --purple-50:#EEEDFE;--purple-200:#AFA9EC;--purple-400:#7F77DD;--purple-600:#534AB7;--purple-800:#3C3489;--purple-900:#26215C;
+    --teal-50:#E1F5EE;--teal-400:#1D9E75;--teal-600:#0F6E56;--teal-800:#085041;
+    --amber-50:#FAEEDA;--amber-400:#BA7517;--amber-600:#854F0B;--amber-800:#633806;
+    --coral-50:#FAECE7;--coral-400:#D85A30;--coral-600:#993C1D;
+    --blue-50:#E6F1FB;--blue-100:#B5D4F4;--blue-400:#378ADD;--blue-600:#185FA5;--blue-800:#0C447C;
+    --green-50:#EAF3DE;--green-400:#639922;--green-800:#27500A;
+    --red-50:#FCEBEB;--red-400:#E24B4A;--red-600:#A32D2D;--red-800:#791F1F;
+    --bg:#FAFAF8;--surface:#FFFFFF;--surface-2:#F4F3EF;
+    --border:rgba(0,0,0,0.08);--border-med:rgba(0,0,0,0.14);
+    --text-1:#1A1918;--text-2:#5F5E5A;--text-3:#9B9A95;
+    --radius-sm:6px;--radius-md:10px;--radius-lg:14px;--radius-xl:20px;
+    --font-sans:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace;
+    --sidebar-w:220px;--topbar-h:52px;
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#111110;--surface:#1C1B1A;--surface-2:#252422;
+    --border:rgba(255,255,255,0.08);--border-med:rgba(255,255,255,0.14);
+    --text-1:#E8E7E2;--text-2:#9B9A95;--text-3:#5F5E5A;
+    --purple-50:#2A2660;--purple-200:#534AB7;--purple-400:#AFA9EC;
+    --teal-50:#063528;--teal-400:#1D9E75;
+    --amber-50:#3A2200;--amber-400:#EF9F27;
+    --coral-50:#3A1508;--coral-400:#F0997B;
+    --blue-50:#062240;--blue-400:#85B7EB;
+    --green-50:#162400;--green-400:#97C459;
+    --red-50:#3A0A0A;--red-400:#F09595;
+  }}
+  html{font-family:var(--font-sans);background:var(--bg);color:var(--text-1);font-size:14px}
+  body{min-height:100vh}
+  .topbar{position:sticky;top:0;z-index:100;height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--surface);border-bottom:0.5px solid var(--border)}
+  .brand{font-size:15px;font-weight:500;color:var(--text-1);letter-spacing:-.3px}
+  .brand span{color:var(--purple-600)}
+  .role-pill{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--purple-50);color:var(--purple-800)}
+  .topbar-right{display:flex;align-items:center;gap:10px}
+  .icon-btn{width:32px;height:32px;border-radius:var(--radius-sm);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-2);background:transparent;position:relative;transition:background .15s}
+  .icon-btn:hover{background:var(--surface-2)}
+  .notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--red-400)}
+  .av{width:32px;height:32px;border-radius:50%;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;background:var(--purple-50);color:var(--purple-800);cursor:pointer;flex-shrink:0}
+  .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:6px;border-radius:var(--radius-sm)}
+  .hamburger span{display:block;width:18px;height:1.5px;background:var(--text-2);border-radius:2px;transition:.3s}
+  .shell{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:calc(100vh - var(--topbar-h))}
+  .sidebar{background:var(--surface);border-right:0.5px solid var(--border);padding:14px 0;display:flex;flex-direction:column;position:sticky;top:var(--topbar-h);height:calc(100vh - var(--topbar-h));overflow-y:auto;transition:transform .3s ease}
+  .prof-block{padding:10px 14px 14px;border-bottom:0.5px solid var(--border);margin-bottom:8px}
+  .prof-av{width:42px;height:42px;border-radius:50%;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;background:var(--purple-50);color:var(--purple-800);margin-bottom:8px}
+  .prof-name{font-size:13px;font-weight:500;color:var(--text-1)}
+  .prof-sub{font-size:11px;color:var(--text-2);margin-top:2px}
+  .xp-wrap{margin-top:9px}
+  .xp-row{display:flex;justify-content:space-between;font-size:10px;color:var(--text-2);margin-bottom:3px}
+  .xp-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+  .xp-fill{height:100%;border-radius:2px;background:var(--amber-400);width:68%}
+  .ns{font-size:10px;font-weight:500;color:var(--text-3);padding:8px 14px 3px;letter-spacing:.06em}
+  .ni{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12px;color:var(--text-2);cursor:pointer;border-right:2px solid transparent;transition:background .15s,color .15s;text-decoration:none}
+  .ni:hover{background:var(--surface-2);color:var(--text-1)}
+  .ni.active{background:var(--surface-2);color:var(--text-1);font-weight:500;border-right-color:var(--purple-600)}
+  .ni svg{width:14px;height:14px;flex-shrink:0;opacity:.65}
+  .ni.active svg{opacity:1}
+  .ni-badge{margin-left:auto;font-size:10px;padding:1px 6px;border-radius:8px;background:var(--coral-50);color:var(--coral-600)}
+  .main{padding:20px 22px;display:flex;flex-direction:column;gap:16px;background:var(--surface);overflow-x:hidden}
+  .page-title{font-size:16px;font-weight:500;color:var(--text-1)}
+  .page-sub{font-size:12px;color:var(--text-2);margin-top:3px}
+  .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .sec-title{font-size:13px;font-weight:500;color:var(--text-1)}
+  .sec-link{font-size:11px;color:var(--purple-600);cursor:pointer}
+  .sec-link:hover{text-decoration:underline}
+  .badge{font-size:10px;padding:2px 7px;border-radius:7px}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:90;opacity:0;transition:opacity .3s}
+  .overlay.show{display:block;opacity:1}
+  .btn{font-size:12px;padding:6px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--border-med);background:transparent;color:var(--text-1);cursor:pointer;transition:background .15s;white-space:nowrap}
+  .btn:hover{background:var(--surface-2)}
+  .btn-primary{background:var(--purple-600);color:var(--purple-50);border-color:var(--purple-600)}
+  .btn-primary:hover{background:var(--purple-800);border-color:var(--purple-800)}
+  @media(max-width:640px){
+    :root{--sidebar-w:0px}
+    .shell{grid-template-columns:1fr}
+    .sidebar{position:fixed;top:var(--topbar-h);left:0;z-index:95;width:240px;transform:translateX(-100%);height:calc(100vh - var(--topbar-h))}
+    .sidebar.open{transform:translateX(0)}
+    .hamburger{display:flex}
+    .main{padding:14px;gap:13px}
+  }
+  @media(min-width:1280px){:root{--sidebar-w:240px}}
+.search-bar{display:flex;align-items:center;gap:8px;border:0.5px solid var(--border-med);border-radius:var(--radius-md);padding:7px 12px;background:var(--surface)}
+.search-bar input{border:none;background:transparent;font-size:12px;color:var(--text-1);flex:1;outline:none;font-family:var(--font-sans)}
+.search-bar input::placeholder{color:var(--text-3)}
+.search-bar svg{width:13px;height:13px;flex-shrink:0;color:var(--text-3)}
+.students-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stu-card{border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);padding:16px 12px;text-align:center;cursor:pointer;transition:border-color .15s,transform .15s;position:relative}
+.stu-card:hover{border-color:var(--border-med);transform:translateY(-1px)}
+.stu-card.me{border-color:var(--purple-200);background:var(--purple-50)}
+.stu-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;margin:0 auto 8px}
+.stu-name{font-size:12px;font-weight:500;color:var(--text-1)}
+.stu-absen{font-size:10px;color:var(--text-3);margin-top:1px}
+.stu-xp{font-size:11px;font-weight:500;font-family:var(--font-mono);color:var(--purple-600);margin-top:5px}
+.stu-rank{position:absolute;top:8px;right:8px;font-size:10px;font-weight:500;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.rank-1{background:#FAEEDA;color:#633806}
+.rank-2{background:#F1EFE8;color:#444441}
+.rank-3{background:var(--coral-50);color:var(--coral-600)}
+.stu-online{position:absolute;top:12px;left:12px;width:8px;height:8px;border-radius:50%;background:var(--teal-400);border:1.5px solid var(--surface)}
+.stu-tags{display:flex;gap:4px;justify-content:center;margin-top:6px;flex-wrap:wrap}
+.stu-tag{font-size:9px;padding:1px 5px;border-radius:5px}
+@media(max-width:900px){.students-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){.students-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="hamburger" id="menuBtn"><span></span><span></span><span></span></button>
+    <a href="index.html" style="text-decoration:none"><div class="brand">Edu<span>Space</span></div></a><div class="role-pill">Portal Murid</div>
+  </div>
+  <div class="topbar-right">
+    <div class="icon-btn"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 0 1 4 4v2l1.5 2.5H2.5L4 8V6a4 4 0 0 1 4-4zM6.5 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="notif-dot"></div></div>
+    <div class="av">RA</div>
+  </div>
+</header>
+<div class="overlay" id="overlay"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="prof-block">
+    <div class="prof-av">RA</div>
+    <div class="prof-name">Rafi Ananda</div>
+    <div class="prof-sub">Kelas 8A · No. Absen 22</div>
+    <div class="xp-wrap">
+      <div class="xp-row"><span>Level 12 · 2.840 XP</span><span>→ 3.000</span></div>
+      <div class="xp-track"><div class="xp-fill"></div></div>
+    </div>
+  </div>
+  <div class="ns">Menu utama</div>
+  <a class="ni" href="homepage_eduspace.html"><svg viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/></svg>Dashboard</a>
+  <a class="ni" href="kelas_saya.html"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Kelas saya</a>
+  <a class="ni" href="materi_pelajaran.html"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h10M3 12h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Materi pelajaran</a>
+  <a class="ni" href="tugas_kuis.html"><svg viewBox="0 0 16 16" fill="none"><path d="M13 4L6 11l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Tugas & kuis<span class="ni-badge">4</span></a>
+  <a class="ni" href="nilai_saya.html"><svg viewBox="0 0 16 16" fill="none"><path d="M2 12L5 7l3 3 2.5-4 3.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Nilai saya</a>
+  <div class="ns">Komunitas</div>
+  <a class="ni" href="forum_diskusi.html"><svg viewBox="0 0 16 16" fill="none"><path d="M2 11V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7l-3 2v-2H4a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="1.3"/></svg>Forum diskusi</a>
+  <a class="ni" href="teman_sekelas.html"><svg viewBox="0 0 16 16" fill="none"><circle cx="6" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><circle cx="11" cy="5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M1 13c0-2.5 2.2-4 5-4s5 1.5 5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M13 9c1.3.4 2 1.4 2 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Teman sekelas</a>
+  <div class="ns">Akun</div>
+  <a class="ni" href="profil_saya.html"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Profil saya</a>
+</aside>
+<main class="main">
+  <div><div class="page-title">Teman sekelas</div><div class="page-sub">Kelas 8A · 33 siswa · Wali kelas: Bu Siti Rahayu</div></div>
+
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <div class="search-bar" style="flex:1;min-width:180px">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <input placeholder="Cari nama teman...">
+    </div>
+    <select style="font-size:11px;padding:6px 10px;border-radius:var(--radius-sm);border:0.5px solid var(--border-med);background:var(--surface-2);color:var(--text-1)">
+      <option>Urutkan: Peringkat XP</option>
+      <option>Urutkan: Nama</option>
+      <option>Urutkan: No. Absen</option>
+    </select>
+    <div style="font-size:11px;color:var(--text-2);display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--teal-400)"></div>12 online</div>
+  </div>
+
+  <div class="students-grid">
+    <div class="stu-card"><div class="stu-rank rank-1">1</div>
+      <div class="stu-av" style="background:var(--amber-50);color:var(--amber-800)">NF</div>
+      <div class="stu-name">Nadia Fitri</div><div class="stu-absen">No. 18</div>
+      <div class="stu-xp">3.210 XP</div>
+      <div class="stu-tags"><span class="stu-tag" style="background:var(--teal-50);color:var(--teal-800)">Top forum</span></div>
+    </div>
+    <div class="stu-card"><div class="stu-rank rank-2">2</div><div class="stu-online"></div>
+      <div class="stu-av" style="background:var(--teal-50);color:var(--teal-800)">DK</div>
+      <div class="stu-name">Dimas Kurnia</div><div class="stu-absen">No. 5</div>
+      <div class="stu-xp">3.050 XP</div>
+      <div class="stu-tags"><span class="stu-tag" style="background:var(--purple-50);color:var(--purple-800)">Aktif</span></div>
+    </div>
+    <div class="stu-card me"><div class="stu-rank rank-3">3</div><div class="stu-online"></div>
+      <div class="stu-av" style="background:var(--purple-600);color:var(--purple-50)">RA</div>
+      <div class="stu-name">Rafi Ananda</div><div class="stu-absen">No. 22 · Kamu</div>
+      <div class="stu-xp" style="color:var(--purple-800)">2.840 XP</div>
+      <div class="stu-tags"><span class="stu-tag" style="background:var(--purple-200);color:var(--purple-900)">Kamu</span></div>
+    </div>
+    <div class="stu-card"><div class="stu-online"></div>
+      <div class="stu-av" style="background:var(--coral-50);color:var(--coral-600)">SP</div>
+      <div class="stu-name">Sari Pratiwi</div><div class="stu-absen">No. 26</div>
+      <div class="stu-xp">2.710 XP</div>
+      <div class="stu-tags"><span class="stu-tag" style="background:var(--blue-50);color:var(--blue-800)">Rajin</span></div>
+    </div>
+    <div class="stu-card">
+      <div class="stu-av" style="background:var(--blue-50);color:var(--blue-800)">AR</div>
+      <div class="stu-name">Aldi Rahman</div><div class="stu-absen">No. 2</div>
+      <div class="stu-xp">2.680 XP</div>
+    </div>
+    <div class="stu-card"><div class="stu-online"></div>
+      <div class="stu-av" style="background:var(--green-50);color:var(--green-800)">FH</div>
+      <div class="stu-name">Fitri Handayani</div><div class="stu-absen">No. 7</div>
+      <div class="stu-xp">2.540 XP</div>
+    </div>
+    <div class="stu-card">
+      <div class="stu-av" style="background:var(--amber-50);color:var(--amber-800)">RW</div>
+      <div class="stu-name">Rizky Wijaya</div><div class="stu-absen">No. 24</div>
+      <div class="stu-xp">2.480 XP</div>
+    </div>
+    <div class="stu-card"><div class="stu-online"></div>
+      <div class="stu-av" style="background:var(--purple-50);color:var(--purple-800)">LP</div>
+      <div class="stu-name">Laila Putri</div><div class="stu-absen">No. 13</div>
+      <div class="stu-xp">2.350 XP</div>
+    </div>
+    <div class="stu-card">
+      <div class="stu-av" style="background:var(--coral-50);color:var(--coral-600)">BS</div>
+      <div class="stu-name">Bagas Saputra</div><div class="stu-absen">No. 3</div>
+      <div class="stu-xp">2.210 XP</div>
+    </div>
+    <div class="stu-card"><div class="stu-online"></div>
+      <div class="stu-av" style="background:var(--blue-50);color:var(--blue-800)">WA</div>
+      <div class="stu-name">Windi Astuti</div><div class="stu-absen">No. 31</div>
+      <div class="stu-xp">2.180 XP</div>
+    </div>
+    <div class="stu-card">
+      <div class="stu-av" style="background:var(--teal-50);color:var(--teal-800)">MR</div>
+      <div class="stu-name">Muhammad Rizal</div><div class="stu-absen">No. 16</div>
+      <div class="stu-xp">2.050 XP</div>
+    </div>
+    <div class="stu-card">
+      <div class="stu-av" style="background:var(--green-50);color:var(--green-800)">AN</div>
+      <div class="stu-name">Anisa Nur</div><div class="stu-absen">No. 1</div>
+      <div class="stu-xp">1.980 XP</div>
+    </div>
+  </div>
+  <div style="text-align:center;font-size:11px;color:var(--text-3);padding:8px 0">Menampilkan 12 dari 33 siswa · <span style="color:var(--purple-600);cursor:pointer">Tampilkan semua</span></div>
+</main>
+</div>
+<script>
+const btn=document.getElementById('menuBtn'),sb=document.getElementById('sidebar'),ov=document.getElementById('overlay');
+function open(){sb.classList.add('open');ov.classList.add('show')}
+function close(){sb.classList.remove('open');ov.classList.remove('show')}
+btn.addEventListener('click',()=>sb.classList.contains('open')?close():open());
+ov.addEventListener('click',close);
+document.querySelectorAll('.ni').forEach(n=>{if(n.href&&n.href.includes(location.pathname.split('/').pop()))n.classList.add('active')});
+</script>
+
+<script src="auth.js"></script></body></html>
+

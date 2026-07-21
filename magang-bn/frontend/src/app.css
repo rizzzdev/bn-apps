@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #22C55E;
+  --color-secondary: #1E293B;
+  --color-error: #ba1a1a;
+  --color-warning: #facc15;
+  --color-success: #10b981;
+  --color-surface: #ffffff;
+  --color-on-background: #0f172a;
+  --color-on-surface: #0f172a;
+
+  --font-body: 'Inter', sans-serif;
+  --font-headline: 'Hanken Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --shadow-neo: 8px 8px 0px 0px #0f172a;
+  --shadow-neo-sm: 4px 4px 0px 0px #0f172a;
+  --shadow-neo-xs: 2px 2px 0px 0px #0f172a;
+}
+
+body {
+  @apply font-body bg-[#f3f4f6] text-on-background antialiased;
+}
+
+/* Hide scrollbar for clean neo-brutalist look if needed */
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-left: 2px solid #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #0f172a;
+}
