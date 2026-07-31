@@ -3,7 +3,6 @@ import { CreateMajorDto, UpdateMajorDto } from '@/modules/major/domain';
 import { BadRequestError, NotFoundError } from '@/errors';
 import { prisma } from '@/database';
 import { withCache, clearCachePattern, setCache } from '@/utils/cache';
-import { sendWebhook } from '@/utils/webhook';
 
 export class MajorService {
   constructor(private repository: MajorRepository) {}
@@ -43,7 +42,6 @@ export class MajorService {
     const created = await this.repository.create(data);
     await clearCachePattern('major:all:*');
     await setCache(`major:id:${created.id}`, created, 600);
-    sendWebhook('majors', created);
     return created;
   }
 
@@ -53,7 +51,6 @@ export class MajorService {
     const updated = await this.repository.update(id, data);
     await clearCachePattern('major:all:*');
     await setCache(`major:id:${id}`, updated, 600);
-    sendWebhook('majors', updated);
     return updated;
   }
 
@@ -64,8 +61,71 @@ export class MajorService {
     const deleted = await this.repository.softDelete(id);
     await clearCachePattern('major:all:*');
     await clearCachePattern(`major:id:${id}`);
-    sendWebhook('majors', deleted);
     return deleted;
+  }
+
+  async bulkCreate(data: { code: string; name: string }[]) {
+    const uniqueData = [];
+    const seenCodes = new Set<string>();
+    const seenNames = new Set<string>();
+    const failedRows = [];
+
+    for (const item of data) {
+      if (!item.code || !item.name) {
+        failedRows.push({ ...item, reason: 'Kode atau Nama kosong' });
+        continue;
+      }
+      if (seenCodes.has(item.code) || seenNames.has(item.name)) {
+        failedRows.push({ ...item, reason: 'Duplikat kode/nama di dalam file' });
+        continue;
+      }
+      seenCodes.add(item.code);
+      seenNames.add(item.name);
+      uniqueData.push(item);
+    }
+
+    if (uniqueData.length > 0) {
+      const existingCodes = await prisma.major.findMany({
+        where: { code: { in: uniqueData.map(d => d.code) }, deletedAt: null },
+        select: { code: true }
+      });
+      const existingNames = await prisma.major.findMany({
+        where: { name: { in: uniqueData.map(d => d.name) }, deletedAt: null },
+        select: { name: true }
+      });
+
+      const existingCodeSet = new Set(existingCodes.map(c => c.code));
+      const existingNameSet = new Set(existingNames.map(n => n.name));
+
+      const toInsert = [];
+      for (const item of uniqueData) {
+        if (existingCodeSet.has(item.code)) {
+          failedRows.push({ ...item, reason: 'Kode sudah ada di database' });
+        } else if (existingNameSet.has(item.name)) {
+          failedRows.push({ ...item, reason: 'Nama sudah ada di database' });
+        } else {
+          toInsert.push(item);
+        }
+      }
+
+      if (toInsert.length > 0) {
+        await prisma.major.createMany({ data: toInsert });
+
+        await clearCachePattern('major:all:*');
+
+        const inserted = await prisma.major.findMany({
+          where: { code: { in: toInsert.map(i => i.code) }, deletedAt: null }
+        });
+
+        for (const item of inserted) {
+          await setCache(`major:id:${item.id}`, item, 600);
+        }
+
+        return { successCount: toInsert.length, failedRows };
+      }
+    }
+
+    return { successCount: 0, failedRows };
   }
 
   async getBatchByIds(ids: string[]) {
@@ -79,19 +139,18 @@ export class MajorService {
     return prisma.$transaction(async (tx) => {
       const items = await tx.major.findMany({ where: { id: { in: ids }, deletedAt: null } });
       if (items.length !== ids.length) throw new NotFoundError('Beberapa data tidak ditemukan');
-      
+
       const classes = await tx.class.findFirst({ where: { majorId: { in: ids }, deletedAt: null } });
       if (classes) throw new BadRequestError('Cannot delete Major because it still has active Classes.');
-      
+
       await tx.major.updateMany({ where: { id: { in: ids } }, data: { deletedAt: new Date() } });
-      
+
       const deletedItems = await tx.major.findMany({ where: { id: { in: ids } } });
       await clearCachePattern('major:all:*');
       for (const item of deletedItems) {
         await clearCachePattern(`major:id:${item.id}`);
-        sendWebhook('majors', item);
       }
-      
+
       return true;
     });
   }

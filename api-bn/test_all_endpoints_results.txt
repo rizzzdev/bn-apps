@@ -1,0 +1,263 @@
+
+🩺  BN-APPS API ENDPOINT SMOKE TEST
+    Run as testtest@test.com (super_admin) + 3 role users
+
+🔐  Admin login OK  roles=["super_admin"]  userId=0a66e8b1-3ff3-41d3-8c56-5b7638f61ad4
+  👤 student registered + logged in → e2e_student_7d1ba3cf@test.com  token=FAIL
+  👤 teacher registered + logged in → e2e_teacher_711a7198@test.com  token=FAIL
+  👤 mentor  registered + logged in → e2e_mentor_82cca804@test.com  token=FAIL
+
+========== SEED (link role users ↔ master/internship profiles) ==========
+
+========== PUBLIC ==========
+  ✅ GET    /health (app)                                                → 200  [app health endpoint]
+  ⚪ GET    /health (master?)                                            → null  [n/a]
+
+========== AUTH ==========
+  ✅ POST   /auth/login                                                  → 200  [public]
+  ❌ GET    /auth/me                                                     → 404  [sentri]
+  ❌ POST   /auth/refresh                                                → 401  [sentri]
+  ✅ POST   /auth/logout                                                 → 200  [sentri]
+
+🔐  Admin login OK  roles=["super_admin"]  userId=0a66e8b1-3ff3-41d3-8c56-5b7638f61ad4
+  ✅ GET    /auth/users                                                  → 200  [super_admin]
+  ✅ GET    /auth/users/roles                                            → 200
+  ✅ GET    /auth/users/0a66e8b1-3ff3-41d3-8c56-5b7638f61ad4             → 200
+  ✅ PUT    /auth/users/:id/roles                                        → 200
+  ✅ POST   /auth/register (new)                                         → 201  [fresh email]
+
+========== MASTER ==========
+  ✅ GET    /master/academic-years                                       → 200
+  ✅ POST   /master/academic-years                                       → 201  [inactive year allowed; 400 if conflict]
+  ✅ GET    /master/academic-years/f813fb11-b00a-40dc-b0c1-0cba6b95e6f1?includeSemesters=true → 200
+  ✅ PUT    /master/academic-years/f813fb11-b00a-40dc-b0c1-0cba6b95e6f1  → 200
+  ✅ DELETE /master/academic-years/f813fb11-b00a-40dc-b0c1-0cba6b95e6f1  → 200
+  ✅ POST   /master/academic-years/batch                                 → 200
+  ❌ DELETE /master/academic-years/bulk                                  → 400
+  ✅ GET    /master/semesters                                            → 200
+  ❌ POST   /master/semesters                                            → 400  [duplicate semester → 400 is OK]
+  ✅ POST   /master/semesters/batch                                      → 200
+  ❌ DELETE /master/semesters/bulk                                       → 400
+  ✅ POST   /master/majors                                               → 201
+  ✅ GET    /master/majors                                               → 200
+  ✅ GET    /master/majors/template                                      → 200
+  ✅ POST   /master/majors/batch                                         → 200
+  ✅ GET    /master/majors/21747b26-bf50-4ee0-ac30-5ffa7b050eb2?includeClasses=true → 200
+  ✅ PUT    /master/majors/21747b26-bf50-4ee0-ac30-5ffa7b050eb2          → 200
+  ✅ DELETE /master/majors/21747b26-bf50-4ee0-ac30-5ffa7b050eb2          → 200
+  ❌ DELETE /master/majors/bulk                                          → 400
+  ✅ POST   /master/classes                                              → 201
+  ✅ GET    /master/classes/b8c138b7-0034-4367-b282-35fb66c10284?includeMajor=true → 200
+  ✅ PUT    /master/classes/b8c138b7-0034-4367-b282-35fb66c10284         → 200
+  ✅ DELETE /master/classes/b8c138b7-0034-4367-b282-35fb66c10284         → 200
+  ✅ GET    /master/classes                                              → 200
+  ✅ GET    /master/classes/template                                     → 200
+  ✅ POST   /master/classes/batch                                        → 200
+  ❌ DELETE /master/classes/bulk                                         → 400
+  ✅ POST   /master/subjects                                             → 201
+  ✅ GET    /master/subjects/beadf3e5-c84e-41fc-9da6-b1d0011547dc        → 200
+  ✅ PUT    /master/subjects/beadf3e5-c84e-41fc-9da6-b1d0011547dc        → 200
+  ✅ DELETE /master/subjects/beadf3e5-c84e-41fc-9da6-b1d0011547dc        → 200
+  ✅ GET    /master/subjects                                             → 200
+  ✅ GET    /master/subjects/template                                    → 200
+  ✅ POST   /master/subjects/batch                                       → 200
+  ❌ DELETE /master/subjects/bulk                                        → 400
+  ❌ POST   /master/teachers                                             → 400
+  ✅ GET    /master/teachers                                             → 200
+  ✅ GET    /master/teachers/statistics                                  → 200
+  ✅ GET    /master/teachers/bulk/excel-template                         → 200
+  ❌ POST   /master/students                                             → 400
+  ✅ GET    /master/students                                             → 200
+  ✅ GET    /master/students/statistic                                   → 200
+  ✅ GET    /master/students/bulk/excel-template                         → 200
+  ✅ POST   /master/attachments                                          → 201  [multipart]
+  ✅ GET    /master/attachments/file/1785341524939-5o2ezf.txt            → 200
+  ✅ POST   /master/attachments/batch                                    → 200
+  ✅ DELETE /master/attachments/6c7c5167-071e-4be5-9f72-a985879b3ff6     → 200
+  ✅ DELETE /master/attachments/bulk                                     → 200
+  ✅ POST   /master/applications                                         → 201
+  ✅ GET    /master/applications/720a2ec9-e09f-4cad-874a-cde59e13e715    → 200
+  ✅ PUT    /master/applications/720a2ec9-e09f-4cad-874a-cde59e13e715    → 200
+  ✅ POST   /master/applications/batch                                   → 200
+  ✅ DELETE /master/applications/720a2ec9-e09f-4cad-874a-cde59e13e715    → 200
+  ✅ DELETE /master/applications/bulk                                    → 200
+  ✅ GET    /master/dashboard/summary                                    → 200
+
+========== ACADEMIC ==========
+  ✅ GET    /academic/major-students                                     → 200
+  ❌ POST   /academic/major-students                                     → 500  [duplicate active major-student → 400 is OK]
+  ✅ PATCH  /academic/major-students/bulk/status                         → 200
+  ✅ DELETE /academic/major-students/bulk                                → 200
+  ✅ GET    /academic/class-students                                     → 200
+  ❌ POST   /academic/class-students                                     → 400  [duplicate → 400 is OK]
+  ✅ PATCH  /academic/class-students/bulk/status                         → 200
+  ✅ DELETE /academic/class-students/bulk                                → 200
+  ✅ GET    /academic/homeroom-teachers                                  → 200
+  ❌ POST   /academic/homeroom-teachers                                  → 500
+  ✅ PATCH  /academic/homeroom-teachers/bulk/status                      → 200
+  ✅ DELETE /academic/homeroom-teachers/bulk                             → 200
+  ✅ GET    /academic/subject-teachers                                   → 200
+  ❌ POST   /academic/subject-teachers                                   → 500
+  ✅ PATCH  /academic/subject-teachers/bulk/status                       → 200
+  ✅ DELETE /academic/subject-teachers/bulk                              → 200
+  ✅ GET    /academic/teacher-picket-schedules                           → 200
+  ❌ POST   /academic/teacher-picket-schedules                           → 500
+  ✅ POST   /academic/teacher-picket-schedules/bulk                      → 201
+  ✅ PATCH  /academic/teacher-picket-schedules/bulk/status               → 200
+  ✅ DELETE /academic/teacher-picket-schedules/bulk                      → 200
+  ✅ GET    /academic/major-heads                                        → 200
+  ❌ POST   /academic/major-heads                                        → 500
+  ✅ DELETE /academic/major-heads/bulk                                   → 200
+  ✅ PATCH  /academic/major-heads/bulk/status                            → 200
+  ✅ GET    /academic/lesson-hours                                       → 200
+  ✅ POST   /academic/lesson-hours                                       → 201
+  ✅ GET    /academic/lesson-hours/0ed7a4ac-bece-457d-b495-7ca72147002f  → 200
+  ✅ PATCH  /academic/lesson-hours/0ed7a4ac-bece-457d-b495-7ca72147002f  → 200
+  ✅ PATCH  /academic/lesson-hours/bulk/status                           → 200
+  ✅ DELETE /academic/lesson-hours/bulk                                  → 200
+  ❌ POST   /academic/lesson-hours/bulk                                  → 404
+  ✅ GET    /academic/lesson-schedules                                   → 200
+  ❌ POST   /academic/lesson-schedules                                   → 500
+  ❌ POST   /academic/lesson-schedules/bulk                              → 500
+  ✅ PATCH  /academic/lesson-schedules/bulk/status                       → 200
+  ✅ DELETE /academic/lesson-schedules/bulk                              → 200
+  ✅ GET    /academic/class-subject-requirements                         → 200
+  ❌ POST   /academic/class-subject-requirements                         → 500
+  ❌ POST   /academic/class-subject-requirements/bulk                    → 400
+  ✅ DELETE /academic/class-subject-requirements/bulk                    → 200
+  ✅ DELETE /academic/class-subject-requirements/clear                   → 200
+  ✅ GET    /academic/teacher-unavailabilities                           → 200
+  ❌ POST   /academic/teacher-unavailabilities                           → 500
+  ❌ POST   /academic/teacher-unavailabilities/bulk                      → 500
+  ✅ DELETE /academic/teacher-unavailabilities/bulk                      → 200
+  ❌ POST   /academic/lesson-schedules/generator/preview                 → 400
+  ❌ POST   /academic/lesson-schedules/generator/commit                  → 400
+
+========== INTERNSHIP ==========
+  ✅ GET    /internship/activities                                       → 200
+  ✅ POST   /internship/activities                                       → 201
+  ✅ GET    /internship/activities/cms6a8xw1000jjkbwsqw7wo3v             → 200
+  ✅ PUT    /internship/activities/cms6a8xw1000jjkbwsqw7wo3v             → 200
+  ✅ DELETE /internship/activities/cms6a8xw1000jjkbwsqw7wo3v             → 200
+  ✅ GET    /internship/companies                                        → 200
+  ✅ POST   /internship/companies                                        → 201
+  ✅ GET    /internship/companies/excel/template                         → 200
+  ✅ GET    /internship/companies/cms6a8xy6000kjkbwifjqlzx6              → 200
+  ✅ PUT    /internship/companies/cms6a8xy6000kjkbwifjqlzx6              → 200
+  ✅ POST   /internship/companies/bulk                                   → 201
+  ✅ POST   /internship/companies/bulk-delete                            → 200
+  ✅ GET    /internship/industry-mentors                                 → 200
+  ❌ POST   /internship/industry-mentors                                 → 400
+  ✅ GET    /internship/industry-mentors/excel/template                  → 200
+  ✅ GET    /internship/students                                         → 200
+  ✅ GET    /internship/teachers                                         → 200
+  ✅ GET    /internship/attendances                                      → 200
+  ✅ GET    /internship/internship-placements                            → 200
+  ✅ GET    /internship/daily-logbooks                                   → 200
+  ✅ GET    /internship/assessments                                      → 200
+  ❌ POST   /internship/internship-placements/bulk                       → 400
+  ❌ POST   /internship/internship-placements/bulk-delete                → 400
+  ❌ POST   /internship/internship-placements/bulk-update-status         → 400
+  ❌ POST   /internship/internship-placements/bulk-update-assessable     → 400
+  ❌ PUT    /internship/internship-placements/:id/certificate            → 404  [404 for non-existent id acceptable]
+  ❌ POST   /internship/daily-logbooks/bulk-delete                       → 400
+  ❌ POST   /internship/daily-logbooks/:id/reviews                       → 400
+  ❌ PUT    /internship/assessments/:id/certificate                      → 500
+  ❌ DELETE /internship/assessments/:id/certificate                      → 404
+  ✅ POST   /internship/attachments                                      → 201  [multipart]
+  ❌ GET    /internship/attachments/file/:filename                       → 404
+  ❌ POST   /internship/attachments/bulk-delete                          → 500
+  ✅ DELETE /internship/attachments/cms6a8yaq000qjkbwp7623ssb            → 200
+  ✅ GET    /internship/dashboard/admin                                  → 200
+  ❌ GET    /internship/dashboard/profile                                → 400  [super → "Super Admin"]
+  ❌ GET    /internship/dashboard/student                                → 403  [student token, student role-linked]
+  ❌ GET    /internship/dashboard/teacher                                → 400  [teacher token, teacher role-linked]
+  ❌ GET    /internship/dashboard/mentor                                 → 400  [mentor token, mentor role-linked]
+
+========== LEARN ==========
+  ❌ POST   /learn/materials                                             → 403
+  ✅ GET    /learn/materials/class/2732a66e-21bd-43b1-bd66-f6f529f80327  → 200
+  ❌ POST   /learn/materials/delete-bulk                                 → 403
+  ❌ POST   /learn/assignments                                           → 403
+  ❌ GET    /learn/assignments                                           → 403
+  ✅ GET    /learn/assignments/class/2732a66e-21bd-43b1-bd66-f6f529f80327 → 200
+  ❌ POST   /learn/assignments/delete-bulk                               → 403
+  ❌ POST   /learn/quizzes                                               → 403
+  ❌ POST   /learn/quizzes/bulk                                          → 403
+  ✅ GET    /learn/quizzes/class/2732a66e-21bd-43b1-bd66-f6f529f80327    → 200
+  ❌ POST   /learn/quizzes/delete-bulk                                   → 403
+  ❌ GET    /learn/grades/class/2732a66e-21bd-43b1-bd66-f6f529f80327/my  → 403
+  ❌ GET    /learn/grades/class/2732a66e-21bd-43b1-bd66-f6f529f80327     → 403
+  ❌ GET    /learn/dashboard/teacher/pending-grading                     → 403
+  ❌ GET    /learn/dashboard/student/pending-items                       → 403
+  ✅ POST   /learn/attachments/upload                                    → 201  [multipart (auth required)]
+  ✅ POST   /learn/attachments/batch                                     → 200
+  ✅ DELETE /learn/attachments/0df2c398-3bdd-4a4f-8005-f1ba5dab9dc4      → 200
+  ✅ POST   /learn/attachments/delete-bulk                               → 200
+
+================== FINAL SUMMARY ==================
+ Total endpoints tested  : 172
+ ✅ Expected 2xx          : 118
+ 🟡 2xx but not expected  : 0
+ ⚠️  4xx                  : 41
+ ❌ 5xx                   : 12
+ ⚪  network/connection   : 0
+======================================================
+
+Unexpected statuses:
+  [404] GET /auth/me  sentri
+  [401] POST /auth/refresh  sentri
+  [400] DELETE /master/academic-years/bulk  
+  [400] POST /master/semesters  duplicate semester → 400 is OK
+  [400] DELETE /master/semesters/bulk  
+  [400] DELETE /master/majors/bulk  
+  [400] DELETE /master/classes/bulk  
+  [400] DELETE /master/subjects/bulk  
+  [400] POST /master/teachers  
+  [400] POST /master/students  
+  [500] POST /academic/major-students  duplicate active major-student → 400 is OK
+  [400] POST /academic/class-students  duplicate → 400 is OK
+  [500] POST /academic/homeroom-teachers  
+  [500] POST /academic/subject-teachers  
+  [500] POST /academic/teacher-picket-schedules  
+  [500] POST /academic/major-heads  
+  [404] POST /academic/lesson-hours/bulk  
+  [500] POST /academic/lesson-schedules  
+  [500] POST /academic/lesson-schedules/bulk  
+  [500] POST /academic/class-subject-requirements  
+  [400] POST /academic/class-subject-requirements/bulk  
+  [500] POST /academic/teacher-unavailabilities  
+  [500] POST /academic/teacher-unavailabilities/bulk  
+  [400] POST /academic/lesson-schedules/generator/preview  
+  [400] POST /academic/lesson-schedules/generator/commit  
+  [400] POST /internship/industry-mentors  
+  [400] POST /internship/internship-placements/bulk  
+  [400] POST /internship/internship-placements/bulk-delete  
+  [400] POST /internship/internship-placements/bulk-update-status  
+  [400] POST /internship/internship-placements/bulk-update-assessable  
+  [404] PUT /internship/internship-placements/:id/certificate  404 for non-existent id acceptable
+  [400] POST /internship/daily-logbooks/bulk-delete  
+  [400] POST /internship/daily-logbooks/:id/reviews  
+  [500] PUT /internship/assessments/:id/certificate  
+  [404] DELETE /internship/assessments/:id/certificate  
+  [404] GET /internship/attachments/file/:filename  
+  [500] POST /internship/attachments/bulk-delete  
+  [400] GET /internship/dashboard/profile  super → "Super Admin"
+  [403] GET /internship/dashboard/student  student token, student role-linked
+  [400] GET /internship/dashboard/teacher  teacher token, teacher role-linked
+  [400] GET /internship/dashboard/mentor  mentor token, mentor role-linked
+  [403] POST /learn/materials  
+  [403] POST /learn/materials/delete-bulk  
+  [403] POST /learn/assignments  
+  [403] GET /learn/assignments  
+  [403] POST /learn/assignments/delete-bulk  
+  [403] POST /learn/quizzes  
+  [403] POST /learn/quizzes/bulk  
+  [403] POST /learn/quizzes/delete-bulk  
+  [403] GET /learn/grades/class/2732a66e-21bd-43b1-bd66-f6f529f80327/my  
+  [403] GET /learn/grades/class/2732a66e-21bd-43b1-bd66-f6f529f80327  
+  [403] GET /learn/dashboard/teacher/pending-grading  
+  [403] GET /learn/dashboard/student/pending-items  
+
+🧹  Cleanup…
+✅  Cleanup done.

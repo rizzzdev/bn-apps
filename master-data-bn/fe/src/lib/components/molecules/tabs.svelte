@@ -17,15 +17,15 @@
 </script>
 
 <div class="flex flex-col {className}">
-	<div class="border-b-3 border-on-background flex overflow-x-auto no-scrollbar bg-surface-container-low rounded-t-lg border-x-[3px] border-t-3">
+	<div class="flex overflow-x-auto no-scrollbar border-3 border-on-background rounded-lg bg-surface w-fit shadow-[4px_4px_0_0_#000]">
 		{#each tabs as tab, i}
 			<button
 				type="button"
-				class="flex items-center gap-xs px-md py-sm font-label-lg transition-colors border-r-3 border-on-background whitespace-nowrap outline-none
+				class="flex items-center justify-center gap-xs px-lg py-sm font-label-lg transition-colors whitespace-nowrap outline-none flex-1 min-w-[120px]
+                    {i !== 0 ? 'border-l-3 border-on-background' : ''}
 					{activeTab === tab.id 
-						? 'bg-primary text-on-primary font-bold shadow-[inset_0px_-6px_0px_0px_rgba(0,0,0,1)]' 
-						: 'bg-surface text-on-surface hover:bg-secondary hover:text-on-secondary'}
-                    {i === tabs.length - 1 ? 'border-r-0' : ''}"
+						? 'bg-primary text-on-primary font-bold' 
+						: 'bg-transparent text-on-surface hover:bg-secondary hover:text-on-secondary'}"
 				onclick={() => selectTab(tab.id)}
 			>
 				{#if tab.icon}

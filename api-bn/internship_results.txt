@@ -1,0 +1,107 @@
+
+======================================================================
+  COMPREHENSIVE INTERNSHIP API TEST
+  Started at: 2026-07-29T16:07:58.902Z
+======================================================================
+
+======================================================================
+  1. AUTH - Login
+======================================================================
+  ✅ Login successful (roles: ["super_admin"])
+
+======================================================================
+  2. ACTIVITIES (/activities)
+======================================================================
+  ✅ GET Activities list => 200
+  ✅ POST Activities => 201
+  ℹ️  Created activity: cms6a3np...
+  ✅ GET Activities by ID => 200
+  ✅ PUT Activities => 200
+
+======================================================================
+  3. COMPANIES (/companies)
+======================================================================
+  ✅ GET Companies list => 200
+  ✅ POST Companies => 201
+  ℹ️  Created company: cms6a3nu...
+  ✅ POST Companies => 201
+  ✅ GET Companies template => 200
+  ✅ GET Companies by ID => 200
+  ✅ PUT Companies => 200
+
+======================================================================
+  4. INDUSTRY MENTORS (/industry-mentors)
+======================================================================
+  ✅ GET IndustryMentors list => 200
+  ✅ POST IndustryMentors => 201
+  ℹ️  Created mentor: cms6a3o7...
+  ✅ GET IndustryMentors template => 200
+  ✅ GET IndustryMentors by ID => 200
+  ✅ PUT IndustryMentors => 200
+
+======================================================================
+  5. INTERNSHIP PLACEMENTS (/internship-placements)
+======================================================================
+  ✅ GET InternshipPlacements list => 200
+
+======================================================================
+  6. ATTENDANCE (/attendances)
+======================================================================
+  ✅ GET Attendances list => 200
+
+======================================================================
+  7. TEACHERS (/teachers)
+======================================================================
+  ✅ GET InternshipTeachers list => 200
+
+======================================================================
+  8. STUDENTS (/students)
+======================================================================
+  ✅ GET InternshipStudents list => 200
+
+======================================================================
+  9. DASHBOARD (/dashboard)
+======================================================================
+  ✅ GET Dashboard admin => 200
+  ❌ GET Dashboard student => 403 - User is not a student in internship system
+  ❌ GET Dashboard teacher => 400 - User email not found in request
+  ❌ GET Dashboard mentor => 400 - User email not found in request
+  ❌ GET Dashboard profile => 400 - User email not found in request
+
+======================================================================
+  10. ATTACHMENTS (/attachments)
+======================================================================
+  ✅ GET InternshipAttachments list => 200
+
+======================================================================
+  11. DAILY LOGBOOKS (/daily-logbooks)
+======================================================================
+  ✅ GET DailyLogbooks list => 200
+
+======================================================================
+  12. ASSESSMENTS (/assessments)
+======================================================================
+  ✅ GET Assessments list => 200
+
+======================================================================
+  13. CLEANUP
+======================================================================
+  ✅ DELETE Activities => 200
+  ✅ DELETE IndustryMentors => 200
+  ✅ DELETE Companies => 200
+  ✅ DELETE Companies => 200
+
+======================================================================
+  TEST SUMMARY
+======================================================================
+  Total tests:  31
+  ✅ Passed:    27
+  ❌ Failed:    4
+  ⚠️  SOME TESTS FAILED!
+
+  Tested modules: activities, companies, industry-mentors,
+                   internship-placements, attendances, teachers,
+                   students, dashboard, attachments, assessments,
+                   daily-logbooks
+  Finished at: 2026-07-29T16:08:00.563Z
+

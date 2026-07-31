@@ -7,8 +7,9 @@
 	import { apiClient } from '$lib/utils/api';
 	import * as XLSX from 'xlsx';
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import { Tabs } from '$lib/components/molecules';
 
-	let { isCreateOpen = $bindable(false), isBulkCreateOpen = $bindable(false), handleExport = $bindable() } = $props<{ isCreateOpen?: boolean; isBulkCreateOpen?: boolean, handleExport?: () => void }>();
+	let { isCreateOpen = $bindable(false), handleExport = $bindable() } = $props<{ isCreateOpen?: boolean, handleExport?: () => void }>();
 
 	let isEditOpen = $state(false);
 	let isDeleteOpen = $state(false);
@@ -55,11 +56,12 @@
 		status: ''
 	};
 
-	// Picture state — managed via FormField type="image"
 	let pictureFile = $state<File | null>(null);
 	let picturePreview = $state<string>('');
 	let isPictureDeleted = $state(false);
 	let existingImageUrl = $state<string | null>(null);
+
+	let activeTabId = $state('single');
 
 	$effect(() => {
 		if (!isCreateOpen && !isEditOpen) {
@@ -68,6 +70,8 @@
 			picturePreview = '';
 			isPictureDeleted = false;
 			existingImageUrl = null;
+			activeTabId = 'single';
+			uploadedFile = null;
 		}
 	});
 
@@ -313,7 +317,7 @@
 			}
 			
 			toast.success('Data guru berhasil ditambahkan dari file excel');
-			isBulkCreateOpen = false;
+			isCreateOpen = false;
 			uploadedFile = null;
 			fetchTeachers(currentPage, limit);
 		} catch (error) {
@@ -478,36 +482,61 @@
 />
 
 <Modal bind:isOpen={isCreateOpen} title="Tambah Guru">
-	<div class="flex flex-col gap-sm">
-		<FormField id="fullname-create" label="Nama Lengkap *" bind:value={formData.fullname} placeholder="Masukkan nama lengkap tanpa gelar" />
-		
-		<FormField id="picture-create" label="Foto Profil" type="image" bind:file={pictureFile} bind:preview={picturePreview}
-			markedForDeletion={false}
-			onDeleteImage={() => {}}
-			onRestoreImage={() => {}}
-		/>
+	<Tabs 
+		tabs={[
+			{ id: 'single', label: 'Single Create', icon: 'add' }, 
+			{ id: 'bulk', label: 'Import Excel', icon: 'upload_file' }
+		]} 
+		bind:activeTab={activeTabId} 
+		class="mb-md"
+	/>
 
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
-			<FormField id="prefix-create" label="Gelar Depan" bind:value={formData.prefixTitle} placeholder="Contoh: Dr., Ir." />
-			<FormField id="suffix-create" label="Gelar Belakang" bind:value={formData.suffixTitle} placeholder="Contoh: S.Pd., M.Si." />
-			<FormField id="nip-create" label="NIP" bind:value={formData.nip} placeholder="Masukkan NIP" />
-			<FormField id="nik-create" label="NIK" bind:value={formData.nik} placeholder="Masukkan NIK" />
-			<SelectField id="gender-create" label="Jenis Kelamin" bind:value={formData.gender} options={[{value: 'L', label: 'Laki-laki'}, {value: 'P', label: 'Perempuan'}]} />
-			<FormField id="birthplace-create" label="Tempat Lahir" bind:value={formData.birthplace} placeholder="Tempat lahir" />
-			<FormField id="birthdate-create" label="Tanggal Lahir" bind:value={formData.birthdate} type="date" />
-			<SelectField id="religion-create" label="Agama" bind:value={formData.religion} options={[{value: 'Islam', label: 'Islam'}, {value: 'Kristen', label: 'Kristen'}, {value: 'Katolik', label: 'Katolik'}, {value: 'Hindu', label: 'Hindu'}, {value: 'Buddha', label: 'Buddha'}, {value: 'Konghucu', label: 'Konghucu'}]} />
-			<FormField id="ethnic-create" label="Suku" bind:value={formData.ethnicGroup} placeholder="Contoh: Jawa, Sunda" />
-			<FormField id="height-create" label="Tinggi Badan (cm)" bind:value={formData.height} type="number" />
-			<FormField id="weight-create" label="Berat Badan (kg)" bind:value={formData.weight} type="number" />
-			<FormField id="phone-create" label="Nomor Telepon" bind:value={formData.phoneNumber} placeholder="Contoh: 0812..." />
-			<FormField id="email-create" label="Email *" bind:value={formData.email} type="email" placeholder="email@contoh.com" />
-			<FormField id="password-create" label="Password *" bind:value={formData.password} type="password" placeholder="Minimal 8 karakter" />
+	{#if activeTabId === 'single'}
+		<div class="flex flex-col gap-sm">
+			<FormField id="fullname-create" label="Nama Lengkap *" bind:value={formData.fullname} placeholder="Masukkan nama lengkap tanpa gelar" />
+			
+			<FormField id="picture-create" label="Foto Profil" type="image" bind:file={pictureFile} bind:preview={picturePreview}
+				markedForDeletion={false}
+				onDeleteImage={() => {}}
+				onRestoreImage={() => {}}
+			/>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+				<FormField id="prefix-create" label="Gelar Depan" bind:value={formData.prefixTitle} placeholder="Contoh: Dr., Ir." />
+				<FormField id="suffix-create" label="Gelar Belakang" bind:value={formData.suffixTitle} placeholder="Contoh: S.Pd., M.Si." />
+				<FormField id="nip-create" label="NIP" bind:value={formData.nip} placeholder="Masukkan NIP" />
+				<FormField id="nik-create" label="NIK" bind:value={formData.nik} placeholder="Masukkan NIK" />
+				<SelectField id="gender-create" label="Jenis Kelamin" bind:value={formData.gender} options={[{value: 'L', label: 'Laki-laki'}, {value: 'P', label: 'Perempuan'}]} />
+				<FormField id="birthplace-create" label="Tempat Lahir" bind:value={formData.birthplace} placeholder="Tempat lahir" />
+				<FormField id="birthdate-create" label="Tanggal Lahir" bind:value={formData.birthdate} type="date" />
+				<SelectField id="religion-create" label="Agama" bind:value={formData.religion} options={[{value: 'Islam', label: 'Islam'}, {value: 'Kristen', label: 'Kristen'}, {value: 'Katolik', label: 'Katolik'}, {value: 'Hindu', label: 'Hindu'}, {value: 'Buddha', label: 'Buddha'}, {value: 'Konghucu', label: 'Konghucu'}]} />
+				<FormField id="ethnic-create" label="Suku" bind:value={formData.ethnicGroup} placeholder="Contoh: Jawa, Sunda" />
+				<FormField id="height-create" label="Tinggi Badan (cm)" bind:value={formData.height} type="number" />
+				<FormField id="weight-create" label="Berat Badan (kg)" bind:value={formData.weight} type="number" />
+				<FormField id="phone-create" label="Nomor Telepon" bind:value={formData.phoneNumber} placeholder="Contoh: 0812..." />
+				<FormField id="email-create" label="Email *" bind:value={formData.email} type="email" placeholder="email@contoh.com" />
+				<FormField id="password-create" label="Password *" bind:value={formData.password} type="password" placeholder="Minimal 8 karakter" />
+			</div>
+			<SelectField id="status-create" label="Status" bind:value={formData.status} options={[{value: 'Aktif', label: 'Aktif'}, {value: 'Tidak_Aktif', label: 'Tidak Aktif'}, {value: 'Pensiun', label: 'Pensiun'}]} />
 		</div>
-		<SelectField id="status-create" label="Status" bind:value={formData.status} options={[{value: 'Aktif', label: 'Aktif'}, {value: 'Tidak_Aktif', label: 'Tidak Aktif'}, {value: 'Pensiun', label: 'Pensiun'}]} />
-	</div>
+	{:else}
+		<div class="flex flex-col gap-sm">
+			<div class="flex justify-between items-center">
+				<p class="font-body-base text-body-base text-on-surface-variant">Unggah file Excel (.xlsx) yang berisi data guru.</p>
+				<Button variant="secondary" class="py-1 px-3 text-sm h-8" onclick={downloadTemplate}>
+					<Icon name="download" class="text-sm mr-1" fill={0} /> Template
+				</Button>
+			</div>
+			<FormField id="excel-bulk" label="File Excel" type="excel" bind:file={uploadedFile} />
+		</div>
+	{/if}
 	{#snippet footer()}
 		<Button variant="secondary" onclick={() => isCreateOpen = false} class="bg-surface text-on-surface hover:bg-surface-variant w-auto">Batal</Button>
-		<Button variant="info" onclick={handleSave}>Simpan</Button>
+		{#if activeTabId === 'single'}
+			<Button variant="info" onclick={handleSave}>Simpan</Button>
+		{:else}
+			<Button variant="info" disabled={!uploadedFile} onclick={handleBulkCreate}>Mulai Impor</Button>
+		{/if}
 	{/snippet}
 </Modal>
 
@@ -560,21 +589,7 @@
 	onConfirm={handleDelete}
 />
 
-<Modal bind:isOpen={isBulkCreateOpen} title="Tambah Masal Guru">
-	<div class="flex flex-col gap-sm">
-		<div class="flex justify-between items-center">
-			<p class="font-body-base text-body-base text-on-surface-variant">Unggah file Excel (.xlsx) yang berisi data guru.</p>
-			<Button variant="secondary" class="py-1 px-3 text-sm h-8" onclick={downloadTemplate}>
-				<Icon name="download" class="text-sm mr-1" fill={0} /> Template
-			</Button>
-		</div>
-		<FormField id="excel-bulk" label="File Excel" type="excel" bind:file={uploadedFile} />
-	</div>
-	{#snippet footer()}
-		<Button variant="secondary" onclick={() => isBulkCreateOpen = false} class="bg-surface text-on-surface hover:bg-surface-variant w-auto">Batal</Button>
-		<Button variant="info" disabled={!uploadedFile} onclick={handleBulkCreate}>Mulai Impor</Button>
-	{/snippet}
-</Modal>
+
 
 <Modal bind:isOpen={isBulkEditOpen} title="Ubah Status Masal">
 	<div class="flex flex-col gap-sm">

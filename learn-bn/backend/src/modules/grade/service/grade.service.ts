@@ -14,7 +14,29 @@ export class GradeService {
       throw new SentriError('FORBIDDEN', 'Anda tidak terdaftar di kelas ini', 403);
     }
 
-    return this.repository.getStudentGradesByClass(classId, studentId);
+    const raw = await this.repository.getStudentGradesByClass(classId, studentId);
+
+    const assignments = raw.assignments.map((sub: any) => {
+      let status = 'not_submitted';
+      if (sub.grade !== null) status = 'graded';
+      else if (sub.fileUrl || sub.content) status = 'pending';
+
+      return {
+        id: sub.assignmentId,
+        title: sub.assignment?.title || 'Unknown',
+        deadline: sub.assignment?.deadline?.toISOString() || sub.createdAt?.toISOString(),
+        grade: sub.grade,
+        status,
+      };
+    });
+
+    const quizzes = raw.quizzes.map((sub: any) => ({
+      id: sub.quizId,
+      title: sub.quiz?.title || 'Unknown',
+      score: sub.score,
+    }));
+
+    return { assignments, quizzes };
   }
 
   async getClassGrades(classId: string, teacherId: string) {

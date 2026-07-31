@@ -22,8 +22,12 @@ export class StudentRepository {
     };
     const students = await prisma.student.findMany({
       where,
+      orderBy: {
+        createdAt: "desc"
+      },
       include: Object.keys(include).length > 0 ? include : undefined,
       ...(take === "all" ? {} : { skip, take }),
+
     });
 
     if (!includeUser) {

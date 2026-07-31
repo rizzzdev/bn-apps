@@ -3,7 +3,6 @@ import { CreateSubjectDto, UpdateSubjectDto } from '@/modules/subject/domain';
 import { BadRequestError, NotFoundError } from '@/errors';
 import { prisma } from '@/database';
 import { withCache, clearCachePattern, setCache } from '@/utils/cache';
-import { sendWebhook } from '@/utils/webhook';
 
 export class SubjectService {
   constructor(private repository: SubjectRepository) {}
@@ -43,7 +42,6 @@ export class SubjectService {
     const created = await this.repository.create(data);
     await clearCachePattern('subject:all:*');
     await setCache(`subject:id:${created.id}`, created, 600);
-    sendWebhook('subjects', created);
     return created;
   }
 
@@ -53,7 +51,6 @@ export class SubjectService {
     const updated = await this.repository.update(id, data);
     await clearCachePattern('subject:all:*');
     await setCache(`subject:id:${id}`, updated, 600);
-    sendWebhook('subjects', updated);
     return updated;
   }
 
@@ -62,7 +59,6 @@ export class SubjectService {
     const deleted = await this.repository.softDelete(id);
     await clearCachePattern('subject:all:*');
     await clearCachePattern(`subject:id:${id}`);
-    sendWebhook('subjects', deleted);
     return deleted;
   }
 
@@ -78,16 +74,78 @@ export class SubjectService {
       const items = await tx.subject.findMany({ where: { id: { in: ids }, deletedAt: null } });
       if (items.length !== ids.length) throw new NotFoundError('Beberapa data tidak ditemukan');
       await tx.subject.updateMany({ where: { id: { in: ids } }, data: { deletedAt: new Date() } });
-      
+
       const deletedItems = await tx.subject.findMany({ where: { id: { in: ids } } });
       await clearCachePattern('subject:all:*');
       for (const item of deletedItems) {
         await clearCachePattern(`subject:id:${item.id}`);
-        sendWebhook('subjects', item);
       }
-      
+
       return true;
     });
+  }
+
+  async bulkCreate(data: { code: string; name: string }[]) {
+    const uniqueData = [];
+    const seenCodes = new Set<string>();
+    const seenNames = new Set<string>();
+    const failedRows = [];
+
+    for (const item of data) {
+      if (!item.code || !item.name) {
+        failedRows.push({ ...item, reason: 'Kode atau Nama kosong' });
+        continue;
+      }
+      if (seenCodes.has(item.code) || seenNames.has(item.name)) {
+        failedRows.push({ ...item, reason: 'Duplikat kode/nama di dalam file' });
+        continue;
+      }
+      seenCodes.add(item.code);
+      seenNames.add(item.name);
+      uniqueData.push(item);
+    }
+
+    if (uniqueData.length > 0) {
+      const existingCodes = await prisma.subject.findMany({
+        where: { code: { in: uniqueData.map(d => d.code) }, deletedAt: null },
+        select: { code: true }
+      });
+      const existingNames = await prisma.subject.findMany({
+        where: { name: { in: uniqueData.map(d => d.name) }, deletedAt: null },
+        select: { name: true }
+      });
+
+      const existingCodeSet = new Set(existingCodes.map(c => c.code));
+      const existingNameSet = new Set(existingNames.map(n => n.name));
+
+      const toInsert = [];
+      for (const item of uniqueData) {
+        if (existingCodeSet.has(item.code)) {
+          failedRows.push({ ...item, reason: 'Kode sudah ada di database' });
+        } else if (existingNameSet.has(item.name)) {
+          failedRows.push({ ...item, reason: 'Nama sudah ada di database' });
+        } else {
+          toInsert.push(item);
+        }
+      }
+
+      if (toInsert.length > 0) {
+        await prisma.subject.createMany({ data: toInsert });
+        await clearCachePattern('subject:all:*');
+
+        const inserted = await prisma.subject.findMany({
+          where: { code: { in: toInsert.map(i => i.code) }, deletedAt: null }
+        });
+
+        for (const item of inserted) {
+          await setCache(`subject:id:${item.id}`, item, 600);
+        }
+
+        return { successCount: toInsert.length, failedRows };
+      }
+    }
+
+    return { successCount: 0, failedRows };
   }
 }
 

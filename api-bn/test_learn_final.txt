@@ -1,0 +1,81 @@
+
+🩺  LEARN-ONLY TEST (v3 — clean rewrite)
+
+✓ admin login OK
+
+--- SEEDING ---
+  teacher: OK (id=a915395a-b85d-4a8a-a94a-3e10efb94198)
+  student: OK (id=97ac3bb7-7e38-41d2-999c-f964c28281f5)
+  subject: OK (id=42ec9290-845c-4836-9b99-5f887f92219c)
+  major:   OK (id=5eff24f5-12a1-4237-bcf4-afc9d01fdbdd)
+  class:   OK (id=89ecc0de-74e7-4c83-b416-198c226b43ad)
+  acadYr:  OK (id=fcec3fd9-1374-4b9e-8116-e2ad73227d0b)
+  lessonHour: OK (id=d45a74e9-5a30-4005-ad69-3d7491705ba2)
+
+--- ACADEMIC SEED ---
+  POST /academic/subject-teachers            → 201
+  POST /academic/class-subject-requirements  → 200
+  POST /academic/major-students              → 201
+  POST /academic/class-students              → 201
+  POST /academic/homeroom-teachers           → 201
+  POST /academic/lesson-schedules            → 400
+
+--- DASHBOARDS ---
+  🟡 GET    /learn/dashboard/teacher/pending-grading                                         → 200  [RBAC]
+  🟡 GET    /learn/dashboard/student/pending-items                                           → 200  [RBAC]
+
+--- MATERIALS ---
+  ✅ POST   /learn/materials                                                                 → 201
+  ✅ GET    /learn/materials/78c14b06-61b1-41df-a253-7a745e4db73b                            → 200
+  ✅ GET    /learn/materials/class/89ecc0de-74e7-4c83-b416-198c226b43ad                      → 200
+  ✅ PUT    /learn/materials/78c14b06-61b1-41df-a253-7a745e4db73b                            → 200
+  ✅ POST   /learn/materials/78c14b06-61b1-41df-a253-7a745e4db73b/read                       → 200
+  ✅ DELETE /learn/materials/78c14b06-61b1-41df-a253-7a745e4db73b                            → 200
+
+--- ASSIGNMENTS ---
+  ✅ POST   /learn/assignments                                                               → 201
+  ✅ GET    /learn/assignments                                                               → 200
+  ✅ GET    /learn/assignments/eaeaf5da-210a-47c7-9b6a-a9898083404c                          → 200
+  ✅ GET    /learn/assignments/class/89ecc0de-74e7-4c83-b416-198c226b43ad                    → 200
+  ✅ PUT    /learn/assignments/eaeaf5da-210a-47c7-9b6a-a9898083404c                          → 200
+  ✅ POST   /learn/assignments/eaeaf5da-210a-47c7-9b6a-a9898083404c/submissions              → 201
+  ✅ GET    /learn/assignments/eaeaf5da-210a-47c7-9b6a-a9898083404c/submissions/my           → 200
+  ✅ GET    /learn/assignments/eaeaf5da-210a-47c7-9b6a-a9898083404c/submissions              → 200
+  ✅ DELETE /learn/assignments/eaeaf5da-210a-47c7-9b6a-a9898083404c                          → 200
+  🟡 POST   /learn/assignments/delete-batch                                                  → 200  [empty array]
+
+--- QUIZZES ---
+  ✅ POST   /learn/quizzes                                                                   → 201
+  ✅ POST   /learn/quizzes/batch                                                             → 201
+  ✅ GET    /learn/quizzes/class/89ecc0de-74e7-4c83-b416-198c226b43ad                        → 200
+  ✅ GET    /learn/quizzes/ab566170-2e2c-40a0-acaa-993441013879                              → 200
+  ✅ POST   /learn/quizzes/ab566170-2e2c-40a0-acaa-993441013879/submissions/start            → 201
+  ✅ POST   /learn/quizzes/ab566170-2e2c-40a0-acaa-993441013879/submissions/finish           → 200
+  ✅ GET    /learn/quizzes/ab566170-2e2c-40a0-acaa-993441013879/submissions/my               → 200
+  ✅ GET    /learn/quizzes/ab566170-2e2c-40a0-acaa-993441013879/submissions                  → 200
+  ✅ PUT    /learn/quizzes/ab566170-2e2c-40a0-acaa-993441013879                              → 200
+  ✅ DELETE /learn/quizzes/ab566170-2e2c-40a0-acaa-993441013879                              → 200
+  🟡 POST   /learn/quizzes/delete-batch                                                      → 200  [empty array]
+
+--- GRADES ---
+  🟡 GET    /learn/grades/class/89ecc0de-74e7-4c83-b416-198c226b43ad/my                      → 200  [RBAC]
+  🟡 GET    /learn/grades/class/89ecc0de-74e7-4c83-b416-198c226b43ad                         → 200  [RBAC]
+
+--- ATTACHMENTS ---
+  ✅ POST   /learn/attachments/upload                                                        → 201
+  ✅ POST   /learn/attachments/batch                                                         → 200
+  ✅ POST   /learn/attachments/delete-batch                                                  → 200
+  ❌ DELETE /learn/attachments/04cd3672-8b17-4563-a520-6c82291280d8                          → 404
+  ✅ POST   /learn/attachments/upload-batch                                                  → 201
+
+========== SUMMARY ==========
+ Total endpoint tests   : 36
+ ✅ Passed (2xx or by-design 4xx): 35
+ ❌ Failed                : 1
+ Pass rate                : 97.2%
+
+--- Failures ---
+ [404] DELETE /learn/attachments/04cd3672-8b17-4563-a520-6c82291280d8  
+
+🧹  Cleanup…
+Done.

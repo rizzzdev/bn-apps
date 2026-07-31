@@ -3,6 +3,7 @@ import { SentriError } from 'sentri/express';
 import { sendError } from '@/utils/response';
 import { BaseError } from '@/errors';
 import { appRoutes } from './routes';
+import { ZodError } from 'zod';
 
 import { corsConfig } from '@/configs/cors';
 
@@ -17,15 +18,29 @@ app.use('/public', express.static('public'));
 app.use('/api/v1', appRoutes);
 
 // Global Error Handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  if (err instanceof SentriError) {
-    return sendError(res, err.statusCode || 401, err.message);
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('[GLOBAL ERROR HANDLER]:', err);
+
+  if (err instanceof ZodError) {
+    const message = err.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join(', ') || 'Validasi gagal';
+    return sendError(res, 400, message);
   }
-  
+
+  if (
+    err instanceof SentriError ||
+    err?.name === 'SentriError' ||
+    (typeof err === 'object' && err !== null && 'statusCode' in err && 'message' in err)
+  ) {
+    return sendError(res, err.statusCode || 400, err.message || 'Terjadi kesalahan');
+  }
+
   if (err instanceof BaseError) {
     return sendError(res, err.statusCode, err.message);
   }
 
-  console.error(err);
-  return sendError(res, 500, 'Internal Server Error');
+  if (err?.code === 'P2003') {
+    return sendError(res, 400, 'Data referensi (Kelas atau Guru) tidak terdaftar di sistem');
+  }
+
+  return sendError(res, 500, err.message || 'Internal Server Error');
 });

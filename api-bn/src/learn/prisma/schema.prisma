@@ -1,0 +1,198 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../database/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Attachment {
+  id       String @id @default(uuid())
+  filename String
+  format   String
+  size     Float
+  url      String @unique
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([deletedAt])
+  @@map("attachments")
+}
+
+model Material {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  status    String   @default("Draft")
+  teacherId String   @map("teacher_id")
+
+  attachments MaterialAttachment[]
+  classes     MaterialClass[]
+  reads       MaterialRead[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("materials")
+}
+
+model MaterialAttachment {
+  id        String   @id @default(uuid())
+  fileUrl   String   @map("file_url")
+  fileName  String   @map("file_name")
+  materialId String  @map("material_id")
+
+  material  Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+
+  @@map("material_attachments")
+}
+
+model MaterialClass {
+  id         String   @id @default(uuid())
+  materialId String   @map("material_id")
+  classId    String   @map("class_id")
+
+  material   Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+
+  @@map("material_classes")
+}
+
+model MaterialRead {
+  id         String   @id @default(uuid())
+  materialId String   @map("material_id")
+  studentId  String   @map("student_id")
+  readAt     DateTime @default(now()) @map("read_at")
+
+  material   Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+
+  @@unique([materialId, studentId])
+  @@map("material_reads")
+}
+
+model Assignment {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  deadline    DateTime
+  status      String   @default("Draft")
+  teacherId   String   @map("teacher_id")
+
+  attachments AssignmentAttachment[]
+  classes     AssignmentClass[]
+  submissions AssignmentSubmission[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("assignments")
+}
+
+model AssignmentAttachment {
+  id           String     @id @default(uuid())
+  fileUrl      String     @map("file_url")
+  fileName     String     @map("file_name")
+  assignmentId String     @map("assignment_id")
+
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@map("assignment_attachments")
+}
+
+model AssignmentClass {
+  id           String     @id @default(uuid())
+  assignmentId String     @map("assignment_id")
+  classId      String     @map("class_id")
+
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@map("assignment_classes")
+}
+
+model AssignmentSubmission {
+  id           String   @id @default(uuid())
+  assignmentId String   @map("assignment_id")
+  studentId    String   @map("student_id")
+  fileUrl      String?  @map("file_url")
+  fileName     String?  @map("file_name")
+  content      String?
+  grade        Int?
+  feedback     String?
+
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([assignmentId, studentId])
+  @@map("assignment_submissions")
+}
+
+model Quiz {
+  id        String   @id @default(uuid())
+  title     String
+  timeLimit Int?     @map("time_limit")
+  status    String   @default("Draft")
+  teacherId String   @map("teacher_id")
+
+  questions  QuizQuestion[]
+  classes    QuizClass[]
+  submissions QuizSubmission[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("quizzes")
+}
+
+model QuizQuestion {
+  id           String @id @default(uuid())
+  quizId       String @map("quiz_id")
+  question     String
+  options      String
+  correctOption Int   @map("correct_option")
+  order        Int    @default(0)
+
+  quiz         Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_questions")
+}
+
+model QuizClass {
+  id      String @id @default(uuid())
+  quizId  String @map("quiz_id")
+  classId String @map("class_id")
+
+  quiz    Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_classes")
+}
+
+model QuizSubmission {
+  id        String   @id @default(uuid())
+  quizId    String   @map("quiz_id")
+  studentId String   @map("student_id")
+  score     Int?
+  startedAt DateTime @default(now()) @map("started_at")
+  finishedAt DateTime? @map("finished_at")
+
+  answers  QuizAnswer[]
+  quiz     Quiz       @relation(fields: [quizId], references: [id])
+
+  @@unique([quizId, studentId])
+  @@map("quiz_submissions")
+}
+
+model QuizAnswer {
+  id            String  @id @default(uuid())
+  submissionId  String  @map("submission_id")
+  quizQuestionId String @map("quiz_question_id")
+  selectedOption Int    @map("selected_option")
+  isCorrect     Boolean @default(false) @map("is_correct")
+
+  submission    QuizSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_answers")
+}

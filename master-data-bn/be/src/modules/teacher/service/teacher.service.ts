@@ -8,7 +8,6 @@ import { sentriAuth, prisma } from "@/database";
 import { TeacherStatus } from "@/database/generated/client";
 import { parseExcel, generateExcelTemplate } from "@/utils/excel";
 import { withCache, clearCachePattern, setCache } from '@/utils/cache';
-import { sendWebhook } from '@/utils/webhook';
 import { createTeacherSchema } from "@/modules/teacher/domain/schemas";
 import { attachmentRepository } from "@/modules/attachment/repository";
 import { attachmentService } from "@/modules/attachment/service";
@@ -40,7 +39,7 @@ const TEACHER_EXCEL_SAMPLE: Record<string, unknown> = {
 };
 
 export class TeacherService {
-  constructor(private repository: TeacherRepository) {}
+  constructor(private repository: TeacherRepository) { }
 
   async getAll(page: number, limit: number, userId?: string, includeUser = false, includePicture = false) {
     return withCache(`teacher:all:page:${page}:limit:${limit}:userId:${userId || 'none'}:includeUser:${includeUser}:includePicture:${includePicture}`, 600, async () => {
@@ -101,9 +100,9 @@ export class TeacherService {
     const registerUser = await sentriAuth.register({
       identifiers: [
         { type: "email", value: data.email },
-        ...(data.phoneNumber ? [{ type: "phone", value: data.phoneNumber }] : []),
-        ...(data.nip ? [{ type: "nip", value: data.nip }] : []),
-        ...(data.nik ? [{ type: "nik", value: data.nik }] : []),
+        // ...(data.phoneNumber ? [{ type: "phone", value: data.phoneNumber }] : []),
+        // ...(data.nip ? [{ type: "nip", value: data.nip }] : []),
+        // ...(data.nik ? [{ type: "nik", value: data.nik }] : []),
       ],
       password: data.password,
       roles: ["teacher"],
@@ -116,7 +115,7 @@ export class TeacherService {
     await clearCachePattern('teacher:all:*');
     await clearCachePattern('teacher:statistics');
     await setCache(`teacher:id:${created.id}`, created, 600);
-    sendWebhook('teachers', created);
+
 
     const { user, picture, ...restCreated } = created as any;
     return restCreated;
@@ -133,9 +132,9 @@ export class TeacherService {
 
     // Clean up old picture if replaced or removed
     if (data.pictureId === null && item.pictureId) {
-      await attachmentService.delete(item.pictureId).catch(() => {});
+      await attachmentService.delete(item.pictureId).catch(() => { });
     } else if (data.pictureId && item.pictureId && data.pictureId !== item.pictureId) {
-      await attachmentService.delete(item.pictureId).catch(() => {});
+      await attachmentService.delete(item.pictureId).catch(() => { });
     }
 
     if (item.userId) {
@@ -160,7 +159,7 @@ export class TeacherService {
       };
 
       handleIdentifier("email", data.email);
-      handleIdentifier("phone", data.phoneNumber);
+      // handleIdentifier("phone", data.phoneNumber);
 
       if (updates.length > 0 && sentriAuth.bulkUpdateIdentifiers) {
         await sentriAuth.bulkUpdateIdentifiers(item.userId, updates);
@@ -175,7 +174,7 @@ export class TeacherService {
     await clearCachePattern('teacher:statistics');
     await clearCachePattern(`teacher:id:${id}:*`);
     await setCache(`teacher:id:${id}`, updated, 600);
-    sendWebhook('teachers', updated);
+
 
     const { user, picture, ...restUpdated } = updated as any;
     return restUpdated;
@@ -185,18 +184,18 @@ export class TeacherService {
     const item = await this.getById(id);
 
     if (item.pictureId) {
-      await attachmentService.delete(item.pictureId).catch(() => {});
+      await attachmentService.delete(item.pictureId).catch(() => { });
     }
 
     if (item.userId) {
-      await prisma.sentri_users.delete({ where: { id: item.userId } }).catch(() => {});
+      await prisma.sentri_users.delete({ where: { id: item.userId } }).catch(() => { });
     }
     const deleted = await this.repository.softDelete(id);
     await clearCachePattern('teacher:all:*');
     await clearCachePattern('teacher:statistics');
     await clearCachePattern(`teacher:id:${id}:*`);
-    sendWebhook('teachers', deleted);
-    
+
+
     const { user, picture, ...restDeleted } = deleted as any;
     return restDeleted;
   }
@@ -206,7 +205,7 @@ export class TeacherService {
 
     // Delete old picture if exists
     if (item.pictureId) {
-      await attachmentService.delete(item.pictureId).catch(() => {});
+      await attachmentService.delete(item.pictureId).catch(() => { });
     }
 
     // Upload new picture
@@ -252,24 +251,24 @@ export class TeacherService {
       // Clean up pictures
       for (const item of items) {
         if (item.pictureId) {
-          await attachmentService.delete(item.pictureId).catch(() => {});
+          await attachmentService.delete(item.pictureId).catch(() => { });
         }
       }
-      
+
       const userIds = items.map(i => i.userId).filter(id => id) as string[];
       if (userIds.length > 0) {
-        await tx.sentri_users.deleteMany({ where: { id: { in: userIds } } }).catch(() => {});
+        await tx.sentri_users.deleteMany({ where: { id: { in: userIds } } }).catch(() => { });
       }
       await tx.teacher.updateMany({ where: { id: { in: ids } }, data: { deletedAt: new Date() } });
-      
+
       const deletedItems = await tx.teacher.findMany({ where: { id: { in: ids } } });
       await clearCachePattern('teacher:all:*');
       await clearCachePattern('teacher:statistics');
       for (const item of deletedItems) {
         await clearCachePattern(`teacher:id:${item.id}:*`);
-        sendWebhook('teachers', item);
+
       }
-      
+
       return true;
     });
   }
@@ -278,17 +277,17 @@ export class TeacherService {
     return prisma.$transaction(async (tx) => {
       const items = await tx.teacher.findMany({ where: { id: { in: ids }, deletedAt: null } });
       if (items.length !== ids.length) throw new NotFoundError('Beberapa data tidak ditemukan');
-      
+
       await tx.teacher.updateMany({ where: { id: { in: ids }, deletedAt: null }, data: { status } });
       const updated = await tx.teacher.findMany({ where: { id: { in: ids }, deletedAt: null } });
-      
+
       await clearCachePattern('teacher:all:*');
       await clearCachePattern('teacher:statistics');
       for (const item of updated) {
         await setCache(`teacher:id:${item.id}`, item, 600);
-        sendWebhook('teachers', item);
+
       }
-      
+
       return updated;
     });
   }
@@ -328,7 +327,7 @@ export class TeacherService {
     // Run in a single transaction so it rolls back if any fails
     const createdItems = await prisma.$transaction(async (tx) => {
       const results = [];
-      
+
       for (const row of preparedRows) {
         const { parsed, passwordHash } = row;
         const userId = randomUUID();
@@ -336,9 +335,9 @@ export class TeacherService {
         const identifiers: { id: string; user_id: string; type: string; value: string }[] = [
           { id: randomUUID(), user_id: userId, type: 'email', value: parsed.email || '' },
         ];
-        if (parsed.phoneNumber) identifiers.push({ id: randomUUID(), user_id: userId, type: 'phone', value: parsed.phoneNumber });
-        if (parsed.nik) identifiers.push({ id: randomUUID(), user_id: userId, type: 'nik', value: parsed.nik });
-        if (parsed.nip) identifiers.push({ id: randomUUID(), user_id: userId, type: 'nip', value: parsed.nip });
+        // if (parsed.phoneNumber) identifiers.push({ id: randomUUID(), user_id: userId, type: 'phone', value: parsed.phoneNumber });
+        // if (parsed.nik) identifiers.push({ id: randomUUID(), user_id: userId, type: 'nik', value: parsed.nik });
+        // if (parsed.nip) identifiers.push({ id: randomUUID(), user_id: userId, type: 'nip', value: parsed.nip });
 
         const { password, ...teacherData } = parsed;
 
@@ -346,11 +345,11 @@ export class TeacherService {
           data: { id: userId, password_hash: passwordHash, roles: '["teacher"]' },
         });
         await tx.sentri_identifiers.createMany({ data: identifiers });
-        
+
         const teacher = await tx.teacher.create({ data: { ...teacherData, userId } });
         results.push(teacher);
       }
-      
+
       return results;
     });
 
@@ -358,7 +357,7 @@ export class TeacherService {
     await clearCachePattern('teacher:statistics');
     for (const item of createdItems) {
       await setCache(`teacher:id:${item.id}`, item, 600);
-      sendWebhook('teachers', item);
+
     }
 
     return createdItems;

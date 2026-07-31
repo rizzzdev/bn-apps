@@ -3,7 +3,6 @@ import { CreateClassDto, UpdateClassDto } from '@/modules/class/domain';
 import { BadRequestError, NotFoundError } from '@/errors';
 import { prisma } from '@/database';
 import { withCache, clearCachePattern, setCache } from '@/utils/cache';
-import { sendWebhook } from '@/utils/webhook';
 
 export class ClassService {
   constructor(private repository: ClassRepository) {}
@@ -43,7 +42,6 @@ export class ClassService {
     const created = await this.repository.create(data);
     await clearCachePattern('class:all:*');
     await setCache(`class:id:${created.id}`, created, 600);
-    sendWebhook('classes', created);
     return created;
   }
 
@@ -53,7 +51,6 @@ export class ClassService {
     const updated = await this.repository.update(id, data);
     await clearCachePattern('class:all:*');
     await setCache(`class:id:${id}`, updated, 600);
-    sendWebhook('classes', updated);
     return updated;
   }
 
@@ -62,7 +59,6 @@ export class ClassService {
     const deleted = await this.repository.softDelete(id);
     await clearCachePattern('class:all:*');
     await clearCachePattern(`class:id:${id}`);
-    sendWebhook('classes', deleted);
     return deleted;
   }
 
@@ -78,16 +74,78 @@ export class ClassService {
       const items = await tx.class.findMany({ where: { id: { in: ids }, deletedAt: null } });
       if (items.length !== ids.length) throw new NotFoundError('Beberapa data tidak ditemukan');
       await tx.class.updateMany({ where: { id: { in: ids } }, data: { deletedAt: new Date() } });
-      
+
       const deletedItems = await tx.class.findMany({ where: { id: { in: ids } } });
       await clearCachePattern('class:all:*');
       for (const item of deletedItems) {
         await clearCachePattern(`class:id:${item.id}`);
-        sendWebhook('classes', item);
       }
-      
+
       return true;
     });
+  }
+
+  async bulkCreate(data: { name: string; majorCode: string }[]) {
+    const uniqueData = [];
+    const seenNames = new Set<string>();
+    const failedRows = [];
+
+    for (const item of data) {
+      if (!item.name || !item.majorCode) {
+        failedRows.push({ ...item, reason: 'Nama Kelas atau Kode Jurusan kosong' });
+        continue;
+      }
+      if (seenNames.has(item.name)) {
+        failedRows.push({ ...item, reason: 'Duplikat nama kelas di dalam file' });
+        continue;
+      }
+      seenNames.add(item.name);
+      uniqueData.push(item);
+    }
+
+    if (uniqueData.length > 0) {
+      const uniqueMajorCodes = Array.from(new Set(uniqueData.map((d) => d.majorCode)));
+      const existingMajors = await prisma.major.findMany({
+        where: { code: { in: uniqueMajorCodes }, deletedAt: null },
+        select: { id: true, code: true }
+      });
+      const majorMap = new Map(existingMajors.map((m) => [m.code, m.id]));
+
+      const existingClasses = await prisma.class.findMany({
+        where: { name: { in: uniqueData.map((d) => d.name) }, deletedAt: null },
+        select: { name: true }
+      });
+      const existingNameSet = new Set(existingClasses.map((c) => c.name));
+
+      const toInsert = [];
+      for (const item of uniqueData) {
+        const majorId = majorMap.get(item.majorCode);
+        if (!majorId) {
+          failedRows.push({ ...item, reason: 'Kode Jurusan tidak ditemukan atau dihapus' });
+        } else if (existingNameSet.has(item.name)) {
+          failedRows.push({ ...item, reason: 'Nama Kelas sudah ada di database' });
+        } else {
+          toInsert.push({ name: item.name, majorId });
+        }
+      }
+
+      if (toInsert.length > 0) {
+        await prisma.class.createMany({ data: toInsert });
+        await clearCachePattern('class:all:*');
+
+        const inserted = await prisma.class.findMany({
+          where: { name: { in: toInsert.map((i) => i.name) }, deletedAt: null }
+        });
+
+        for (const item of inserted) {
+          await setCache(`class:id:${item.id}`, item, 600);
+        }
+
+        return { successCount: toInsert.length, failedRows };
+      }
+    }
+
+    return { successCount: 0, failedRows };
   }
 }
 

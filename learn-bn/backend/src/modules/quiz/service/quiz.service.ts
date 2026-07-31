@@ -10,8 +10,13 @@ export class QuizService {
     return this.repository.create(parsed, teacherId);
   }
 
-  async getByClass(classId: string) {
-    return this.repository.findAllByClass(classId);
+  async bulkCreate(data: CreateQuizDto, teacherId: string) {
+    const parsed = createQuizSchema.parse(data);
+    return this.repository.bulkCreate(parsed, teacherId);
+  }
+
+  async getByClass(classId: string, role?: string) {
+    return this.repository.findAllByClass(classId, role);
   }
 
   async getById(id: string, role: string) {

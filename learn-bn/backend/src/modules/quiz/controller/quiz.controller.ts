@@ -19,10 +19,24 @@ export class QuizController {
     }
   };
 
+  bulkCreate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.user?.roles.includes('super_admin') && (!req.user?.roles.includes('teacher') || !req.profileId)) {
+        throw new SentriError('FORBIDDEN', 'Hanya Guru yang dapat membuat kuis', 403);
+      }
+      
+      const data = await this.service.bulkCreate(req.body, req.profileId!);
+      sendResponse(res, 201, 'Kuis berhasil dibuat untuk kelas terdaftar', data);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   getByClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { classId } = req.params as { classId: string };
-      const data = await this.service.getByClass(classId);
+      const role = req.user?.roles[0];
+      const data = await this.service.getByClass(classId, role);
       sendResponse(res, 200, 'Berhasil mengambil kuis kelas', data);
     } catch (error) {
       next(error);

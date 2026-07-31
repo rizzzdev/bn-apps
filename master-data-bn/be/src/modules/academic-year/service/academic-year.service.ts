@@ -3,7 +3,6 @@ import { CreateAcademicYearDto, UpdateAcademicYearDto } from '@/modules/academic
 import { BadRequestError, NotFoundError } from '@/errors';
 import { prisma } from '@/database';
 import { withCache, clearCachePattern, setCache } from '@/utils/cache';
-import { sendWebhook } from '@/utils/webhook';
 
 export class AcademicYearService {
   constructor(private repository: AcademicYearRepository) {}
@@ -50,7 +49,6 @@ export class AcademicYearService {
     const created = await this.repository.create(data);
     await clearCachePattern('academic-year:all:*');
     await setCache(`academic-year:id:${created.id}`, created, 600);
-    sendWebhook('academic-years', created);
     return created;
   }
 
@@ -58,7 +56,7 @@ export class AcademicYearService {
     const item = await this.getById(id);
     const currentStartYear = data.startYear || item.startYear;
     const currentEndYear = data.endYear || item.endYear;
-    
+
     if (currentEndYear !== currentStartYear + 1) {
       throw new BadRequestError('Tahun Selesai harus tepat 1 tahun setelah Tahun Mulai');
     }
@@ -70,7 +68,6 @@ export class AcademicYearService {
     const updated = await this.repository.update(id, data);
     await clearCachePattern('academic-year:all:*');
     await setCache(`academic-year:id:${id}`, updated, 600);
-    sendWebhook('academic-years', updated);
     return updated;
   }
 
@@ -81,7 +78,6 @@ export class AcademicYearService {
     const deleted = await this.repository.softDelete(id);
     await clearCachePattern('academic-year:all:*');
     await clearCachePattern(`academic-year:id:${id}`);
-    sendWebhook('academic-years', deleted);
     return deleted;
   }
 
@@ -96,19 +92,18 @@ export class AcademicYearService {
     return prisma.$transaction(async (tx) => {
       const items = await tx.academicYear.findMany({ where: { id: { in: ids }, deletedAt: null } });
       if (items.length !== ids.length) throw new NotFoundError('Beberapa data tidak ditemukan');
-      
+
       const semesters = await tx.semester.findFirst({ where: { academicYearId: { in: ids }, deletedAt: null } });
       if (semesters) throw new BadRequestError('Cannot delete Academic Year because it still has active Semesters.');
-      
+
       await tx.academicYear.updateMany({ where: { id: { in: ids } }, data: { deletedAt: new Date() } });
-      
+
       const deletedItems = await tx.academicYear.findMany({ where: { id: { in: ids } } });
       await clearCachePattern('academic-year:all:*');
       for (const item of deletedItems) {
         await clearCachePattern(`academic-year:id:${item.id}`);
-        sendWebhook('academic-years', item);
       }
-      
+
       return true;
     });
   }

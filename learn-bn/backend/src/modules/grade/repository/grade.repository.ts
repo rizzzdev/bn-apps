@@ -5,10 +5,10 @@ export class GradeRepository {
     const assignments = await prisma.assignmentSubmission.findMany({
       where: {
         studentId,
-        assignment: { classId },
+        assignment: { classes: { some: { classId } } },
       },
       include: {
-        assignment: { select: { title: true } },
+        assignment: { select: { title: true, deadline: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -16,7 +16,7 @@ export class GradeRepository {
     const quizzes = await prisma.quizSubmission.findMany({
       where: {
         studentId,
-        quiz: { classId },
+        quiz: { classes: { some: { classId } } },
       },
       include: {
         quiz: { select: { title: true } },
@@ -28,8 +28,6 @@ export class GradeRepository {
   }
 
   async getClassGrades(classId: string) {
-    // For a teacher to see all grades in a class
-    // 1. Get all students in the class
     const classStudents = await prisma.classStudent.findMany({
       where: { classId, status: 'Aktif' },
       include: {
@@ -37,26 +35,25 @@ export class GradeRepository {
       },
     });
 
-    // 2. Fetch assignments & quizzes of this class
     const assignments = await prisma.assignment.findMany({
-      where: { classId },
+      where: { classes: { some: { classId } } },
       select: { id: true, title: true },
       orderBy: { createdAt: 'asc' },
     });
 
     const quizzes = await prisma.quiz.findMany({
-      where: { classId },
+      where: { classes: { some: { classId } } },
       select: { id: true, title: true },
       orderBy: { createdAt: 'asc' },
     });
 
     const assignmentSubmissions = await prisma.assignmentSubmission.findMany({
-      where: { assignment: { classId } },
+      where: { assignment: { classes: { some: { classId } } } },
       select: { studentId: true, assignmentId: true, grade: true },
     });
 
     const quizSubmissions = await prisma.quizSubmission.findMany({
-      where: { quiz: { classId }, finishedAt: { not: null } },
+      where: { quiz: { classes: { some: { classId } } }, finishedAt: { not: null } },
       select: { studentId: true, quizId: true, score: true },
     });
 

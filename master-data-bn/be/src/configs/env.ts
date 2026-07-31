@@ -6,7 +6,6 @@ config();
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   CLIENT_URL: z.string(),
-  WEBHOOK_CLIENT_URL: z.string().optional(),
   REDIS_URL: z.string().optional(),
   PORT: z.string().default("8000").transform(Number),
   CORS_ORIGIN: z.string().optional().default("*"),

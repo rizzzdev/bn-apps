@@ -22,7 +22,9 @@ export class MaterialController {
   getByClass = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { classId } = req.params as { classId: string };
-      const data = await this.service.getByClass(classId);
+      const isStudent = !req.user?.roles?.includes('teacher') && !req.user?.roles?.includes('super_admin');
+      const studentId = isStudent ? req.profileId ?? undefined : undefined;
+      const data = await this.service.getByClass(classId, isStudent, studentId);
       sendResponse(res, 200, 'Berhasil mengambil materi kelas', data);
     } catch (error) {
       next(error);
@@ -32,8 +34,24 @@ export class MaterialController {
   getById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params as { id: string };
-      const data = await this.service.getById(id);
+      const isStudent = !req.user?.roles?.includes('teacher') && !req.user?.roles?.includes('super_admin');
+      const studentId = isStudent ? req.profileId ?? undefined : undefined;
+      const data = await this.service.getById(id, isStudent, studentId);
       sendResponse(res, 200, 'Berhasil mengambil detail materi', data);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  markAsRead = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.user?.roles.includes('super_admin') && (!req.user?.roles.includes('student') || !req.profileId)) {
+        throw new SentriError('FORBIDDEN', 'Hanya Siswa yang dapat mengonfirmasi baca materi', 403);
+      }
+
+      const { id } = req.params as { id: string };
+      const data = await this.service.markAsRead(id, req.profileId!);
+      sendResponse(res, 200, 'Materi berhasil ditandai telah dibaca', data);
     } catch (error) {
       next(error);
     }

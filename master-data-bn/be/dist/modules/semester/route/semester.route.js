@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.semesterRoute = void 0;
+const middlewares_1 = require("../../../middlewares");
+const express_1 = require("express");
+const controller_1 = require("../../../modules/semester/controller");
+const domain_1 = require("../../../modules/semester/domain");
+const zod_1 = require("zod");
+exports.semesterRoute = (0, express_1.Router)();
+exports.semesterRoute.post('/batch', (0, middlewares_1.validate)(domain_1.batchGetSemesterSchema), controller_1.semesterController.getBatch);
+exports.semesterRoute.delete('/bulk', (0, middlewares_1.validate)(zod_1.z.object({ ids: zod_1.z.array(zod_1.z.string().min(1)).min(1) })), controller_1.semesterController.bulkDelete);
+exports.semesterRoute.get('/', controller_1.semesterController.getAll);
+exports.semesterRoute.get('/:id', controller_1.semesterController.getById);
+exports.semesterRoute.post('/', (0, middlewares_1.validate)(domain_1.createSemesterSchema), controller_1.semesterController.create);
+exports.semesterRoute.put('/:id', (0, middlewares_1.validate)(domain_1.updateSemesterSchema), controller_1.semesterController.update);
+exports.semesterRoute.delete('/:id', controller_1.semesterController.delete);

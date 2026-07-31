@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.subjectRoute = void 0;
+const middlewares_1 = require("../../../middlewares");
+const express_1 = require("express");
+const controller_1 = require("../../../modules/subject/controller");
+const domain_1 = require("../../../modules/subject/domain");
+const zod_1 = require("zod");
+exports.subjectRoute = (0, express_1.Router)();
+exports.subjectRoute.post('/batch', (0, middlewares_1.validate)(domain_1.batchGetSubjectSchema), controller_1.subjectController.getBatch);
+exports.subjectRoute.delete('/bulk', (0, middlewares_1.validate)(zod_1.z.object({ ids: zod_1.z.array(zod_1.z.string().min(1)).min(1) })), controller_1.subjectController.bulkDelete);
+exports.subjectRoute.get('/', controller_1.subjectController.getAll);
+exports.subjectRoute.get('/:id', controller_1.subjectController.getById);
+exports.subjectRoute.post('/', (0, middlewares_1.validate)(domain_1.createSubjectSchema), controller_1.subjectController.create);
+exports.subjectRoute.put('/:id', (0, middlewares_1.validate)(domain_1.updateSubjectSchema), controller_1.subjectController.update);
+exports.subjectRoute.delete('/:id', controller_1.subjectController.delete);

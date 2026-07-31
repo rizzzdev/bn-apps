@@ -10,7 +10,7 @@ import { parseExcel, generateExcelTemplate } from "@/utils/excel";
 import { createStudentSchema } from "@/modules/student/domain/schemas";
 import { randomUUID } from "crypto";
 import { withCache, clearCachePattern, setCache } from "@/utils/cache";
-import { sendWebhook } from "@/utils/webhook";
+
 import { attachmentRepository } from "@/modules/attachment/repository";
 import { attachmentService } from "@/modules/attachment/service";
 
@@ -190,12 +190,12 @@ export class StudentService {
           type: "email",
           value: data.email,
         },
-        ...(data.phoneNumber
-          ? [{ type: "phone", value: data.phoneNumber }]
-          : []),
-        ...(data.nisn ? [{ type: "nisn", value: data.nisn }] : []),
-        ...(data.nik ? [{ type: "nik", value: data.nik }] : []),
-        ...(data.nis ? [{ type: "nis", value: data.nis }] : []),
+        // ...(data.phoneNumber
+        //   ? [{ type: "phone", value: data.phoneNumber }]
+        //   : []),
+        // ...(data.nisn ? [{ type: "nisn", value: data.nisn }] : []),
+        // ...(data.nik ? [{ type: "nik", value: data.nik }] : []),
+        // ...(data.nis ? [{ type: "nis", value: data.nis }] : []),
       ],
       password: data.password,
       roles: ["student"],
@@ -207,7 +207,6 @@ export class StudentService {
     const created = await this.repository.create(data, registerUser.user.id);
     await clearCachePattern("student:all:*");
     await setCache(`student:id:${created.id}`, created, 600);
-    sendWebhook("students", created);
 
     const { currentClass, currentMajor, user, picture, ...restCreated } = created as any;
     return restCreated;
@@ -251,7 +250,7 @@ export class StudentService {
       };
 
       handleIdentifier("email", data.email);
-      handleIdentifier("phone", data.phoneNumber);
+      // handleIdentifier("phone", data.phoneNumber);
 
       if (updates.length > 0 && sentriAuth.bulkUpdateIdentifiers) {
         await sentriAuth.bulkUpdateIdentifiers(item.userId, updates);
@@ -265,7 +264,6 @@ export class StudentService {
     await clearCachePattern("student:all:*");
     await clearCachePattern(`student:id:${id}:*`);
     await setCache(`student:id:${id}`, updated, 600);
-    sendWebhook("students", updated);
     const { currentClass, currentMajor, user, picture, ...restUpdated } = updated as any;
 
     return restUpdated;
@@ -286,7 +284,6 @@ export class StudentService {
     const deleted = await this.repository.softDelete(id);
     await clearCachePattern("student:all:*");
     await clearCachePattern(`student:id:${id}:*`);
-    sendWebhook("students", deleted);
 
     const { currentClass, currentMajor, user, picture, ...restDeleted } = deleted as any;
     return restDeleted;
@@ -343,34 +340,34 @@ export class StudentService {
         }[] = [
           { id: randomUUID(), user_id: userId, type: "email", value: d.email },
         ];
-        if (d.phoneNumber)
-          identifiers.push({
-            id: randomUUID(),
-            user_id: userId,
-            type: "phone",
-            value: d.phoneNumber,
-          });
-        if (d.nik)
-          identifiers.push({
-            id: randomUUID(),
-            user_id: userId,
-            type: "nik",
-            value: d.nik,
-          });
-        if (d.nis)
-          identifiers.push({
-            id: randomUUID(),
-            user_id: userId,
-            type: "nis",
-            value: d.nis,
-          });
-        if (d.nisn)
-          identifiers.push({
-            id: randomUUID(),
-            user_id: userId,
-            type: "nisn",
-            value: d.nisn,
-          });
+        // if (d.phoneNumber)
+        //   identifiers.push({
+        //     id: randomUUID(),
+        //     user_id: userId,
+        //     type: "phone",
+        //     value: d.phoneNumber,
+        //   });
+        // if (d.nik)
+        //   identifiers.push({
+        //     id: randomUUID(),
+        //     user_id: userId,
+        //     type: "nik",
+        //     value: d.nik,
+        //   });
+        // if (d.nis)
+        //   identifiers.push({
+        //     id: randomUUID(),
+        //     user_id: userId,
+        //     type: "nis",
+        //     value: d.nis,
+        //   });
+        // if (d.nisn)
+        //   identifiers.push({
+        //     id: randomUUID(),
+        //     user_id: userId,
+        //     type: "nisn",
+        //     value: d.nisn,
+        //   });
 
         const { password, ...studentData } = d;
 
@@ -393,7 +390,6 @@ export class StudentService {
     await clearCachePattern("student:all:*");
     for (const item of createdItems) {
       await setCache(`student:id:${item.id}`, item, 600);
-      sendWebhook("students", item);
     }
 
     return createdItems;
@@ -437,7 +433,6 @@ export class StudentService {
       await clearCachePattern("student:all:*");
       for (const item of deletedItems) {
         await clearCachePattern(`student:id:${item.id}:*`);
-        sendWebhook("students", item);
       }
 
       return true;
@@ -463,7 +458,6 @@ export class StudentService {
       await clearCachePattern("student:all:*");
       for (const item of updated) {
         await setCache(`student:id:${item.id}`, item, 600);
-        sendWebhook("students", item);
       }
 
       return updated;
@@ -536,34 +530,34 @@ export class StudentService {
             value: parsed.email || "",
           },
         ];
-        if (parsed.phoneNumber)
-          identifiers.push({
-            id: randomUUID(),
-            user_id: userId,
-            type: "phone",
-            value: parsed.phoneNumber,
-          });
-        if (parsed.nik)
-          identifiers.push({
-            id: randomUUID(),
-            user_id: userId,
-            type: "nik",
-            value: parsed.nik,
-          });
-        if (parsed.nis)
-          identifiers.push({
-            id: randomUUID(),
-            user_id: userId,
-            type: "nis",
-            value: parsed.nis,
-          });
-        if (parsed.nisn)
-          identifiers.push({
-            id: randomUUID(),
-            user_id: userId,
-            type: "nisn",
-            value: parsed.nisn,
-          });
+        // if (parsed.phoneNumber)
+        //   identifiers.push({
+        //     id: randomUUID(),
+        //     user_id: userId,
+        //     type: "phone",
+        //     value: parsed.phoneNumber,
+        //   });
+        // if (parsed.nik)
+        //   identifiers.push({
+        //     id: randomUUID(),
+        //     user_id: userId,
+        //     type: "nik",
+        //     value: parsed.nik,
+        //   });
+        // if (parsed.nis)
+        //   identifiers.push({
+        //     id: randomUUID(),
+        //     user_id: userId,
+        //     type: "nis",
+        //     value: parsed.nis,
+        //   });
+        // if (parsed.nisn)
+        //   identifiers.push({
+        //     id: randomUUID(),
+        //     user_id: userId,
+        //     type: "nisn",
+        //     value: parsed.nisn,
+        //   });
 
         const { password, ...studentData } = parsed;
 

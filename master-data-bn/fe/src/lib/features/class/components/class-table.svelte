@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, Icon, Checkbox, Badge } from '$lib/components/atoms';
-	import { Pagination, SearchBar, Dropdown, Modal, FormField, SelectField } from '$lib/components/molecules';
+	import { Pagination, SearchBar, Dropdown, Modal, FormField, SelectField, Tabs } from '$lib/components/molecules';
 	import { ConfirmationModal } from '$lib/components/organisms';
 	import { Table, TableHead, TableBody, TableRow, TableHeadCell, TableCell } from '$lib/components/organisms/table';
 	import { toast } from '$lib/stores/toast.svelte';
@@ -20,11 +20,72 @@
 		majorId: ''
 	});
 
+	let activeTabId = $state('single');
+	let uploadedFile = $state<File | null>(null);
+	let isUploading = $state(false);
+
 	$effect(() => {
 		if (isCreateOpen) {
 			formData = { name: '', majorId: '' };
+			activeTabId = 'single';
+			uploadedFile = null;
 		}
 	});
+
+	async function downloadTemplate() {
+		try {
+			const res = await apiClient('/classes/template');
+			if (!res.ok) throw new Error('Gagal mengunduh template');
+			const blob = await res.blob();
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = 'template-kelas.xlsx';
+			document.body.appendChild(a);
+			a.click();
+			a.remove();
+			window.URL.revokeObjectURL(url);
+		} catch (error) {
+			toast.error('Gagal mengunduh template');
+		}
+	}
+
+	async function handleUpload() {
+		if (!uploadedFile) {
+			toast.error('Pilih file terlebih dahulu');
+			return;
+		}
+
+		isUploading = true;
+		try {
+			const uploadData = new FormData();
+			uploadData.append('file', uploadedFile);
+
+			const res = await apiClient('/classes/bulk', {
+				method: 'POST',
+				body: uploadData
+			});
+			
+			const result = await res.json();
+			if (res.ok && !result.error) {
+				const { successCount, failedRows } = result.data;
+				if (failedRows.length > 0) {
+					toast.success(`Berhasil mengimpor ${successCount} data, ${failedRows.length} data gagal.`);
+				} else {
+					toast.success(`Berhasil mengimpor ${successCount} data kelas.`);
+				}
+				isCreateOpen = false;
+				uploadedFile = null;
+				await fetchClasses(currentPage, limit);
+			} else {
+				toast.error(result.message || 'Gagal mengimpor data');
+			}
+		} catch (error) {
+			toast.error('Terjadi kesalahan koneksi saat mengunggah');
+		} finally {
+			isUploading = false;
+		}
+	}
 
 	
 	const exportData = () => {
@@ -275,13 +336,40 @@
 />
 
 <Modal bind:isOpen={isCreateOpen} title="Tambah Kelas">
-	<div class="flex flex-col gap-sm">
-		<FormField id="name-create" label="Nama Kelas" bind:value={formData.name} placeholder="Contoh: X RPL 1" />
-		<SelectField id="majorId-create" label="Jurusan" bind:value={formData.majorId} options={majorOptions} />
-	</div>
+	<Tabs 
+		tabs={[
+			{ id: 'single', label: 'Single Create', icon: 'add' }, 
+			{ id: 'bulk', label: 'Import Excel', icon: 'upload' }
+		]} 
+		bind:activeTab={activeTabId} 
+		class="mb-md"
+	/>
+
+	{#if activeTabId === 'single'}
+		<div class="flex flex-col gap-sm">
+			<FormField id="name-create" label="Nama Kelas" bind:value={formData.name} placeholder="Contoh: X RPL 1" />
+			<SelectField id="majorId-create" label="Jurusan" bind:value={formData.majorId} options={majorOptions} />
+		</div>
+	{:else}
+		<div class="flex flex-col gap-sm">
+			<div class="flex justify-between items-center">
+				<p class="font-body-base text-body-base text-on-surface-variant">Unggah file Excel (.xlsx) yang berisi data kelas.</p>
+				<Button variant="secondary" class="py-1 px-3 text-sm h-8" onclick={downloadTemplate}>
+					<Icon name="download" class="text-sm mr-1" fill={0} /> Template
+				</Button>
+			</div>
+			<FormField id="excel-bulk-class" label="File Excel" type="excel" bind:file={uploadedFile} />
+		</div>
+	{/if}
 	{#snippet footer()}
-		<Button variant="secondary" onclick={() => isCreateOpen = false} class="bg-surface text-on-surface hover:bg-surface-variant w-auto">Batal</Button>
-		<Button variant="info" onclick={handleSave}>Simpan</Button>
+		<Button variant="secondary" onclick={() => isCreateOpen = false} class="bg-surface text-on-surface hover:bg-surface-variant w-auto" disabled={isUploading}>Batal</Button>
+		{#if activeTabId === 'single'}
+			<Button variant="info" onclick={handleSave}>Simpan</Button>
+		{:else}
+			<Button variant="info" disabled={!uploadedFile || isUploading} onclick={handleUpload}>
+				{isUploading ? 'Mengunggah...' : 'Mulai Impor'}
+			</Button>
+		{/if}
 	{/snippet}
 </Modal>
 

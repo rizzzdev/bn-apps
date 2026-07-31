@@ -1,0 +1,25 @@
+[✅ PASS] AUTH                      POST   /auth/login                                        -> 200 (Logged in successfully)
+[✅ PASS] SHADOW-SYNC               POST   /academic/shadow-sync                              -> 200 
+[✅ PASS] SHADOW-AY                 GET    /academic/shadow-academic-years                    -> 200 
+[✅ PASS] SHADOW-AY                 GET    /academic/shadow-academic-years/8940faf2-ced8-4bac-82e0-1d40904e28bd -> 200 
+[✅ PASS] SHADOW-CLASS              GET    /academic/shadow-classes                           -> 200 
+[✅ PASS] SHADOW-CLASS              GET    /academic/shadow-classes/546e291a-17b1-4c3f-87a7-ae28c502e2a6 -> 200 
+[✅ PASS] SHADOW-MAJOR              GET    /academic/shadow-majors                            -> 200 
+[✅ PASS] SHADOW-MAJOR              GET    /academic/shadow-majors/b5a0709b-47b1-4e5a-959c-c2cf03cd03b3 -> 200 
+[✅ PASS] SHADOW-STUDENT            GET    /academic/shadow-students                          -> 200 
+[✅ PASS] SHADOW-STUDENT            GET    /academic/shadow-students/739e91d4-e925-4899-9fa0-30b701542904 -> 200 
+[✅ PASS] SHADOW-TEACHER            GET    /academic/shadow-teachers                          -> 200 
+[✅ PASS] SHADOW-TEACHER            GET    /academic/shadow-teachers/788ede3d-63c7-46c4-a122-a589faff81fa -> 200 
+[✅ PASS] SHADOW-SUBJECT            GET    /academic/shadow-subjects                          -> 200 
+[✅ PASS] SHADOW-SUBJECT            GET    /academic/shadow-subjects/4f16a8a0-22fc-4c32-8c77-d516812cf4fe -> 200 
+[✅ PASS] MAJOR-STUDENTS            GET    /academic/major-students                           -> 200 
+[✅ PASS] CLASS-STUDENTS            GET    /academic/class-students                           -> 200 
+[✅ PASS] HOMEROOM-TEACHERS         GET    /academic/homeroom-teachers                        -> 200 
+[✅ PASS] SUBJECT-TEACHERS          GET    /academic/subject-teachers                         -> 200 
+[✅ PASS] TEACHER-PICKET            GET    /academic/teacher-picket-schedules                 -> 200 
+[✅ PASS] MAJOR-HEADS               GET    /academic/major-heads                              -> 200 
+[✅ PASS] LESSON-HOURS              GET    /academic/lesson-hours                             -> 200 
+[✅ PASS] CLASS-SUBJECT-REQ         GET    /academic/class-subject-requirements               -> 200 
+[✅ PASS] TEACHER-UNAVAILABILITY    GET    /academic/teacher-unavailabilities                 -> 200 
+[✅ PASS] LESSON-SCHEDULES          GET    /academic/lesson-schedules                         -> 200 
+[✅ PASS] GENERATOR                 POST   /academic/lesson-schedules/generator/preview       -> 400 

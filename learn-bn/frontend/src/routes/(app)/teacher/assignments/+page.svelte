@@ -1,91 +1,223 @@
 <script lang="ts">
-	import { authState } from '$lib/features/auth/auth.svelte';
-	import { lmsStore } from '$lib/features/lms/lms-store.svelte';
+	import { lmsStore, type Assignment } from '$lib/features/lms/lms-store.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import AssignmentCard from '$lib/components/AssignmentCard.svelte';
+	import CustomSelect, { type SelectOption } from '$lib/components/CustomSelect.svelte';
+	import Pagination from '$lib/components/Pagination.svelte';
 
-	let teacherId = $derived(authState.user?.id || '');
-	let teacherClasses = $derived(lmsStore.getClassesForTeacher(teacherId));
-	let assignments = $derived(
-		lmsStore.assignments.filter((a) => teacherClasses.some((c) => c.id === a.classId))
-	);
-	let submissions = $derived(
-		lmsStore.assignmentSubmissions.filter((s) => assignments.find((a) => a.id === s.assignmentId))
+	let classMap: Record<string, string> = $state({});
+	let classOptions: SelectOption[] = $state([]);
+	let subjectOptions: SelectOption[] = $state([]);
+	let allAssignments: Assignment[] = $state([]);
+	let loading = $state(true);
+	let errorMsg = $state('');
+
+	// Filter States
+	let selectedClass = $state('all');
+	let selectedSubject = $state('all');
+	let selectedStatus = $state('all');
+
+	// Pagination State
+	let currentPage = $state(1);
+	const itemsPerPage = 6;
+
+	let deletingId = $state<string | null>(null);
+	let isDeleting = $state(false);
+
+	const statusOptions: SelectOption[] = [
+		{ value: 'all', label: 'Semua Status' },
+		{ value: 'Published', label: 'Published' },
+		{ value: 'Draft', label: 'Draft' }
+	];
+
+	// Filtered Assignments
+	let filteredAssignments = $derived(
+		allAssignments.filter((a: any) => {
+			// Filter Kelas
+			if (selectedClass !== 'all') {
+				const inClass = a.classes?.some((c: any) => c.classId === selectedClass || c.class?.id === selectedClass);
+				if (!inClass) return false;
+			}
+			// Filter Mapel
+			if (selectedSubject !== 'all') {
+				const mapelName = a.teacher?.subjectTeachers?.[0]?.subject?.name || '';
+				if (mapelName !== selectedSubject) return false;
+			}
+			// Filter Status
+			if (selectedStatus !== 'all' && a.status !== selectedStatus) return false;
+			return true;
+		})
 	);
 
-	function getClassName(classId: string) {
-		return teacherClasses.find((c) => c.id === classId)?.name || 'Unknown Class';
+	// Total Pages & Paginated Items
+	let totalPages = $derived(Math.ceil(filteredAssignments.length / itemsPerPage) || 1);
+	let paginatedAssignments = $derived(
+		filteredAssignments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+	);
+
+	// Reset page to 1 when filters change
+	$effect(() => {
+		selectedClass;
+		selectedSubject;
+		selectedStatus;
+		currentPage = 1;
+	});
+
+	async function loadAssignments() {
+		loading = true;
+		errorMsg = '';
+		try {
+			const [assignments, classes] = await Promise.all([
+				lmsStore.getMyAssignments(),
+				lmsStore.getTeacherClasses()
+			]);
+			allAssignments = assignments;
+
+			classOptions = [
+				{ value: 'all', label: 'Semua Kelas' },
+				...classes.map((c) => ({ value: c.id, label: c.name }))
+			];
+
+			// Extract unique subjects for dropdown filter
+			const subjectsSet = new Set<string>();
+			allAssignments.forEach((a: any) => {
+				const sName = a.teacher?.subjectTeachers?.[0]?.subject?.name;
+				if (sName) subjectsSet.add(sName);
+			});
+			subjectOptions = [
+				{ value: 'all', label: 'Semua Mapel' },
+				...Array.from(subjectsSet).map((s) => ({ value: s, label: s }))
+			];
+		} catch (err: any) {
+			errorMsg = err.message || 'Gagal memuat data tugas';
+		} finally {
+			loading = false;
+		}
+	}
+
+	$effect(() => {
+		loadAssignments();
+	});
+
+	async function handleDelete() {
+		if (!deletingId) return;
+		isDeleting = true;
+		try {
+			await lmsStore.deleteAssignment(deletingId);
+			allAssignments = allAssignments.filter((a) => a.id !== deletingId);
+			deletingId = null;
+		} catch (err: any) {
+			alert(err.message || 'Gagal menghapus tugas');
+		} finally {
+			isDeleting = false;
+		}
 	}
 </script>
 
-<div class="flex justify-between items-center mb-6 mt-4">
-	<h3 class="font-headline-md text-2xl font-bold flex items-center gap-2">
-		<span class="material-symbols-outlined text-3xl">assignment</span>
-		Daftar Tugas Keseluruhan
-	</h3>
-	<Button variant="secondary" onclick={() => alert('Fitur tambah tugas menyusul (dummy)')}>Tambah Tugas</Button>
+<svelte:head>
+	<title>Daftar Tugas - Akademik-BN</title>
+</svelte:head>
+
+<div class="flex justify-between items-end mb-6 mt-4">
+	<div>
+		<h2 class="text-display-lg-mobile md:text-display-lg font-black text-on-surface uppercase tracking-tight">
+			Daftar Tugas
+		</h2>
+		<p class="font-body-md text-secondary">Kelola tugas, draft, dan publikasi untuk kelas Anda.</p>
+	</div>
+	<a href="/teacher/assignments/new">
+		<Button variant="primary">
+			<span class="material-symbols-outlined text-sm">add</span>
+			Tambah Tugas
+		</Button>
+	</a>
+</div>
+
+<!-- Dropdown Filters Bar (Guru: Kelas, Mapel, Status) -->
+<div class="bg-surface-container neo-border p-4 mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+	<div>
+		<CustomSelect
+			label="Filter Kelas"
+			options={classOptions}
+			bind:value={selectedClass}
+			placeholder="Pilih Kelas..."
+		/>
+	</div>
+	<div>
+		<CustomSelect
+			label="Filter Mapel"
+			options={subjectOptions}
+			bind:value={selectedSubject}
+			placeholder="Pilih Mapel..."
+		/>
+	</div>
+	<div>
+		<CustomSelect
+			label="Filter Status"
+			options={statusOptions}
+			bind:value={selectedStatus}
+			placeholder="Pilih Status..."
+		/>
+	</div>
 </div>
 
 <div class="flex flex-col gap-6">
-	{#if assignments.length === 0}
+	{#if loading}
+		<div class="bg-surface-container p-12 neo-border text-center flex flex-col items-center">
+			<span class="material-symbols-outlined text-6xl text-secondary mb-4 animate-spin">hourglass_empty</span>
+			<p class="font-bold text-secondary text-lg">Memuat tugas...</p>
+		</div>
+	{:else if errorMsg}
+		<div class="bg-surface-container p-6 neo-border text-center">
+			<span class="material-symbols-outlined text-4xl text-error mb-2">error</span>
+			<p class="font-bold text-error">{errorMsg}</p>
+		</div>
+	{:else if filteredAssignments.length === 0}
 		<div class="bg-surface-container p-12 neo-border text-center flex flex-col items-center">
 			<span class="material-symbols-outlined text-6xl text-secondary mb-4">inbox</span>
-			<p class="font-bold text-secondary text-lg">Belum ada tugas untuk kelas ini.</p>
+			<p class="font-bold text-secondary text-lg">Tidak ada tugas ditemukan.</p>
 		</div>
+	{:else}
+		<div class="flex flex-col gap-6">
+			{#each paginatedAssignments as assignment}
+				{@const classNames = assignment.classes?.map((c: any) => c.class?.name).filter(Boolean).join(', ') ?? '-'}
+				<AssignmentCard
+					{assignment}
+					href={`/teacher/assignments/${assignment.id}`}
+					showStatus={true}
+					role="teacher"
+				/>
+			{/each}
+		</div>
+
+		<!-- Pagination Component -->
+		<Pagination
+			{currentPage}
+			{totalPages}
+			totalItems={filteredAssignments.length}
+			{itemsPerPage}
+			onPageChange={(p) => (currentPage = p)}
+		/>
 	{/if}
-	{#each assignments as assignment}
-		<article class="bg-surface-container-lowest neo-border shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] hover:-translate-y-1 transition-transform duration-200">
-			<div class="border-b-2 border-on-surface bg-[#E2E2E2] p-4 flex items-center justify-between">
-				<div class="flex items-center gap-3">
-					<div class="w-10 h-10 bg-primary-container neo-border flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-						<span class="material-symbols-outlined text-on-surface">assignment</span>
-					</div>
-					<div>
-						<h3 class="font-label-bold text-lg text-on-surface">{assignment.title}</h3>
-						<p class="font-label-bold text-[10px] uppercase text-secondary mt-1 inline-block bg-white px-2 py-1 neo-border">
-							{getClassName(assignment.classId)}
-						</p>
-					</div>
-				</div>
-			</div>
-			<div class="p-6">
-				<p class="font-body-md text-on-surface mb-4 leading-relaxed line-clamp-3">{assignment.description}</p>
-				<div class="flex items-center gap-2 mb-6 p-3 bg-surface-container w-max neo-border">
-					<span class="material-symbols-outlined text-error">event</span>
-					<span class="font-label-bold text-sm text-error">Batas Waktu: {new Date(assignment.dueDate).toLocaleString()}</span>
-				</div>
-				
-				<div class="border-t-2 border-on-surface pt-6">
-					<h5 class="font-headline-md font-bold mb-4 flex items-center gap-2">
-						<span class="material-symbols-outlined">group</span>
-						Pengumpulan Murid
-					</h5>
-					<div class="flex flex-col gap-3">
-						{#each submissions.filter((s) => s.assignmentId === assignment.id) as sub}
-							<div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface-container-lowest p-4 neo-border shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] gap-4">
-								<div>
-									<span class="font-label-bold text-base block">Murid ID: <span class="text-primary">{sub.studentId}</span></span>
-									<span class="font-body-md text-sm text-secondary mt-1 block flex items-center gap-1">
-										<span class="material-symbols-outlined text-sm">attachment</span> {sub.fileName}
-									</span>
-								</div>
-								<div>
-									{#if sub.grade !== undefined}
-										<div class="px-4 py-2 bg-primary-container neo-border font-label-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-											Dinilai: <span class="text-lg">{sub.grade}</span>
-										</div>
-									{:else}
-										<Button size="sm" variant="secondary" onclick={() => lmsStore.gradeAssignment(sub.id, 100, 'Bagus!')}>
-											Beri Nilai 100
-										</Button>
-									{/if}
-								</div>
-							</div>
-						{:else}
-							<p class="text-sm text-secondary font-label-bold italic">Belum ada murid yang mengumpulkan.</p>
-						{/each}
-					</div>
-				</div>
-			</div>
-		</article>
-	{/each}
 </div>
+
+<!-- Modal Konfirmasi Hapus -->
+{#if deletingId}
+	<div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+		<div class="bg-surface-container-lowest neo-border shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 max-w-md w-full flex flex-col gap-4">
+			<h4 class="font-headline-md text-xl font-bold text-error flex items-center gap-2">
+				<span class="material-symbols-outlined">warning</span>
+				Hapus Tugas?
+			</h4>
+			<p class="font-body-md">Apakah Anda yakin ingin menghapus tugas ini? Tindakan ini tidak dapat dibatalkan.</p>
+			<div class="flex justify-end items-center gap-3 mt-4">
+				<Button variant="outline" disabled={isDeleting} onclick={() => (deletingId = null)}>
+					Batal
+				</Button>
+				<Button variant="error" disabled={isDeleting} onclick={handleDelete}>
+					{isDeleting ? 'Menghapus...' : 'Ya, Hapus'}
+				</Button>
+			</div>
+		</div>
+	</div>
+{/if}

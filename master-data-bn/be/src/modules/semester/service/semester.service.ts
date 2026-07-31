@@ -3,7 +3,6 @@ import { CreateSemesterDto, UpdateSemesterDto } from '@/modules/semester/domain'
 import { BadRequestError, NotFoundError } from '@/errors';
 import { prisma } from '@/database';
 import { withCache, clearCachePattern, setCache } from '@/utils/cache';
-import { sendWebhook } from '@/utils/webhook';
 
 export class SemesterService {
   constructor(private repository: SemesterRepository) {}
@@ -30,17 +29,17 @@ export class SemesterService {
   async validateUnique(data: Partial<CreateSemesterDto>, existingItem?: import('@/database/generated/client').Semester) {
     const checkType = data.type || existingItem?.type;
     const checkYearId = data.academicYearId || existingItem?.academicYearId;
-    
+
     if (checkType && checkYearId) {
       const exists = await this.repository.checkUniqueType(checkType, checkYearId, existingItem?.id);
       if (exists) throw new BadRequestError('Semester type already exists for this academic year');
     }
-    
+
     if (data.status === 'Aktif') {
       const activeExists = await this.repository.checkActiveStatus(existingItem?.id);
       if (activeExists) throw new BadRequestError('An active semester already exists');
     }
-    
+
     if (checkYearId) {
       const ay = await prisma.academicYear.findFirst({ where: { id: checkYearId, deletedAt: null } });
       if (!ay) throw new BadRequestError('Tahun ajaran tidak ditemukan atau telah dihapus');
@@ -54,7 +53,6 @@ export class SemesterService {
     await clearCachePattern('academic-year:all:*');
     await clearCachePattern(`academic-year:id:${created.academicYearId}`);
     await setCache(`semester:id:${created.id}`, created, 600);
-    sendWebhook('semesters', created);
     return created;
   }
 
@@ -67,7 +65,6 @@ export class SemesterService {
     if (item.academicYearId) await clearCachePattern(`academic-year:id:${item.academicYearId}`);
     if (data.academicYearId && data.academicYearId !== item.academicYearId) await clearCachePattern(`academic-year:id:${data.academicYearId}`);
     await setCache(`semester:id:${id}`, updated, 600);
-    sendWebhook('semesters', updated);
     return updated;
   }
 
@@ -78,7 +75,6 @@ export class SemesterService {
     await clearCachePattern(`semester:id:${id}`);
     await clearCachePattern('academic-year:all:*');
     await clearCachePattern(`academic-year:id:${item.academicYearId}`);
-    sendWebhook('semesters', deleted);
     return deleted;
   }
 
@@ -94,16 +90,15 @@ export class SemesterService {
       const items = await tx.semester.findMany({ where: { id: { in: ids }, deletedAt: null } });
       if (items.length !== ids.length) throw new NotFoundError('Beberapa data tidak ditemukan');
       await tx.semester.updateMany({ where: { id: { in: ids } }, data: { deletedAt: new Date() } });
-      
+
       const deletedItems = await tx.semester.findMany({ where: { id: { in: ids } } });
       await clearCachePattern('semester:all:*');
       await clearCachePattern('academic-year:all:*');
       for (const item of deletedItems) {
         await clearCachePattern(`semester:id:${item.id}`);
         await clearCachePattern(`academic-year:id:${item.academicYearId}`);
-        sendWebhook('semesters', item);
       }
-      
+
       return true;
     });
   }

@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.academicyearRoute = void 0;
+const middlewares_1 = require("../../../middlewares");
+const express_1 = require("express");
+const controller_1 = require("../../../modules/academic-year/controller");
+const database_1 = require("../../../database");
+const domain_1 = require("../../../modules/academic-year/domain");
+const zod_1 = require("zod");
+exports.academicyearRoute = (0, express_1.Router)();
+exports.academicyearRoute.post("/batch", database_1.sentriAuth.authorize("super_admin"), (0, middlewares_1.validate)(domain_1.batchGetAcademicYearSchema), controller_1.academicyearController.getBatch);
+exports.academicyearRoute.delete("/bulk", database_1.sentriAuth.authorize("super_admin"), (0, middlewares_1.validate)(zod_1.z.object({ ids: zod_1.z.array(zod_1.z.string().min(1)).min(1) })), controller_1.academicyearController.bulkDelete);
+exports.academicyearRoute.get("/", database_1.sentriAuth.authorize("super_admin"), controller_1.academicyearController.getAll);
+exports.academicyearRoute.get("/:id", controller_1.academicyearController.getById);
+exports.academicyearRoute.post("/", database_1.sentriAuth.authorize("super_admin"), (0, middlewares_1.validate)(domain_1.createAcademicYearSchema), controller_1.academicyearController.create);
+exports.academicyearRoute.put("/:id", database_1.sentriAuth.authorize("super_admin"), (0, middlewares_1.validate)(domain_1.updateAcademicYearSchema), controller_1.academicyearController.update);
+exports.academicyearRoute.delete("/:id", database_1.sentriAuth.authorize("super_admin"), controller_1.academicyearController.delete);

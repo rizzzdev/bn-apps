@@ -8,7 +8,9 @@
 	import { apiClient } from '$lib/utils/api';
 	import { PUBLIC_API_URL } from '$env/static/public';
 
-	let { isCreateOpen = $bindable(false), isBulkCreateOpen = $bindable(false), handleExport = $bindable() } = $props<{ isCreateOpen?: boolean; isBulkCreateOpen?: boolean, handleExport?: () => void }>();
+	import { Tabs } from '$lib/components/molecules';
+
+	let { isCreateOpen = $bindable(false), handleExport = $bindable() } = $props<{ isCreateOpen?: boolean, handleExport?: () => void }>();
 
 	let isEditOpen = $state(false);
 	let isDeleteOpen = $state(false);
@@ -63,6 +65,8 @@
 	let isPictureDeleted = $state(false);
 	let existingImageUrl = $state<string | null>(null);
 
+	let activeTabId = $state('single');
+
 	$effect(() => {
 		if (!isCreateOpen && !isEditOpen) {
 			formData = { ...initialFormData };
@@ -70,6 +74,8 @@
 			picturePreview = '';
 			isPictureDeleted = false;
 			existingImageUrl = null;
+			activeTabId = 'single';
+			uploadedFile = null;
 		}
 	});
 
@@ -307,7 +313,7 @@
 			}
 			
 			toast.success('Data murid berhasil ditambahkan dari file excel');
-			isBulkCreateOpen = false;
+			isCreateOpen = false;
 			uploadedFile = null;
 			fetchStudents(currentPage, limit);
 		} catch (error) {
@@ -508,39 +514,64 @@
 />
 
 <Modal bind:isOpen={isCreateOpen} title="Tambah Murid">
-	<div class="flex flex-col gap-sm">
-		<FormField id="fullname-create" label="Nama Lengkap *" bind:value={formData.fullname} placeholder="Masukkan nama lengkap" />
-		
-		<FormField id="picture-create" label="Foto Profil" type="image" bind:file={pictureFile} bind:preview={picturePreview}
-			markedForDeletion={false}
-			onDeleteImage={() => {}}
-			onRestoreImage={() => {}}
-		/>
+	<Tabs 
+		tabs={[
+			{ id: 'single', label: 'Single Create', icon: 'add' }, 
+			{ id: 'bulk', label: 'Import Excel', icon: 'upload_file' }
+		]} 
+		bind:activeTab={activeTabId} 
+		class="mb-md"
+	/>
 
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
-			<FormField id="nik-create" label="NIK" bind:value={formData.nik} placeholder="Masukkan NIK" />
-			<FormField id="nis-create" label="NIS" bind:value={formData.nis} placeholder="Masukkan NIS" />
-			<FormField id="nisn-create" label="NISN" bind:value={formData.nisn} placeholder="Masukkan NISN" />
-			<SelectField id="gender-create" label="Jenis Kelamin" bind:value={formData.gender} options={[{value: 'L', label: 'Laki-laki'}, {value: 'P', label: 'Perempuan'}]} />
-			<FormField id="birthplace-create" label="Tempat Lahir" bind:value={formData.birthplace} placeholder="Tempat lahir" />
-			<FormField id="birthdate-create" label="Tanggal Lahir" bind:value={formData.birthdate} type="date" />
-			<SelectField id="religion-create" label="Agama" bind:value={formData.religion} options={[{value: 'Islam', label: 'Islam'}, {value: 'Kristen', label: 'Kristen'}, {value: 'Katolik', label: 'Katolik'}, {value: 'Hindu', label: 'Hindu'}, {value: 'Buddha', label: 'Buddha'}, {value: 'Konghucu', label: 'Konghucu'}]} />
-			<FormField id="ethnic-create" label="Suku" bind:value={formData.ethnicGroup} placeholder="Contoh: Jawa, Sunda" />
-			<FormField id="height-create" label="Tinggi Badan (cm)" bind:value={formData.height} type="number" />
-			<FormField id="weight-create" label="Berat Badan (kg)" bind:value={formData.weight} type="number" />
-			<FormField id="phone-create" label="Nomor Telepon" bind:value={formData.phoneNumber} placeholder="Contoh: 0812..." />
-			<FormField id="email-create" label="Email *" bind:value={formData.email} type="email" placeholder="email@contoh.com" />
-			<FormField id="password-create" label="Password *" bind:value={formData.password} type="password" placeholder="Minimal 8 karakter" />
+	{#if activeTabId === 'single'}
+		<div class="flex flex-col gap-sm">
+			<FormField id="fullname-create" label="Nama Lengkap *" bind:value={formData.fullname} placeholder="Masukkan nama lengkap" />
+			
+			<FormField id="picture-create" label="Foto Profil" type="image" bind:file={pictureFile} bind:preview={picturePreview}
+				markedForDeletion={false}
+				onDeleteImage={() => {}}
+				onRestoreImage={() => {}}
+			/>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+				<FormField id="nik-create" label="NIK" bind:value={formData.nik} placeholder="Masukkan NIK" />
+				<FormField id="nis-create" label="NIS" bind:value={formData.nis} placeholder="Masukkan NIS" />
+				<FormField id="nisn-create" label="NISN" bind:value={formData.nisn} placeholder="Masukkan NISN" />
+				<SelectField id="gender-create" label="Jenis Kelamin" bind:value={formData.gender} options={[{value: 'L', label: 'Laki-laki'}, {value: 'P', label: 'Perempuan'}]} />
+				<FormField id="birthplace-create" label="Tempat Lahir" bind:value={formData.birthplace} placeholder="Tempat lahir" />
+				<FormField id="birthdate-create" label="Tanggal Lahir" bind:value={formData.birthdate} type="date" />
+				<SelectField id="religion-create" label="Agama" bind:value={formData.religion} options={[{value: 'Islam', label: 'Islam'}, {value: 'Kristen', label: 'Kristen'}, {value: 'Katolik', label: 'Katolik'}, {value: 'Hindu', label: 'Hindu'}, {value: 'Buddha', label: 'Buddha'}, {value: 'Konghucu', label: 'Konghucu'}]} />
+				<FormField id="ethnic-create" label="Suku" bind:value={formData.ethnicGroup} placeholder="Contoh: Jawa, Sunda" />
+				<FormField id="height-create" label="Tinggi Badan (cm)" bind:value={formData.height} type="number" />
+				<FormField id="weight-create" label="Berat Badan (kg)" bind:value={formData.weight} type="number" />
+				<FormField id="phone-create" label="Nomor Telepon" bind:value={formData.phoneNumber} placeholder="Contoh: 0812..." />
+				<FormField id="email-create" label="Email *" bind:value={formData.email} type="email" placeholder="email@contoh.com" />
+				<FormField id="password-create" label="Password *" bind:value={formData.password} type="password" placeholder="Minimal 8 karakter" />
+			</div>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-sm">
+				<SelectField id="major-create" label="Jurusan" bind:value={formData.currentMajorId} options={[{value: '', label: 'Pilih Jurusan'}, ...majorOptions]} />
+				<SelectField id="class-create" label="Kelas" bind:value={formData.currentClassId} options={[{value: '', label: 'Pilih Kelas'}, ...classOptions]} />
+				<SelectField id="status-create" label="Status" bind:value={formData.status} options={[{value: 'Aktif', label: 'Aktif'}, {value: 'Tidak_Aktif', label: 'Tidak Aktif'}, {value: 'Lulus', label: 'Lulus'}]} />
+			</div>
 		</div>
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-sm">
-			<SelectField id="major-create" label="Jurusan" bind:value={formData.currentMajorId} options={[{value: '', label: 'Pilih Jurusan'}, ...majorOptions]} />
-			<SelectField id="class-create" label="Kelas" bind:value={formData.currentClassId} options={[{value: '', label: 'Pilih Kelas'}, ...classOptions]} />
-			<SelectField id="status-create" label="Status" bind:value={formData.status} options={[{value: 'Aktif', label: 'Aktif'}, {value: 'Tidak_Aktif', label: 'Tidak Aktif'}, {value: 'Lulus', label: 'Lulus'}]} />
+	{:else}
+		<div class="flex flex-col gap-sm">
+			<div class="flex justify-between items-center">
+				<p class="font-body-base text-body-base text-on-surface-variant">Unggah file Excel (.xlsx) yang berisi data murid.</p>
+				<Button variant="secondary" class="py-1 px-3 text-sm h-8" onclick={downloadTemplate}>
+					<Icon name="download" class="text-sm mr-1" fill={0} /> Template
+				</Button>
+			</div>
+			<FormField id="excel-bulk" label="File Excel" type="excel" bind:file={uploadedFile} />
 		</div>
-	</div>
+	{/if}
 	{#snippet footer()}
 		<Button variant="secondary" onclick={() => isCreateOpen = false} class="bg-surface text-on-surface hover:bg-surface-variant w-auto">Batal</Button>
-		<Button variant="info" onclick={handleSave}>Simpan</Button>
+		{#if activeTabId === 'single'}
+			<Button variant="info" onclick={handleSave}>Simpan</Button>
+		{:else}
+			<Button variant="info" disabled={!uploadedFile} onclick={handleBulkCreate}>Mulai Impor</Button>
+		{/if}
 	{/snippet}
 </Modal>
 
@@ -596,21 +627,7 @@
 	onConfirm={handleDelete}
 />
 
-<Modal bind:isOpen={isBulkCreateOpen} title="Tambah Masal Murid">
-	<div class="flex flex-col gap-sm">
-		<div class="flex justify-between items-center">
-			<p class="font-body-base text-body-base text-on-surface-variant">Unggah file Excel (.xlsx) yang berisi data murid.</p>
-			<Button variant="secondary" class="py-1 px-3 text-sm h-8" onclick={downloadTemplate}>
-				<Icon name="download" class="text-sm mr-1" fill={0} /> Template
-			</Button>
-		</div>
-		<FormField id="excel-bulk" label="File Excel" type="excel" bind:file={uploadedFile} />
-	</div>
-	{#snippet footer()}
-		<Button variant="secondary" onclick={() => isBulkCreateOpen = false} class="bg-surface text-on-surface hover:bg-surface-variant w-auto">Batal</Button>
-		<Button variant="info" disabled={!uploadedFile} onclick={handleBulkCreate}>Mulai Impor</Button>
-	{/snippet}
-</Modal>
+
 
 <Modal bind:isOpen={isBulkEditOpen} title="Ubah Status Masal">
 	<div class="flex flex-col gap-sm">

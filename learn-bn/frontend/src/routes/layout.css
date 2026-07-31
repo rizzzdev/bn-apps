@@ -85,16 +85,31 @@
   --text-display-lg--font-weight: 700;
 }
 
-@layer utilities {
-  .neo-shadow { box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); }
-  .neo-shadow-hover:hover { box-shadow: 8px 8px 0px 0px rgba(0,0,0,1); transform: translate(-2px, -2px); }
-  .neo-shadow-active:active { box-shadow: 0px 0px 0px 0px rgba(0,0,0,1); transform: translate(4px, 4px); }
-  .neo-border { border: 2px solid #1a1c1c; }
-  .neo-border-3 { border: 3px solid #1a1c1c; }
-  
-  .input-neo:focus {
-      box-shadow: 4px 4px 0px 0px #adff2f;
-      outline: none;
+@utility neo-shadow {
+  box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+}
+@utility neo-shadow-hover {
+  &:hover {
+    box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
+    transform: translate(-2px, -2px);
+  }
+}
+@utility neo-shadow-active {
+  &:active {
+    box-shadow: 0px 0px 0px 0px rgba(0,0,0,1);
+    transform: translate(4px, 4px);
+  }
+}
+@utility neo-border {
+  border: 2px solid #1a1c1c;
+}
+@utility neo-border-3 {
+  border: 3px solid #1a1c1c;
+}
+@utility input-neo {
+  &:focus {
+    box-shadow: 4px 4px 0px 0px #adff2f;
+    outline: none;
   }
 }
 
@@ -104,4 +119,36 @@
 
 body {
   @apply bg-background text-on-surface font-body-md min-h-screen antialiased selection:bg-primary-container selection:text-on-primary-container;
+}
+
+/* Neo-brutalism Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #eeeeee;
+  border-left: 2px solid #1a1c1c;
+  border-top: 2px solid #1a1c1c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #adff2f;
+  border: 2px solid #1a1c1c;
+  box-shadow: 1px 1px 0px 0px #1a1c1c;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8fdb00;
+}
+
+::-webkit-scrollbar-corner {
+  background: #eeeeee;
+}
+
+/* Firefox scrollbar fallback */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #adff2f #eeeeee;
 }

@@ -6,7 +6,6 @@
 	import { onMount } from 'svelte';
 
 	let isCreateOpen = $state(false);
-	let isBulkCreateOpen = $state(false);
 	let handleExport = $state<() => void>();
 
 	let stats = $state({
@@ -42,10 +41,6 @@
 			<Icon name="download" class="text-lg" fill={0} />
 			Ekspor Data
 		</Button>
-		<Button variant="secondary" class="gap-xs" onclick={() => isBulkCreateOpen = true}>
-			<Icon name="upload_file" class="text-lg" fill={0} />
-			Tambah Masal
-		</Button>
 		<Button variant="secondary" class="gap-xs" onclick={() => isCreateOpen = true}>
 			<Icon name="add" class="text-lg" fill={0} />
 			Tambah Guru
@@ -60,4 +55,4 @@
 	retiredTeachers={stats.retired}
 />
 
-<TeacherTable bind:isCreateOpen bind:isBulkCreateOpen bind:handleExport />
+<TeacherTable bind:isCreateOpen bind:handleExport />

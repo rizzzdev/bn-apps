@@ -14,5 +14,23 @@ export default defineConfig({
 			},
 			adapter: adapter()
 		})
-	]
+	],
+	server: {
+		proxy: {
+			'/api/v1/class': 'http://localhost:9061',
+			'/api/v1/materials': 'http://localhost:9061',
+			'/api/v1/assignments': 'http://localhost:9061',
+			'/api/v1/assignment-submissions': 'http://localhost:9061',
+			'/api/v1/quizzes': 'http://localhost:9061',
+			'/api/v1/grades': 'http://localhost:9061',
+			'/api/v1/lesson-schedule': 'http://localhost:9061',
+			'/api/v1/attachments': 'http://localhost:9061',
+			'/api/v1/student': 'http://localhost:9061',
+			'/api/v1/teacher': 'http://localhost:9061',
+			'/api/v1/subject': 'http://localhost:9061',
+			'/api/v1/class-student': 'http://localhost:9061',
+			'/api/v1/subject-teacher': 'http://localhost:9061',
+			'/api/v1/dashboard': 'http://localhost:9061',
+		}
+	}
 });

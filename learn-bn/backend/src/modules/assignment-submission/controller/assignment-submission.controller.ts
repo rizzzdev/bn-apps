@@ -61,6 +61,19 @@ export class AssignmentSubmissionController {
       next(error);
     }
   };
+
+  bulkGrade = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.user?.roles.includes('super_admin') && (!req.user?.roles.includes('teacher') || !req.profileId)) {
+        throw new SentriError('FORBIDDEN', 'Hanya Guru yang dapat menilai tugas', 403);
+      }
+
+      const data = await this.service.bulkGradeSubmissions(req.profileId!, req.body);
+      sendResponse(res, 200, 'Nilai berhasil disimpan', data);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 import { assignmentSubmissionService } from '../service/assignment-submission.service';

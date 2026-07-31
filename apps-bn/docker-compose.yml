@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  apps-bn:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apps-bn-app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=5173
+      # Pass dynamic API URL or other environment variables below
+      - PUBLIC_API_URL=http://api-bn.${DOMAIN_NAME}/api/v1
+      - PUBLIC_PORTAL_URL=http://apps-bn.${DOMAIN_NAME}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://apps-bn.${DOMAIN_NAME}"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - proxy
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.apps-bn.rule=Host(`apps-bn.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.apps-bn.entrypoints=websecure"
+      - "traefik.http.routers.apps-bn.tls.certresolver=myresolver"
+      - "traefik.http.services.apps-bn.loadbalancer.server.port=5173"
+
+networks:
+  proxy:
+    external: true
+  backend:
+    external: true
+    
+

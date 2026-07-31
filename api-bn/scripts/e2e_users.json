@@ -1,0 +1,31 @@
+{
+  "admin": {
+    "identifier": "testtest@test.com",
+    "password": "testtest"
+  },
+  "teacher": {
+    "id": "e39720b6-e859-43b5-bd00-f2e2bdc836d7",
+    "email": "e2e_teacher@test.com",
+    "password": "P@ssw0rd12345"
+  },
+  "student": {
+    "id": "4ca99c49-8cc8-433c-bd5a-0c9acab76cb0",
+    "email": "e2e_student@test.com",
+    "password": "P@ssw0rd12345"
+  },
+  "mentor": {
+    "id": "cms6clg7z0000ukbw6zyj1r59",
+    "email": "e2e_mentor@test.com",
+    "username": "e2e_mentor",
+    "password": "P@ssw0rd12345"
+  },
+  "academicYearId": "154900d4-7f56-495c-8460-b79e85c04cb7",
+  "subjectId": "3272d8bc-1c5c-4ec1-800b-e333d3cd6829",
+  "majorId": "7ac9e394-25b8-4895-b611-7decbf033947",
+  "classId": "1c2a6ffc-7c4c-40be-ae75-631b275da4d8",
+  "lessonHourId": "2d293f61-2339-4d20-aaaf-480c94fb634f",
+  "subjectTeacherId": "7ceb1e70-5998-44ff-b37c-59ae831a36bf",
+  "classSubjectRequirementId": "a4d2920a-9c1a-48fa-bead-d67f7ffced9d",
+  "homeroomTeacherId": "ae7ac9fd-0b7c-4b51-8061-cd3d4682ee52",
+  "classStudentId": ""
+}

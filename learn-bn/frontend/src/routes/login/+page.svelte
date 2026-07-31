@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { authState } from '$lib/features/auth/auth.svelte';
+	import { authState, getHomePath } from '$lib/features/auth/auth.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import Button from '$lib/components/Button.svelte';
@@ -9,31 +9,33 @@
 	let identifier = $state('');
 	let password = $state('');
 	let errorMsg = $state('');
+	let loading = $state(false);
 
-	onMount(() => {
-		if (authState.user) {
-			goto('/');
+	onMount(async () => {
+		const currentUser = authState.user;
+		if (currentUser) {
+			goto(getHomePath(currentUser.role));
+			return;
+		}
+		await authState.checkSession();
+		const updatedUser = authState.user;
+		if (updatedUser) {
+			goto(getHomePath(updatedUser.role));
 		}
 	});
 
-	function handleLogin(e: Event) {
+	async function handleLogin(e: Event) {
 		e.preventDefault();
 		errorMsg = '';
+		loading = true;
 
-		if (!identifier || !password) {
-			errorMsg = 'Identifier dan Password harus diisi.';
-			return;
-		}
-
-		// Mock login logic
-		if (identifier.toLowerCase().includes('guru')) {
-			authState.loginAs('teacher');
-			goto('/');
-		} else if (identifier.toLowerCase().includes('murid')) {
-			authState.loginAs('student');
-			goto('/');
-		} else {
-			errorMsg = 'Identifier tidak dikenal. Gunakan kata "guru" atau "murid" dalam identifier Anda untuk uji coba.';
+		try {
+			const user = await authState.login(identifier, password);
+			goto(getHomePath(user.role));
+		} catch (err: any) {
+			errorMsg = err.message || 'Login gagal. Periksa identifier dan password Anda.';
+		} finally {
+			loading = false;
 		}
 	}
 </script>
@@ -54,7 +56,7 @@
 
 			<Input 
 				label="Identifier" 
-				placeholder="Contoh: guru_budi atau murid_andi" 
+				placeholder="Email, NIP, NIS, atau NISN" 
 				bind:value={identifier} 
 				icon="person" 
 				required 
@@ -70,7 +72,9 @@
 			/>
 
 			<div class="mt-4">
-				<Button variant="primary" class="w-full h-12" type="submit">Masuk ke LMS</Button>
+				<Button variant="primary" class="w-full h-12" type="submit" disabled={loading}>
+					{loading ? 'Memproses...' : 'Masuk ke LMS'}
+				</Button>
 			</div>
 		</form>
 

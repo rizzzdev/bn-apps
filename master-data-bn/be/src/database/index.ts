@@ -35,6 +35,7 @@ export const sentriAuth = createAuthExpress<Role>({
   }),
 
   // -- Token ------------------------------------------------------------------
+  secret: process.env.JWT_SECRET!,
   accessExpiresIn: env.JWT_ACCESS_EXPIRES_IN ?? "15m",
   refreshExpiresIn: env.JWT_REFRESH_EXPIRES_IN ?? "1d",
 
@@ -50,10 +51,12 @@ export const sentriAuth = createAuthExpress<Role>({
 
   // -- Cookie (optional) ------------------------------------------------------
   cookie: {
+    name: 'refresh_token',
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
   },
   accessCookie: {
+    name: 'access_token',
     secure: process.env.NODE_ENV === "production",
   },
 

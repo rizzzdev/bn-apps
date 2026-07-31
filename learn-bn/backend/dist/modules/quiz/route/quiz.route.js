@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import { quizController } from '../controller/quiz.controller';
+export const quizRoute = Router();
+quizRoute.post('/', quizController.create);
+quizRoute.post('/bulk', quizController.bulkCreate);
+quizRoute.get('/class/:classId', quizController.getByClass);
+quizRoute.get('/:id', quizController.getById);
+quizRoute.put('/:id', quizController.update);
+quizRoute.delete('/:id', quizController.delete);
+quizRoute.post('/delete-bulk', quizController.bulkDelete);

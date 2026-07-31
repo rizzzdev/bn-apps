@@ -1,0 +1,202 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../src/database/generated"
+  previewFeatures = ["partialIndexes"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AcademicYear {
+  id        String         @id @default(uuid())
+  code      String
+  startYear Int            @map("start_year")
+  endYear   Int            @map("end_year")
+  status    AcademicStatus @default(Tidak_Aktif)
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+  deletedAt DateTime?      @map("deleted_at")
+  semesters Semester[]
+
+  @@map("academic_years")
+}
+
+model Semester {
+  id             String         @id @default(uuid())
+  type           SemesterType
+  status         AcademicStatus @default(Tidak_Aktif)
+  academicYearId String         @map("academic_year_id")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  deletedAt      DateTime?      @map("deleted_at")
+  academicYear   AcademicYear   @relation(fields: [academicYearId], references: [id])
+
+  @@map("semesters")
+}
+
+model Major {
+  id              String    @id @default(uuid())
+  code            String    @unique(where: raw("(deleted_at IS NULL)"))
+  name            String    @unique(where: raw("(deleted_at IS NULL)"))
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+  classes         Class[]
+  currentStudents Student[] @relation("MajorCurrentStudents")
+
+  @@map("majors")
+}
+
+model Class {
+  id              String    @id @default(uuid())
+  name            String
+  majorId         String    @map("major_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+  major           Major     @relation(fields: [majorId], references: [id])
+  currentStudents Student[] @relation("ClassCurrentStudents")
+
+  @@map("classes")
+}
+
+model Teacher {
+  id          String         @id @default(uuid())
+  fullname    String
+  nik         String?
+  birthplace  String?
+  birthdate   DateTime?
+  ethnicGroup String?        @map("ethnic_group")
+  prefixTitle String?        @map("prefix_title")
+  suffixTitle String?        @map("suffix_title")
+  nip         String?
+  height      Int?
+  weight      Int?
+  phoneNumber String?        @map("phone_number")
+  email       String?
+  userId      String         @unique @map("user_id")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+  deletedAt   DateTime?      @map("deleted_at")
+  gender      Gender?
+  religion    Religion?
+  status      TeacherStatus?
+  pictureId   String?        @unique @map("picture_id")
+  picture     Attachment?    @relation("TeacherPicture", fields: [pictureId], references: [id])
+
+  @@map("teachers")
+}
+
+model Student {
+  id             String         @id @default(uuid())
+  fullname       String
+  nik            String?
+  birthplace     String?
+  birthdate      DateTime?
+  ethnicGroup    String?        @map("ethnic_group")
+  nis            String?
+  nisn           String?
+  height         Int?
+  weight         Int?
+  phoneNumber    String?        @map("phone_number")
+  email          String?
+  userId         String         @unique @map("user_id")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  deletedAt      DateTime?      @map("deleted_at")
+  currentClassId String?        @map("current_class_id")
+  currentMajorId String?        @map("current_major_id")
+  gender         Gender?
+  religion       Religion?
+  status         StudentStatus?
+  pictureId      String?        @unique @map("picture_id")
+  currentClass   Class?         @relation("ClassCurrentStudents", fields: [currentClassId], references: [id])
+  currentMajor   Major?         @relation("MajorCurrentStudents", fields: [currentMajorId], references: [id])
+  picture        Attachment?    @relation("StudentPicture", fields: [pictureId], references: [id])
+
+  @@map("students")
+}
+
+model Subject {
+  id        String    @id @default(uuid())
+  code      String
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("subjects")
+}
+
+model Attachment {
+  id             String    @id @default(uuid())
+  filename       String
+  format         String
+  size           Float
+  url            String    @unique
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
+  studentPicture Student?  @relation("StudentPicture")
+  teacherPicture Teacher?  @relation("TeacherPicture")
+
+  @@index([deletedAt])
+  @@map("attachments")
+}
+
+model Application {
+  id           String    @id @default(uuid())
+  title        String
+  description  String
+  materialIcon String    @map("material_icon")
+  link         String
+  /// Optional display/ordering position. Smaller numbers appear first.
+  /// If omitted at creation, the service auto-fills with `(max order) + 1`
+  /// among non-deleted rows. Duplicates are allowed (no DB constraint) so
+  /// admins can reorder freely without breaking soft-deleted history.
+  order        Int?
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  @@index([order])
+  @@map("applications")
+}
+
+enum AcademicStatus {
+  Aktif
+  Tidak_Aktif @map("Tidak Aktif")
+  Selesai
+}
+
+enum StudentStatus {
+  Aktif
+  Tidak_Aktif @map("Tidak Aktif")
+  Lulus
+}
+
+enum TeacherStatus {
+  Aktif
+  Tidak_Aktif @map("Tidak Aktif")
+  Pensiun
+}
+
+enum SemesterType {
+  Ganjil
+  Genap
+}
+
+enum Gender {
+  L
+  P
+}
+
+enum Religion {
+  Islam
+  Kristen
+  Katolik
+  Hindu
+  Buddha
+  Konghucu
+}

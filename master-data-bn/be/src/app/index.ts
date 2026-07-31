@@ -1,9 +1,9 @@
+import "express-async-errors";
 import express from "express";
 import { corsConfig } from "@/configs/cors";
 import { appRoutes } from "@/app/routes";
 import { sentriAuth } from "@/database";
 import { cacheRouteMiddleware, clearCachePattern } from "@/utils/cache";
-import { webhookRoute } from "@/modules/webhook";
 import { attachmentController } from "@/modules/attachment/controller";
 
 export const createServer = () => {
@@ -34,7 +34,6 @@ export const createServer = () => {
     }
     next();
   });
-  app.use("/api/v1/webhook", webhookRoute);
   app.use("/api/v1/auth", sentriAuth.router());
 
   // Public file serving (no auth required)
@@ -44,8 +43,6 @@ export const createServer = () => {
   app.use(
     sentriAuth.errorHandler(),
   );
-
-  sentriAuth.migrate();
 
   return app;
 };

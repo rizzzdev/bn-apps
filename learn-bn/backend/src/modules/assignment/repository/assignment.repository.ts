@@ -1,6 +1,29 @@
 import { prisma } from '@/database';
 import { CreateAssignmentDto, UpdateAssignmentDto } from '../domain/schemas';
 
+const teacherSelect = {
+  id: true,
+  fullname: true,
+  prefixTitle: true,
+  suffixTitle: true,
+  pictureUrl: true,
+  subjectTeachers: {
+    select: { subject: { select: { id: true, name: true, code: true } } },
+  },
+};
+
+const classesInclude = {
+  include: {
+    class: {
+      select: {
+        id: true,
+        name: true,
+        _count: { select: { classStudents: { where: { status: 'Aktif' as const, deletedAt: null } } } },
+      },
+    },
+  },
+};
+
 export class AssignmentRepository {
   async create(data: CreateAssignmentDto, teacherId: string) {
     return prisma.assignment.create({
@@ -8,39 +31,111 @@ export class AssignmentRepository {
         title: data.title,
         description: data.description,
         deadline: new Date(data.deadline),
-        classId: data.classId,
+        status: data.status || 'Draft',
         teacherId,
         attachments: {
           create: data.attachments || [],
         },
+        classes: {
+          create: data.classIds.map((classId) => ({ classId })),
+        },
       },
-      include: { attachments: true },
+      include: {
+        attachments: true,
+        classes: classesInclude,
+        teacher: { select: teacherSelect },
+      },
     });
   }
 
-  async findAllByClass(classId: string) {
-    return prisma.assignment.findMany({
-      where: { classId, deletedAt: null },
+  async findAllByTeacher(teacherId: string) {
+    const assignments = await prisma.assignment.findMany({
+      where: { teacherId, deletedAt: null },
       include: {
         attachments: true,
-        teacher: {
-          select: { id: true, fullname: true, pictureUrl: true },
-        },
+        classes: classesInclude,
+        teacher: { select: teacherSelect },
+        _count: { select: { submissions: true } },
       },
       orderBy: { createdAt: 'desc' },
+    });
+
+    return assignments.map((a: any) => ({
+      ...a,
+      submissionStats: {
+        submittedCount: a._count?.submissions ?? 0,
+        totalStudents: a.classes?.reduce(
+          (sum: number, c: any) => sum + (c.class?._count?.classStudents ?? 0),
+          0
+        ) ?? 0,
+      },
+    }));
+  }
+
+  async findAllByClass(classId: string, isStudent = false, studentId?: string) {
+    const assignments = await prisma.assignment.findMany({
+      where: {
+        classes: { some: { classId } },
+        deletedAt: null,
+        ...(isStudent && { status: 'Published' }),
+      },
+      include: {
+        attachments: true,
+        classes: classesInclude,
+        teacher: { select: teacherSelect },
+        _count: { select: { submissions: true } },
+        ...(studentId ? {
+          submissions: {
+            where: { studentId },
+            select: { id: true, grade: true, createdAt: true },
+          },
+        } : {}),
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return assignments.map((a: any) => {
+      const submittedCount = a._count?.submissions ?? 0;
+      const totalStudents = a.classes?.reduce(
+        (sum: number, c: any) => sum + (c.class?._count?.classStudents ?? 0),
+        0
+      ) ?? 0;
+
+      if (studentId) {
+        const mySubmission = a.submissions?.[0] ?? null;
+        return {
+          ...a,
+          submissionStats: { submittedCount, totalStudents },
+          isSubmitted: !!mySubmission,
+          mySubmission,
+        };
+      }
+
+      return { ...a, submissionStats: { submittedCount, totalStudents } };
     });
   }
 
   async findById(id: string) {
-    return prisma.assignment.findFirst({
+    const assignment = await prisma.assignment.findFirst({
       where: { id, deletedAt: null },
       include: {
         attachments: true,
-        teacher: {
-          select: { id: true, fullname: true, pictureUrl: true },
-        },
+        classes: classesInclude,
+        teacher: { select: teacherSelect },
+        _count: { select: { submissions: true } },
       },
     });
+
+    if (!assignment) return null;
+
+    const a = assignment as any;
+    const submittedCount = a._count?.submissions ?? 0;
+    const totalStudents = a.classes?.reduce(
+      (sum: number, c: any) => sum + (c.class?._count?.classStudents ?? 0),
+      0
+    ) ?? 0;
+
+    return { ...assignment, submissionStats: { submittedCount, totalStudents } };
   }
 
   async update(id: string, data: UpdateAssignmentDto) {
@@ -50,7 +145,13 @@ export class AssignmentRepository {
         ...(data.title && { title: data.title }),
         ...(data.description && { description: data.description }),
         ...(data.deadline && { deadline: new Date(data.deadline) }),
-        ...(data.classId && { classId: data.classId }),
+        ...(data.status && { status: data.status }),
+        ...(data.classIds !== undefined && {
+          classes: {
+            deleteMany: {},
+            create: data.classIds.map((classId) => ({ classId })),
+          },
+        }),
         ...(data.attachments && {
           attachments: {
             deleteMany: {},
@@ -58,7 +159,11 @@ export class AssignmentRepository {
           },
         }),
       },
-      include: { attachments: true },
+      include: {
+        attachments: true,
+        classes: classesInclude,
+        teacher: { select: teacherSelect },
+      },
     });
   }
 

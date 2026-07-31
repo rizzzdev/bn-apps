@@ -13,3 +13,4 @@ assignmentSubmissionRoute.get('/', assignmentSubmissionController.getAllSubmissi
 // Let's create a separate router for direct submission access without assignmentId
 export const directSubmissionRoute = Router();
 directSubmissionRoute.put('/:submissionId/grade', assignmentSubmissionController.gradeSubmission);
+directSubmissionRoute.post('/bulk-grade', assignmentSubmissionController.bulkGrade);

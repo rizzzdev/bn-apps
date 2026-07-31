@@ -1,0 +1,310 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/database/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model LessonHour {
+  id               String                  @id @default(uuid())
+  name             String
+  startTime        String                  @map("start_time")
+  endTime          String                  @map("end_time")
+  order            Int
+  createdAt        DateTime                @default(now()) @map("created_at")
+  updatedAt        DateTime                @updatedAt @map("updated_at")
+  deletedAt        DateTime?               @map("deleted_at")
+  schedules        LessonSchedule[]
+  unavailabilities TeacherUnavailability[]
+
+  @@map("lesson_hours")
+}
+
+model MajorStudent {
+  id             String           @id @default(uuid())
+  majorId        String           @map("major_id")
+  studentId      String           @map("student_id")
+  academicYearId String           @map("academic_year_id")
+  status         MajorStudentStatus
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  deletedAt      DateTime?        @map("deleted_at")
+
+  @@map("major_students")
+}
+
+model ClassStudent {
+  id             String           @id @default(uuid())
+  classId        String           @map("class_id")
+  studentId      String           @map("student_id")
+  academicYearId String           @map("academic_year_id")
+  status         ClassStudentStatus
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  deletedAt      DateTime?        @map("deleted_at")
+
+  @@map("class_students")
+}
+
+model HomeroomTeacher {
+  id             String      @id @default(uuid())
+  teacherId      String      @map("teacher_id")
+  classId        String      @map("class_id")
+  academicYearId String      @map("academic_year_id")
+  status         ActiveStatus
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  deletedAt      DateTime?   @map("deleted_at")
+
+  @@map("homeroom_teachers")
+}
+
+model MajorHead {
+  id             String      @id @default(uuid())
+  teacherId      String      @map("teacher_id")
+  majorId        String      @map("major_id")
+  academicYearId String      @map("academic_year_id")
+  status         ActiveStatus
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  deletedAt      DateTime?   @map("deleted_at")
+
+  @@map("major_heads")
+}
+
+model SubjectTeacher {
+  id          String              @id @default(uuid())
+  teacherId   String              @map("teacher_id")
+  subjectId   String              @map("subject_id")
+  status      SubjectTeacherStatus
+  createdAt   DateTime            @default(now()) @map("created_at")
+  updatedAt   DateTime            @updatedAt @map("updated_at")
+  deletedAt   DateTime?           @map("deleted_at")
+  targetHours Int                 @default(0) @map("target_hours")
+
+  @@map("subject_teachers")
+}
+
+model LessonSchedule {
+  id           String                  @id @default(uuid())
+  subjectId    String                  @map("subject_id")
+  day          String
+  notes        String?
+  status       LessonScheduleStatus    @default(Aktif)
+  createdAt    DateTime                @default(now()) @map("created_at")
+  updatedAt    DateTime                @updatedAt @map("updated_at")
+  deletedAt    DateTime?               @map("deleted_at")
+  lessonHourId String                  @map("lesson_hour_id")
+  lessonHour   LessonHour              @relation(fields: [lessonHourId], references: [id])
+  classes      LessonScheduleClass[]
+  teachers     LessonScheduleTeacher[]
+
+  @@map("lesson_schedules")
+}
+
+model LessonScheduleTeacher {
+  id         String        @id @default(uuid())
+  scheduleId String        @map("schedule_id")
+  teacherId  String        @map("teacher_id")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  deletedAt  DateTime?     @map("deleted_at")
+  schedule   LessonSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@map("lesson_schedule_teachers")
+}
+
+model LessonScheduleClass {
+  id         String        @id @default(uuid())
+  scheduleId String        @map("schedule_id")
+  classId    String        @map("class_id")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  deletedAt  DateTime?     @map("deleted_at")
+  schedule   LessonSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@map("lesson_schedule_classes")
+}
+
+model TeacherPicketSchedule {
+  id        String      @id @default(uuid())
+  teacherId String      @map("teacher_id")
+  day       String
+  status    ActiveStatus
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  deletedAt DateTime?   @map("deleted_at")
+
+  @@map("teacher_picket_schedules")
+}
+
+model ClassSubjectRequirement {
+  id             String    @id @default(uuid())
+  classId        String    @map("class_id")
+  subjectId      String    @map("subject_id")
+  teacherId      String?   @map("teacher_id")
+  weeklyHours    Int       @default(2) @map("weekly_hours")
+  maxHoursPerDay Int       @default(2) @map("max_hours_per_day")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
+
+  @@map("class_subject_requirements")
+}
+
+model TeacherUnavailability {
+  id           String     @id @default(uuid())
+  teacherId    String     @map("teacher_id")
+  day          String
+  lessonHourId String     @map("lesson_hour_id")
+  reason       String?
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  deletedAt    DateTime?  @map("deleted_at")
+  lessonHour   LessonHour @relation(fields: [lessonHourId], references: [id])
+
+  @@map("teacher_unavailabilities")
+}
+
+enum ActiveStatus {
+  Aktif
+  TidakAktif @map("Tidak Aktif")
+}
+
+enum ClassStudentStatus {
+  Aktif
+  TidakAktif   @map("Tidak Aktif")
+  NaikKelas    @map("Naik Kelas")
+  TinggalKelas @map("Tinggal Kelas")
+  Pindah
+  Lulus
+}
+
+enum MajorStudentStatus {
+  Aktif
+  TidakAktif @map("Tidak Aktif")
+  Pindah
+  Lulus
+}
+
+enum SubjectTeacherStatus {
+  Aktif
+  TidakAktif @map("Tidak Aktif")
+  Lulus
+}
+
+enum LessonScheduleStatus {
+  Aktif
+  TidakAktif @map("Tidak Aktif")
+}
+
+enum Gender {
+  L
+  P
+}
+
+enum SemesterType {
+  Ganjil
+  Genap
+}
+
+model ShadowAcademicYear {
+  id           String    @id @default(uuid())
+  code         String
+  semesterType String    @map("semester_type")
+  status       String    @default("Aktif")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+  lastSyncAt   DateTime? @map("last_sync_at")
+
+  @@map("shadow_academic_years")
+}
+
+model ShadowMajor {
+  id                  String    @id @default(uuid())
+  code                String
+  name                String
+  status              String    @default("Aktif")
+  totalStudents       Int       @default(0) @map("total_students")
+  headOfDepartment    String?   @map("head_of_department")
+  headOfDepartmentNip String?   @map("head_of_department_nip")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  deletedAt           DateTime? @map("deleted_at")
+  lastSyncAt          DateTime? @map("last_sync_at")
+
+  @@map("shadow_majors")
+}
+
+model ShadowClass {
+  id                 String    @id @default(uuid())
+  name               String
+  majorId            String    @map("major_id")
+  majorCode          String?   @map("major_code")
+  academicYear       String?   @map("academic_year")
+  semester           Int       @default(1)
+  totalStudents      Int       @default(0) @map("total_students")
+  homeroomTeacher    String?   @map("homeroom_teacher")
+  homeroomTeacherNip String?   @map("homeroom_teacher_nip")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
+  lastSyncAt         DateTime? @map("last_sync_at")
+
+  @@map("shadow_classes")
+}
+
+model ShadowTeacher {
+  id           String    @id @default(uuid())
+  fullname     String
+  nip          String?
+  subject      String?
+  field        String?
+  class        String?
+  academicYear String?   @map("academic_year")
+  phone        String?
+  photoUrl     String?   @map("photo_url")
+  status       String    @default("Aktif")
+  userId       String    @map("user_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+  lastSyncAt   DateTime? @map("last_sync_at")
+
+  @@map("shadow_teachers")
+}
+
+model ShadowStudent {
+  id             String    @id @default(uuid())
+  fullname       String
+  nis            String?
+  nisn           String?
+  classId        String?   @map("class_id")
+  className      String?   @map("class_name")
+  majorId        String?   @map("major_id")
+  majorName      String?   @map("major_name")
+  academicYearId String?   @map("academic_year_id")
+  status         String    @default("Aktif")
+  photoUrl       String?   @map("photo_url")
+  userId         String    @map("user_id")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
+  lastSyncAt     DateTime? @map("last_sync_at")
+
+  @@map("shadow_students")
+}
+
+model ShadowSubject {
+  id         String    @id @default(uuid())
+  code       String
+  name       String
+  status     String    @default("Aktif")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+  lastSyncAt DateTime? @map("last_sync_at")
+
+  @@map("shadow_subjects")
+}

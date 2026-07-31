@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { MajorService, majorService } from '@/modules/major/service';
 import { sendResponse } from '@/utils/response';
 import { BadRequestError } from '@/errors';
+import * as ExcelJS from 'exceljs';
 
 export class MajorController {
   constructor(private service: MajorService) {}
@@ -64,6 +65,50 @@ export class MajorController {
     try {
       await this.service.bulkDelete(req.body.ids);
       sendResponse(res, 200, 'Data berhasil dihapus', null);
+    } catch (error: unknown) { next(error instanceof Error ? error : new Error(String(error))); }
+  };
+
+  downloadTemplate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet('Template Jurusan');
+      sheet.columns = [
+        { header: 'Kode Jurusan', key: 'code', width: 20 },
+        { header: 'Nama Jurusan', key: 'name', width: 40 },
+      ];
+      sheet.addRow({ code: 'RPL', name: 'Rekayasa Perangkat Lunak' });
+      sheet.addRow({ code: 'TKJ', name: 'Teknik Komputer dan Jaringan' });
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=template-jurusan.xlsx');
+      
+      await workbook.xlsx.write(res);
+      res.end();
+    } catch (error: unknown) { next(error instanceof Error ? error : new Error(String(error))); }
+  };
+
+  bulkCreate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.file) {
+        throw new BadRequestError('File tidak ditemukan');
+      }
+
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(req.file.buffer as any);
+      const worksheet = workbook.worksheets[0];
+      
+      const data: { code: string; name: string }[] = [];
+      worksheet.eachRow((row, rowNumber) => {
+        if (rowNumber > 1) { // Skip header
+          data.push({
+            code: row.getCell(1).text?.toString().trim(),
+            name: row.getCell(2).text?.toString().trim(),
+          });
+        }
+      });
+
+      const result = await this.service.bulkCreate(data);
+      sendResponse(res, 201, 'Proses bulk create selesai', result);
     } catch (error: unknown) { next(error instanceof Error ? error : new Error(String(error))); }
   };
 }

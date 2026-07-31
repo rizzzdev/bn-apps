@@ -1,0 +1,40 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DB_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432
+      CLIENT_URLS: ${CLIENT_URLS:-http://localhost:5173,http://localhost:9082}
+      API_KEY: ${API_KEY:-change-me-to-a-random-secret}
+      SALT_ROUNDS: ${SALT_ROUNDS:-12}
+      ACCESS_TOKEN_EXPIRES: ${ACCESS_TOKEN_EXPIRES:-15m}
+      REFRESH_TOKEN_EXPIRES: ${REFRESH_TOKEN_EXPIRES:-7d}
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - uploads:/app/public
+    networks:
+      - proxy
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-bn.rule=Host(`api-bn.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.api-bn.entrypoints=websecure"
+      - "traefik.http.routers.api-bn.tls.certresolver=myresolver"
+
+      # Port internal default dari DbGate adalah 3001
+      - "traefik.http.services.api-bn.loadbalancer.server.port=3001"
+
+volumes:
+  uploads:
+
+networks:
+  proxy:
+    external: true
+  backend:
+    external: true
+
+

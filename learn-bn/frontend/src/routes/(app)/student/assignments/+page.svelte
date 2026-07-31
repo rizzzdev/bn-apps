@@ -1,87 +1,190 @@
 <script lang="ts">
 	import { authState } from '$lib/features/auth/auth.svelte';
 	import { lmsStore } from '$lib/features/lms/lms-store.svelte';
-	import Button from '$lib/components/Button.svelte';
+	import AssignmentCard from '$lib/components/AssignmentCard.svelte';
+	import CustomSelect, { type SelectOption } from '$lib/components/CustomSelect.svelte';
+	import Pagination from '$lib/components/Pagination.svelte';
 
 	let studentId = $derived(authState.user?.id || '');
-	let studentClasses = $derived(lmsStore.getClassesForStudent(studentId));
 
-	let assignments = $derived(
-		lmsStore.assignments.filter((a) => studentClasses.some((c) => c.id === a.classId))
+	let allAssignments: any[] = $state([]);
+	let classOptions: SelectOption[] = $state([]);
+	let subjectOptions: SelectOption[] = $state([]);
+	let loading = $state(true);
+	let errorMsg = $state('');
+
+	// Filter States (Murid: Kelas, Mapel, Status)
+	let selectedClass = $state('all');
+	let selectedSubject = $state('all');
+	let selectedStatus = $state('all');
+
+	// Pagination State
+	let currentPage = $state(1);
+	const itemsPerPage = 6;
+
+	const statusOptions: SelectOption[] = [
+		{ value: 'all', label: 'Semua Status' },
+		{ value: 'submitted', label: 'Sudah Dikerjakan' },
+		{ value: 'pending', label: 'Belum Dikerjakan' }
+	];
+
+	// Filtered Assignments
+	let filteredAssignments = $derived(
+		allAssignments.filter((a: any) => {
+			// Filter Kelas
+			if (selectedClass !== 'all' && a.classId !== selectedClass) return false;
+			// Filter Mapel
+			if (selectedSubject !== 'all') {
+				const mapelName = a.teacher?.subjectTeachers?.[0]?.subject?.name || '';
+				if (mapelName !== selectedSubject) return false;
+			}
+			// Filter Status (Sudah Dikerjakan vs Belum Dikerjakan)
+			if (selectedStatus === 'submitted' && !a.submission) return false;
+			if (selectedStatus === 'pending' && a.submission) return false;
+
+			return true;
+		})
 	);
-	let mySubmissions = $derived(
-		lmsStore.assignmentSubmissions.filter(
-			(s) => s.studentId === studentId && assignments.find((a) => a.id === s.assignmentId)
-		)
+
+	// Total Pages & Paginated Items
+	let totalPages = $derived(Math.ceil(filteredAssignments.length / itemsPerPage) || 1);
+	let paginatedAssignments = $derived(
+		filteredAssignments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 	);
 
-	function getSubmission(assignmentId: string) {
-		return mySubmissions.find((s) => s.assignmentId === assignmentId);
-	}
+	// Reset page to 1 when filters change
+	$effect(() => {
+		selectedClass;
+		selectedSubject;
+		selectedStatus;
+		currentPage = 1;
+	});
 
-	function getClassName(classId: string) {
-		return studentClasses.find((c) => c.id === classId)?.name || 'Unknown Class';
-	}
+	$effect(() => {
+		async function fetch() {
+			loading = true;
+			errorMsg = '';
+			try {
+				const classes = await lmsStore.getStudentClasses(studentId);
+				const classMap = new Map(classes.map((c) => [c.id, c.name]));
+				classOptions = [
+					{ value: 'all', label: 'Semua Kelas' },
+					...classes.map((c) => ({ value: c.id, label: c.name }))
+				];
+
+				const tempArr: any[] = [];
+				for (const cls of classes) {
+					const assignments = await lmsStore.getAssignmentsByClass(cls.id);
+					for (const a of assignments) {
+						if (a.status !== 'Published') continue;
+						const submission = await lmsStore.getMySubmission(a.id);
+						tempArr.push({
+							...a,
+							className: classMap.get(a.classId || '') || cls.name || 'Kelas',
+							submission
+						});
+					}
+				}
+
+				tempArr.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+				allAssignments = tempArr;
+
+				// Extract unique subjects for dropdown filter
+				const subjectsSet = new Set<string>();
+				allAssignments.forEach((a: any) => {
+					const sName = a.teacher?.subjectTeachers?.[0]?.subject?.name;
+					if (sName) subjectsSet.add(sName);
+				});
+
+				subjectOptions = [
+					{ value: 'all', label: 'Semua Mapel' },
+					...Array.from(subjectsSet).map((s) => ({ value: s, label: s }))
+				];
+			} catch (err: any) {
+				errorMsg = err.message || 'Gagal memuat data tugas';
+			} finally {
+				loading = false;
+			}
+		}
+		fetch();
+	});
 </script>
 
-<div class="flex justify-between items-center mb-6 mt-4">
-	<h3 class="font-headline-md text-2xl font-bold flex items-center gap-2">
-		<span class="material-symbols-outlined text-3xl">assignment</span>
-		Semua Tugas Anda
-	</h3>
+<svelte:head>
+	<title>Semua Tugas - Akademik-BN</title>
+</svelte:head>
+
+<div class="flex justify-between items-end mb-6 mt-4">
+	<div>
+		<h2 class="text-display-lg-mobile md:text-display-lg font-black text-on-surface uppercase tracking-tight">
+			Tugas Anda
+		</h2>
+		<p class="font-body-md text-secondary">Kumpulan tugas yang harus Anda kerjakan.</p>
+	</div>
+</div>
+
+<!-- Dropdown Filters Bar (Murid: 3 Filters - Kelas, Mapel, Status) -->
+<div class="bg-surface-container neo-border p-4 mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+	<div>
+		<CustomSelect
+			label="Filter Kelas"
+			options={classOptions}
+			bind:value={selectedClass}
+			placeholder="Pilih Kelas..."
+		/>
+	</div>
+	<div>
+		<CustomSelect
+			label="Filter Mapel"
+			options={subjectOptions}
+			bind:value={selectedSubject}
+			placeholder="Pilih Mapel..."
+		/>
+	</div>
+	<div>
+		<CustomSelect
+			label="Filter Status"
+			options={statusOptions}
+			bind:value={selectedStatus}
+			placeholder="Pilih Status..."
+		/>
+	</div>
 </div>
 
 <div class="flex flex-col gap-6">
-	{#if assignments.length === 0}
+	{#if loading}
+		<div class="bg-surface-container p-12 neo-border text-center flex flex-col items-center">
+			<span class="material-symbols-outlined text-6xl text-secondary mb-4 animate-spin">hourglass_empty</span>
+			<p class="font-bold text-secondary text-lg">Memuat tugas...</p>
+		</div>
+	{:else if errorMsg}
+		<div class="bg-surface-container p-6 neo-border text-center">
+			<span class="material-symbols-outlined text-4xl text-error mb-2">error</span>
+			<p class="font-bold text-error">{errorMsg}</p>
+		</div>
+	{:else if filteredAssignments.length === 0}
 		<div class="bg-surface-container p-12 neo-border text-center flex flex-col items-center">
 			<span class="material-symbols-outlined text-6xl text-secondary mb-4">inbox</span>
-			<p class="font-bold text-secondary text-lg">Belum ada tugas untuk kelas ini.</p>
+			<p class="font-bold text-secondary text-lg">Tidak ada tugas ditemukan.</p>
 		</div>
+	{:else}
+		<div class="flex flex-col gap-6">
+			{#each paginatedAssignments as assignment}
+				<AssignmentCard
+					{assignment}
+					href={`/student/assignments/${assignment.id}`}
+					role="student"
+				/>
+			{/each}
+		</div>
+
+		<!-- Pagination Component -->
+		<Pagination
+			{currentPage}
+			{totalPages}
+			totalItems={filteredAssignments.length}
+			{itemsPerPage}
+			onPageChange={(p) => (currentPage = p)}
+		/>
 	{/if}
-	{#each assignments as assignment}
-		<article class="bg-surface-container-lowest neo-border shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] hover:-translate-y-1 transition-transform duration-200">
-			<div class="border-b-2 border-on-surface bg-[#E2E2E2] p-4 flex items-center justify-between">
-				<div class="flex items-center gap-3">
-					<div class="w-10 h-10 bg-primary-container neo-border flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-						<span class="material-symbols-outlined text-on-surface">assignment</span>
-					</div>
-					<div>
-						<h3 class="font-label-bold text-lg text-on-surface">{assignment.title}</h3>
-						<p class="font-label-bold text-[10px] uppercase text-secondary mt-1 inline-block bg-white px-2 py-1 neo-border">
-							{getClassName(assignment.classId)}
-						</p>
-					</div>
-				</div>
-			</div>
-			<div class="p-6">
-				<p class="font-body-md mb-4 text-on-surface line-clamp-2 leading-relaxed">{assignment.description}</p>
-				<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-6 p-4 border-2 border-on-surface bg-background border-dashed gap-4">
-					<div class="flex items-center gap-2">
-						<span class="material-symbols-outlined text-error">event</span>
-						<span class="font-label-bold text-sm text-error">Tenggat: {new Date(assignment.dueDate).toLocaleString()}</span>
-					</div>
-					
-					{#if getSubmission(assignment.id)}
-						<div class="flex items-center gap-4">
-							<div class="px-3 py-1 bg-primary-container neo-border font-label-bold text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-								Selesai
-							</div>
-							<a href={`/student/assignments/${assignment.id}`}>
-								<Button variant="outline" size="sm">Lihat Detail</Button>
-							</a>
-						</div>
-					{:else}
-						<div class="flex items-center gap-4">
-							<div class="px-3 py-1 bg-white neo-border font-label-bold text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-error">
-								Belum Selesai
-							</div>
-							<a href={`/student/assignments/${assignment.id}`}>
-								<Button variant="primary" size="sm">Kerjakan</Button>
-							</a>
-						</div>
-					{/if}
-				</div>
-			</div>
-		</article>
-	{/each}
 </div>
