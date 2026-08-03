@@ -27,7 +27,8 @@ export class AssessmentIndicatorController {
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.service.create(req.body);
+      const actorId = req.user?.id;
+      const data = await this.service.create(req.body, actorId);
       sendResponse(res, 201, 'Berhasil menambahkan indikator', data);
     } catch (error) {
       next(error);
@@ -36,7 +37,8 @@ export class AssessmentIndicatorController {
 
   bulkCreate = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.service.bulkCreate(req.body);
+      const actorId = req.user?.id;
+      const data = await this.service.bulkCreate(req.body, actorId);
       sendResponse(res, 201, 'Berhasil menambahkan indikator secara bulk', data);
     } catch (error) {
       next(error);
@@ -45,7 +47,8 @@ export class AssessmentIndicatorController {
 
   update = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.service.update(req.params.id as string, req.body);
+      const actorId = req.user?.id;
+      const data = await this.service.update(req.params.id as string, req.body, actorId);
       sendResponse(res, 200, 'Berhasil memperbarui indikator', data);
     } catch (error) {
       next(error);
@@ -54,7 +57,8 @@ export class AssessmentIndicatorController {
 
   delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await this.service.delete(req.params.id as string);
+      const actorId = req.user?.id;
+      await this.service.delete(req.params.id as string, actorId);
       sendResponse(res, 200, 'Berhasil menghapus indikator');
     } catch (error) {
       next(error);
@@ -63,7 +67,8 @@ export class AssessmentIndicatorController {
 
   bulkDelete = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await this.service.bulkDelete(req.body.ids);
+      const actorId = req.user?.id;
+      const result = await this.service.bulkDelete(req.body.ids, actorId);
       sendResponse(res, 200, `Berhasil menghapus ${result.count} indikator`);
     } catch (error) {
       next(error);

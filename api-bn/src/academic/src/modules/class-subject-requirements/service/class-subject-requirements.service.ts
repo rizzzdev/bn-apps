@@ -29,13 +29,13 @@ export class ClassSubjectRequirementService {
 
     const proposedMap = new Map<string, CreateClassSubjectRequirementDto>();
     for (const r of requirements) {
-      proposedMap.set(`${r.classId}_${r.subjectId}`, r);
+      proposedMap.set(`${r.classId}_${r.subjectId}_${r.teacherId || ''}`, r);
     }
 
     const mergedReqs: { classId: string; subjectId: string; teacherId: string; weeklyHours: number }[] = [];
 
     for (const existing of existingReqs) {
-      const key = `${existing.classId}_${existing.subjectId}`;
+      const key = `${existing.classId}_${existing.subjectId}_${existing.teacherId || ''}`;
       if (proposedMap.has(key)) continue;
       if (existing.teacherId && teacherIds.includes(existing.teacherId)) {
         mergedReqs.push({
@@ -63,26 +63,30 @@ export class ClassSubjectRequirementService {
       const teacherName = teacher ? teacher.fullname : teacherId;
       const stForTeacher = subjectTeachers.filter((st) => st.teacherId === teacherId);
 
-      // 1. Check per-subject target hours overload
-      for (const st of stForTeacher) {
-        const allocatedForSubject = mergedReqs
-          .filter((r) => r.teacherId === teacherId && r.subjectId === st.subjectId)
-          .reduce((sum, r) => sum + r.weeklyHours, 0);
+      // Per-subject max "per single class" weekly hours. Dalam batch/team teaching,
+      // satu guru mengampu mapel yang sama untuk banyak kelas pada slot yang sama,
+      // sehingga beban tidak dihitung dengan mengalikan jumlah kelas.
+      const teacherReqs = mergedReqs.filter((r) => r.teacherId === teacherId);
+      const perSubjectMax = new Map<string, number>();
+      for (const r of teacherReqs) {
+        const current = perSubjectMax.get(r.subjectId) ?? 0;
+        perSubjectMax.set(r.subjectId, Math.max(current, r.weeklyHours));
+      }
 
+      // 1. Check per-subject target hours overload (per single class)
+      for (const st of stForTeacher) {
+        const allocatedForSubject = perSubjectMax.get(st.subjectId) ?? 0;
         const targetForSubject = st.targetHours || 0;
 
         if (allocatedForSubject > targetForSubject) {
           throw new BadRequestError(
-            `Guru ${teacherName} melebihi batas beban mengajar! (Dialokasikan: ${allocatedForSubject} JP, Target Beban: ${targetForSubject} JP)`
+            `Guru ${teacherName} melebihi batas beban mengajar per kelas! (Dialokasikan: ${allocatedForSubject} JP, Target Beban: ${targetForSubject} JP)`
           );
         }
       }
 
-      // 2. Check total teacher target hours overload
-      const totalAllocated = mergedReqs
-        .filter((r) => r.teacherId === teacherId)
-        .reduce((sum, r) => sum + r.weeklyHours, 0);
-
+      // 2. Check total teacher target hours overload (per class per subject)
+      const totalAllocated = Array.from(perSubjectMax.values()).reduce((sum, v) => sum + v, 0);
       const totalTarget = stForTeacher.reduce((sum, st) => sum + (st.targetHours || 0), 0);
 
       if (totalAllocated > totalTarget) {

@@ -78,6 +78,8 @@
 		status: ''
 	};
 
+	const CLEARABLE_FIELDS = ['nik', 'nip'];
+
 	let pictureFile = $state<File | null>(null);
 	let picturePreview = $state<string>('');
 	let isPictureDeleted = $state(false);
@@ -266,9 +268,14 @@
 				weight: formData.weight ? parseInt(formData.weight) : undefined
 			};
 
-			// Hapus properti kosong agar tidak dikirim ke API
+			// Hapus properti kosong agar tidak dikirim ke API, kecuali field yang boleh dikosongkan saat edit
 			Object.keys(payload).forEach((key) => {
-				if (payload[key] === '' || payload[key] === undefined) delete payload[key];
+				if (payload[key] === undefined) delete payload[key];
+				else if (
+					payload[key] === '' &&
+					!(isEditOpen && selectedTeacher && CLEARABLE_FIELDS.includes(key))
+				)
+					delete payload[key];
 			});
 
 			if (isCreateOpen) {
@@ -283,8 +290,6 @@
 					toast.error(result.message || 'Gagal menambahkan guru');
 				}
 			} else if (isEditOpen && selectedTeacher) {
-				delete payload.nik;
-				delete payload.nip;
 				delete payload.password; // Dont send password on update unless supported
 
 				const res = await apiClient(`/teachers/${selectedTeacher.id}`, {
@@ -453,10 +458,12 @@
 	let totalPages = $state(1);
 	let totalItems = $state(0);
 
-	const fetchTeachers = async (page: number, limitPerPage: number) => {
+	const fetchTeachers = async (page: number, limitPerPage: number, search: string = '') => {
 		isLoading = true;
 		try {
-			const res = await apiClient(`/teachers?page=${page}&limit=${limitPerPage}`);
+			const res = await apiClient(
+				`/teachers?page=${page}&limit=${limitPerPage}${search ? `&search=${encodeURIComponent(search)}` : ''}`
+			);
 			const result = await res.json();
 			if (!result.error && result.data) {
 				teachers = Array.isArray(result.data) ? result.data : [];
@@ -472,8 +479,14 @@
 		}
 	};
 
+	let previousSearch = $state('');
+
 	$effect(() => {
-		fetchTeachers(currentPage, limit);
+		if (searchQuery !== previousSearch) {
+			previousSearch = searchQuery;
+			currentPage = 1;
+		}
+		fetchTeachers(currentPage, limit, searchQuery);
 	});
 
 	let searchQuery = $state('');
@@ -488,12 +501,8 @@
 
 	let filteredTeachers = $derived(
 		teachers.filter((t) => {
-			const name = t.fullname || t.name || '';
-			const nip = t.nip || '';
-			const matchesSearch =
-				name.toLowerCase().includes(searchQuery.toLowerCase()) || (nip || '').includes(searchQuery);
 			const matchesStatus = statusFilter.length > 0 ? statusFilter.includes(t.status) : true;
-			return matchesSearch && matchesStatus;
+			return matchesStatus;
 		})
 	);
 </script>

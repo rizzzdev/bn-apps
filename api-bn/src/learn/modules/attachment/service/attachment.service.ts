@@ -15,7 +15,7 @@ export class AttachmentService {
       filename: file.originalname,
       format: ext.replace('.', ''),
       size: sizeMB,
-      url: filename, // URL is just the filename for local, or key for Supabase
+      url: filename, // URL is the filename in local storage
     };
 
     const created = await this.repository.create(data);

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Icon } from '$lib/components/atoms';
+	import { Icon, Checkbox } from '$lib/components/atoms';
 	import { getPictureUrl, getInitials } from '$lib/utils/image';
 
 	interface TeacherItem {
@@ -31,20 +31,13 @@
 <div
 	class="bg-surface neo-border shadow-[4px_4px_0px_0px_#1C1B1B] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#1C1B1B] transition-all text-left flex flex-col w-full relative overflow-hidden"
 >
-	<button
-		type="button"
-		class="absolute top-2 left-2 z-10 w-6 h-6 neo-border flex items-center justify-center cursor-pointer transition-colors {selected
-			? 'bg-primary text-on-primary'
-			: 'bg-white'}"
-		onclick={(e) => {
-			e.stopPropagation();
-			onToggle();
-		}}
-	>
-		{#if selected}
-			<Icon name="check" size="18px" />
-		{/if}
-	</button>
+	<div class="absolute top-2 left-2 z-10">
+		<Checkbox
+			checked={selected}
+			onchange={() => onToggle()}
+			class="shadow-[2px_2px_0px_0px_#1C1B1B]"
+		/>
+	</div>
 
 	<div
 		class="h-32 neo-border-b bg-surface-variant relative overflow-hidden flex items-center justify-center"

@@ -1,11 +1,13 @@
 import { InternshipPlacementRepository, internshipPlacementRepository } from '@internship/modules/internship-placement/repository/index.js';
 import { CreateInternshipPlacementDto, UpdateInternshipPlacementDto, BulkCreateInternshipPlacementDto, BulkUpdateStatusDto, BulkUpdateAssessableDto } from '@internship/modules/internship-placement/domain/index.js';
 import { NotFoundError, BadRequestError } from '@app/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
+import { withCache, clearCachePattern, setCache, putOptionalToNull } from '@app/index.js';
 import { prisma } from '@internship/database/index.js';
 import { Prisma, PlacementStatus } from '@internship/database/index.js';
 import { activityService } from '@internship/modules/activity/service/index.js';
 import { getAdminName, getReviewerName } from '@internship/utils/activity-helper.js';
+
+const INTERNSHIP_PLACEMENT_NULLABLE_UPDATE_FIELDS = ['startTime', 'endTime', 'certificateUrl'] as const;
 
 export class InternshipPlacementService {
   constructor(private repository: InternshipPlacementRepository) {}
@@ -216,7 +218,7 @@ export class InternshipPlacementService {
         throw new BadRequestError('Mentor yang dipilih tidak berasal dari perusahaan yang sama dengan tempat magang');
       }
     }
-    const updated = await this.repository.update(id, data);
+    const updated = await this.repository.update(id, putOptionalToNull(data, INTERNSHIP_PLACEMENT_NULLABLE_UPDATE_FIELDS));
     await clearCachePattern(`internship-placement:all:*`);
     await clearCachePattern(`company:all:*`);
     await clearCachePattern(`company:id:${companyId}`);

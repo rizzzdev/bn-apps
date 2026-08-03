@@ -1,5 +1,6 @@
-import { prisma } from '@/database';
-import { getOrchestrator, fetchStudentNames } from '../../common/hydrate';
+import { prisma } from '@learn/database/index.js';
+import { shadowSyncService } from '../../../services/shadow-sync.service.js';
+import { fetchStudentNames } from '../../common/hydrate.js';
 
 export class GradeRepository {
   async getStudentGradesByClass(classId: string, studentId: string) {
@@ -29,11 +30,15 @@ export class GradeRepository {
   }
 
   async getClassGrades(classId: string) {
+    await shadowSyncService.lazySyncAll().catch(() => {});
+
     const [csRecords, assignments, quizzes, assignmentSubmissions, quizSubmissions] = await Promise.all([
-      getOrchestrator().academicClassStudent.findMany({
-        classId: { in: [classId] },
-        status: 'Aktif',
-        deletedAt: null,
+      prisma.shadowClassStudent.findMany({
+        where: {
+          classId: { in: [classId] },
+          status: 'Aktif',
+          deletedAt: null,
+        },
       }),
       prisma.assignment.findMany({
         where: { classes: { some: { classId } } },
@@ -60,7 +65,7 @@ export class GradeRepository {
 
     const classStudents = csRecords.map((cs) => {
       const s = studentMap.get(cs.studentId);
-      return { id: cs.id, studentId: cs.studentId, status: cs.status, student: s ?? { id: cs.studentId, fullname: '', nis: '', pictureUrl: null } };
+      return { id: cs.id, studentId: cs.studentId, status: cs.status, student: s ?? { id: cs.studentId, fullname: '', nis: null, nisn: null, pictureUrl: null } };
     });
 
     return { classStudents, assignments, quizzes, assignmentSubmissions, quizSubmissions };

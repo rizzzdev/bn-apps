@@ -8,6 +8,7 @@
 		href = '#',
 		icon,
 		active = false,
+		external = false,
 		children,
 		class: className = '',
 		onclick
@@ -15,6 +16,7 @@
 		href?: string;
 		icon: string;
 		active?: boolean;
+		external?: boolean;
 		children?: Snippet;
 		class?: string;
 		onclick?: (e: MouseEvent) => void;
@@ -28,13 +30,23 @@
 		'text-on-surface border-on-background hover:bg-surface-container-high border-b-2 rounded-md';
 </script>
 
-<a
-	href={href?.startsWith('http') ? href : resolve(href)}
-	{onclick}
-	target={href?.startsWith('http') ? '_blank' : undefined}
-	rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-	class="{baseClasses} {active ? activeClasses : inactiveClasses} {className}"
->
-	<Icon name={icon} class="text-xs" />
-	{@render children?.()}
-</a>
+{#if external}
+	<a
+		{href}
+		rel="external"
+		{onclick}
+		class="{baseClasses} {active ? activeClasses : inactiveClasses} {className}"
+	>
+		<Icon name={icon} class="text-xs" />
+		{@render children?.()}
+	</a>
+{:else}
+	<a
+		href={resolve(href)}
+		{onclick}
+		class="{baseClasses} {active ? activeClasses : inactiveClasses} {className}"
+	>
+		<Icon name={icon} class="text-xs" />
+		{@render children?.()}
+	</a>
+{/if}

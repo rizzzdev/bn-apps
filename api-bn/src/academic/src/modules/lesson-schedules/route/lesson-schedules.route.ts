@@ -14,5 +14,5 @@ lessonSchedulesRoute.post('/batch', lessonScheduleController.createBulk);
 lessonSchedulesRoute.delete('/batch', lessonScheduleController.deleteBulk);
 lessonSchedulesRoute.patch('/batch/status', lessonScheduleController.updateStatusBulk);
 lessonSchedulesRoute.get('/:id', lessonScheduleController.getById);
-lessonSchedulesRoute.patch('/:id', validate(updateLessonScheduleSchema), lessonScheduleController.update);
+lessonSchedulesRoute.put('/:id', validate(updateLessonScheduleSchema), lessonScheduleController.update);
 lessonSchedulesRoute.delete('/:id', lessonScheduleController.delete);

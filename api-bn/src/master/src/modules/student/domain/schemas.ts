@@ -31,8 +31,16 @@ export const createStudentSchema = z.object({
 });
 
 export const updateStudentSchema = createStudentSchema
-  .omit({ nik: true, nis: true, nisn: true, userId: true })
+  .omit({ userId: true })
   .partial();
+
+export const changePasswordSchema = z.object({
+  newPassword: z.string().min(8, 'Password minimal 8 karakter'),
+  confirmPassword: z.string().min(8, 'Password minimal 8 karakter'),
+}).refine((d) => d.newPassword === d.confirmPassword, {
+  message: 'Password dan konfirmasi password tidak sama',
+  path: ['confirmPassword'],
+});
 
 export const batchGetStudentSchema = z.object({
   ids: z.array(z.string().min(1)).min(1),

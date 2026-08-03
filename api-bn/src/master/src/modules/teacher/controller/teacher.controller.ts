@@ -13,10 +13,11 @@ export class TeacherController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string | undefined;
       const userId = req.query.userId as string | undefined;
       const includeUser = req.query.includeUser === "true";
       const includePicture = req.query.includePicture === "true";
-      const { data, total } = await this.service.getAll(page, limit, userId, includeUser, includePicture);
+      const { data, total } = await this.service.getAll(page, limit, search, userId, includeUser, includePicture);
       const pagination = { currentPage: page, totalPage: Math.ceil(total / limit), totalData: total, dataPerPage: limit };
       sendResponse(res, 200, 'Berhasil mengambil data guru', data, pagination);
     } catch (error) { next(error instanceof Error ? error : new Error(String(error))); }
@@ -113,6 +114,13 @@ export class TeacherController {
     'teachers_template.xlsx',
     () => teacherService.getExcelTemplate(),
   );
+
+  changePassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.service.changePassword(req.params.id as string, req.body);
+      sendResponse(res, 200, result.message, null);
+    } catch (error) { next(error instanceof Error ? error : new Error(String(error))); }
+  };
 }
 
 export const teacherController = new TeacherController(teacherService);

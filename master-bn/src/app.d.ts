@@ -10,6 +10,7 @@ declare global {
 				roles: string[];
 				[key: string]: unknown;
 			};
+			accessDenied?: boolean;
 		}
 		// interface PageData {}
 		// interface PageState {}

@@ -13,5 +13,5 @@ classStudentsRoute.post('/graduate', classStudentController.graduate);
 classStudentsRoute.delete('/batch', classStudentController.deleteBulk);
 classStudentsRoute.patch('/batch/status', classStudentController.updateStatusBulk);
 classStudentsRoute.get('/:id', classStudentController.getById);
-classStudentsRoute.patch('/:id', classStudentController.update);
+classStudentsRoute.put('/:id', classStudentController.update);
 classStudentsRoute.delete('/:id', classStudentController.delete);

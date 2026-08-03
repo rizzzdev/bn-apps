@@ -397,7 +397,11 @@ export const ModelName = {
   QuizQuestion: 'QuizQuestion',
   QuizClass: 'QuizClass',
   QuizSubmission: 'QuizSubmission',
-  QuizAnswer: 'QuizAnswer'
+  QuizAnswer: 'QuizAnswer',
+  ShadowStudent: 'ShadowStudent',
+  ShadowTeacher: 'ShadowTeacher',
+  ShadowClass: 'ShadowClass',
+  ShadowClassStudent: 'ShadowClassStudent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -413,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "attachment" | "material" | "materialAttachment" | "materialClass" | "materialRead" | "assignment" | "assignmentAttachment" | "assignmentClass" | "assignmentSubmission" | "quiz" | "quizQuestion" | "quizClass" | "quizSubmission" | "quizAnswer"
+    modelProps: "attachment" | "material" | "materialAttachment" | "materialClass" | "materialRead" | "assignment" | "assignmentAttachment" | "assignmentClass" | "assignmentSubmission" | "quiz" | "quizQuestion" | "quizClass" | "quizSubmission" | "quizAnswer" | "shadowStudent" | "shadowTeacher" | "shadowClass" | "shadowClassStudent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1453,6 +1457,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ShadowStudent: {
+      payload: Prisma.$ShadowStudentPayload<ExtArgs>
+      fields: Prisma.ShadowStudentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ShadowStudentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowStudentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ShadowStudentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowStudentPayload>
+        }
+        findFirst: {
+          args: Prisma.ShadowStudentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowStudentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ShadowStudentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowStudentPayload>
+        }
+        findMany: {
+          args: Prisma.ShadowStudentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowStudentPayload>[]
+        }
+        create: {
+          args: Prisma.ShadowStudentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowStudentPayload>
+        }
+        createMany: {
+          args: Prisma.ShadowStudentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ShadowStudentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowStudentPayload>[]
+        }
+        delete: {
+          args: Prisma.ShadowStudentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowStudentPayload>
+        }
+        update: {
+          args: Prisma.ShadowStudentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowStudentPayload>
+        }
+        deleteMany: {
+          args: Prisma.ShadowStudentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ShadowStudentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ShadowStudentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowStudentPayload>[]
+        }
+        upsert: {
+          args: Prisma.ShadowStudentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowStudentPayload>
+        }
+        aggregate: {
+          args: Prisma.ShadowStudentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateShadowStudent>
+        }
+        groupBy: {
+          args: Prisma.ShadowStudentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShadowStudentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ShadowStudentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShadowStudentCountAggregateOutputType> | number
+        }
+      }
+    }
+    ShadowTeacher: {
+      payload: Prisma.$ShadowTeacherPayload<ExtArgs>
+      fields: Prisma.ShadowTeacherFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ShadowTeacherFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowTeacherPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ShadowTeacherFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowTeacherPayload>
+        }
+        findFirst: {
+          args: Prisma.ShadowTeacherFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowTeacherPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ShadowTeacherFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowTeacherPayload>
+        }
+        findMany: {
+          args: Prisma.ShadowTeacherFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowTeacherPayload>[]
+        }
+        create: {
+          args: Prisma.ShadowTeacherCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowTeacherPayload>
+        }
+        createMany: {
+          args: Prisma.ShadowTeacherCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ShadowTeacherCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowTeacherPayload>[]
+        }
+        delete: {
+          args: Prisma.ShadowTeacherDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowTeacherPayload>
+        }
+        update: {
+          args: Prisma.ShadowTeacherUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowTeacherPayload>
+        }
+        deleteMany: {
+          args: Prisma.ShadowTeacherDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ShadowTeacherUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ShadowTeacherUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowTeacherPayload>[]
+        }
+        upsert: {
+          args: Prisma.ShadowTeacherUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowTeacherPayload>
+        }
+        aggregate: {
+          args: Prisma.ShadowTeacherAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateShadowTeacher>
+        }
+        groupBy: {
+          args: Prisma.ShadowTeacherGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShadowTeacherGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ShadowTeacherCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShadowTeacherCountAggregateOutputType> | number
+        }
+      }
+    }
+    ShadowClass: {
+      payload: Prisma.$ShadowClassPayload<ExtArgs>
+      fields: Prisma.ShadowClassFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ShadowClassFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ShadowClassFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassPayload>
+        }
+        findFirst: {
+          args: Prisma.ShadowClassFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ShadowClassFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassPayload>
+        }
+        findMany: {
+          args: Prisma.ShadowClassFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassPayload>[]
+        }
+        create: {
+          args: Prisma.ShadowClassCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassPayload>
+        }
+        createMany: {
+          args: Prisma.ShadowClassCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ShadowClassCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassPayload>[]
+        }
+        delete: {
+          args: Prisma.ShadowClassDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassPayload>
+        }
+        update: {
+          args: Prisma.ShadowClassUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassPayload>
+        }
+        deleteMany: {
+          args: Prisma.ShadowClassDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ShadowClassUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ShadowClassUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassPayload>[]
+        }
+        upsert: {
+          args: Prisma.ShadowClassUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassPayload>
+        }
+        aggregate: {
+          args: Prisma.ShadowClassAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateShadowClass>
+        }
+        groupBy: {
+          args: Prisma.ShadowClassGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShadowClassGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ShadowClassCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShadowClassCountAggregateOutputType> | number
+        }
+      }
+    }
+    ShadowClassStudent: {
+      payload: Prisma.$ShadowClassStudentPayload<ExtArgs>
+      fields: Prisma.ShadowClassStudentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ShadowClassStudentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassStudentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ShadowClassStudentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassStudentPayload>
+        }
+        findFirst: {
+          args: Prisma.ShadowClassStudentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassStudentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ShadowClassStudentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassStudentPayload>
+        }
+        findMany: {
+          args: Prisma.ShadowClassStudentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassStudentPayload>[]
+        }
+        create: {
+          args: Prisma.ShadowClassStudentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassStudentPayload>
+        }
+        createMany: {
+          args: Prisma.ShadowClassStudentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ShadowClassStudentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassStudentPayload>[]
+        }
+        delete: {
+          args: Prisma.ShadowClassStudentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassStudentPayload>
+        }
+        update: {
+          args: Prisma.ShadowClassStudentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassStudentPayload>
+        }
+        deleteMany: {
+          args: Prisma.ShadowClassStudentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ShadowClassStudentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ShadowClassStudentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassStudentPayload>[]
+        }
+        upsert: {
+          args: Prisma.ShadowClassStudentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShadowClassStudentPayload>
+        }
+        aggregate: {
+          args: Prisma.ShadowClassStudentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateShadowClassStudent>
+        }
+        groupBy: {
+          args: Prisma.ShadowClassStudentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShadowClassStudentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ShadowClassStudentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShadowClassStudentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1653,6 +1953,66 @@ export const QuizAnswerScalarFieldEnum = {
 } as const
 
 export type QuizAnswerScalarFieldEnum = (typeof QuizAnswerScalarFieldEnum)[keyof typeof QuizAnswerScalarFieldEnum]
+
+
+export const ShadowStudentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  fullname: 'fullname',
+  nis: 'nis',
+  nisn: 'nisn',
+  pictureUrl: 'pictureUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  lastSyncAt: 'lastSyncAt'
+} as const
+
+export type ShadowStudentScalarFieldEnum = (typeof ShadowStudentScalarFieldEnum)[keyof typeof ShadowStudentScalarFieldEnum]
+
+
+export const ShadowTeacherScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  fullname: 'fullname',
+  email: 'email',
+  nip: 'nip',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  lastSyncAt: 'lastSyncAt'
+} as const
+
+export type ShadowTeacherScalarFieldEnum = (typeof ShadowTeacherScalarFieldEnum)[keyof typeof ShadowTeacherScalarFieldEnum]
+
+
+export const ShadowClassScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  level: 'level',
+  majorId: 'majorId',
+  academicYearId: 'academicYearId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  lastSyncAt: 'lastSyncAt'
+} as const
+
+export type ShadowClassScalarFieldEnum = (typeof ShadowClassScalarFieldEnum)[keyof typeof ShadowClassScalarFieldEnum]
+
+
+export const ShadowClassStudentScalarFieldEnum = {
+  id: 'id',
+  classId: 'classId',
+  studentId: 'studentId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  lastSyncAt: 'lastSyncAt'
+} as const
+
+export type ShadowClassStudentScalarFieldEnum = (typeof ShadowClassStudentScalarFieldEnum)[keyof typeof ShadowClassStudentScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1871,6 +2231,10 @@ export type GlobalOmitConfig = {
   quizClass?: Prisma.QuizClassOmit
   quizSubmission?: Prisma.QuizSubmissionOmit
   quizAnswer?: Prisma.QuizAnswerOmit
+  shadowStudent?: Prisma.ShadowStudentOmit
+  shadowTeacher?: Prisma.ShadowTeacherOmit
+  shadowClass?: Prisma.ShadowClassOmit
+  shadowClassStudent?: Prisma.ShadowClassStudentOmit
 }
 
 /* Types for Logging */

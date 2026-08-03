@@ -22,7 +22,15 @@ export const createTeacherSchema = z.object({
   pictureId: z.string().uuid().optional().nullable(),
 });
 
-export const updateTeacherSchema = createTeacherSchema.omit({ nik: true, nip: true, userId: true }).partial();
+export const updateTeacherSchema = createTeacherSchema.omit({ userId: true }).partial();
+
+export const changePasswordSchema = z.object({
+  newPassword: z.string().min(8, 'Password minimal 8 karakter'),
+  confirmPassword: z.string().min(8, 'Password minimal 8 karakter'),
+}).refine((d) => d.newPassword === d.confirmPassword, {
+  message: 'Password dan konfirmasi password tidak sama',
+  path: ['confirmPassword'],
+});
 
 export const batchGetTeacherSchema = z.object({
   ids: z.array(z.string().min(1)).min(1),

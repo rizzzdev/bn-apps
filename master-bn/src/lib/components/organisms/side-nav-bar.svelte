@@ -89,7 +89,20 @@
 		}
 	};
 
-	let navGroups = $derived([
+	interface NavGroupItem {
+		href: string;
+		icon: string;
+		label: string;
+		active: boolean;
+		external?: boolean;
+	}
+
+	interface NavGroup {
+		title: string;
+		items: NavGroupItem[];
+	}
+
+	let navGroups: NavGroup[] = $derived([
 		{
 			title: 'Menu Utama',
 			items: [{ href: '/', icon: 'dashboard', label: 'Dasbor', active: $page.url.pathname === '/' }]
@@ -147,7 +160,8 @@
 					href: PUBLIC_PORTAL_URL || 'http://localhost:5173',
 					icon: 'apps',
 					label: 'Kembali ke Portal',
-					active: false
+					active: false,
+					external: true
 				}
 			]
 		}
@@ -196,6 +210,7 @@
 							href={item.href}
 							icon={item.icon}
 							active={item.active}
+							external={item.external}
 							onclick={() => (isOpen = false)}
 						>
 							{item.label}

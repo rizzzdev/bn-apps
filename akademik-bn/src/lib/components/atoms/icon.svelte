@@ -39,9 +39,13 @@
 		Square,
 		UserPlus,
 		CalendarDays,
+		CalendarCog,
 		Save,
 		Play,
-		Sparkles
+		Sparkles,
+		Ban,
+		RefreshCw,
+		Trash
 	} from 'lucide-svelte';
 
 	let {
@@ -101,6 +105,7 @@
 		calendar_today: Calendar,
 		calendar: Calendar,
 		calendar_month: CalendarDays,
+		calendar_cog: CalendarCog,
 		check_circle: CheckCircle,
 		'check-circle': CheckCircle,
 		error: AlertCircle,
@@ -108,7 +113,10 @@
 		warning: TriangleAlert,
 		'alert-triangle': TriangleAlert,
 		checklist: SquareCheck,
-		deselect: Square
+		deselect: Square,
+		refresh: RefreshCw,
+		block: Ban,
+		delete_sweep: Trash
 	};
 
 	const IconComponent = $derived(iconMap[name]);

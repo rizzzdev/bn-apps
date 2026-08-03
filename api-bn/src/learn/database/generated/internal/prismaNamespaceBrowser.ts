@@ -64,7 +64,11 @@ export const ModelName = {
   QuizQuestion: 'QuizQuestion',
   QuizClass: 'QuizClass',
   QuizSubmission: 'QuizSubmission',
-  QuizAnswer: 'QuizAnswer'
+  QuizAnswer: 'QuizAnswer',
+  ShadowStudent: 'ShadowStudent',
+  ShadowTeacher: 'ShadowTeacher',
+  ShadowClass: 'ShadowClass',
+  ShadowClassStudent: 'ShadowClassStudent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -244,6 +248,66 @@ export const QuizAnswerScalarFieldEnum = {
 } as const
 
 export type QuizAnswerScalarFieldEnum = (typeof QuizAnswerScalarFieldEnum)[keyof typeof QuizAnswerScalarFieldEnum]
+
+
+export const ShadowStudentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  fullname: 'fullname',
+  nis: 'nis',
+  nisn: 'nisn',
+  pictureUrl: 'pictureUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  lastSyncAt: 'lastSyncAt'
+} as const
+
+export type ShadowStudentScalarFieldEnum = (typeof ShadowStudentScalarFieldEnum)[keyof typeof ShadowStudentScalarFieldEnum]
+
+
+export const ShadowTeacherScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  fullname: 'fullname',
+  email: 'email',
+  nip: 'nip',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  lastSyncAt: 'lastSyncAt'
+} as const
+
+export type ShadowTeacherScalarFieldEnum = (typeof ShadowTeacherScalarFieldEnum)[keyof typeof ShadowTeacherScalarFieldEnum]
+
+
+export const ShadowClassScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  level: 'level',
+  majorId: 'majorId',
+  academicYearId: 'academicYearId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  lastSyncAt: 'lastSyncAt'
+} as const
+
+export type ShadowClassScalarFieldEnum = (typeof ShadowClassScalarFieldEnum)[keyof typeof ShadowClassScalarFieldEnum]
+
+
+export const ShadowClassStudentScalarFieldEnum = {
+  id: 'id',
+  classId: 'classId',
+  studentId: 'studentId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  lastSyncAt: 'lastSyncAt'
+} as const
+
+export type ShadowClassStudentScalarFieldEnum = (typeof ShadowClassStudentScalarFieldEnum)[keyof typeof ShadowClassStudentScalarFieldEnum]
 
 
 export const SortOrder = {

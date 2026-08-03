@@ -20,7 +20,6 @@
     ClassSubjectRequirement,
     TeacherUnavailability,
     GeneratorPreviewResult,
-    GeneratedSlot,
   } from '$lib/types';
   import { onMount } from 'svelte';
   import { toast } from '$lib/stores/toast.svelte';
@@ -55,7 +54,6 @@
 
   let requirements = $state<SubjectRequirementRow[]>([]);
   let allClassRequirements = $state<ClassSubjectRequirement[]>([]);
-  let isSavingRequirements = $state(false);
   let selectedReqIds = $state<string[]>([]);
   let isBulkDeleteReqOpen = $state(false);
   let isClearAllReqOpen = $state(false);
@@ -102,32 +100,6 @@
 
   // Derived Sorted Lesson Hours
   let sortedLessonHours = $derived([...allLessonHours].sort((a, b) => a.order - b.order));
-
-  // Derived Allocated JP per Teacher in Requirements (across ALL classes)
-  let teacherAllocatedHoursMap = $derived.by(() => {
-    const map = new Map<string, number>();
-    for (const r of allClassRequirements) {
-      if (r.teacherId && r.weeklyHours > 0) {
-        const current = map.get(r.teacherId) || 0;
-        map.set(r.teacherId, current + r.weeklyHours);
-      }
-    }
-    // Add local (unsaved) requirements
-    for (const r of requirements) {
-      for (const tId of r.teacherIds) {
-        if (!tId || r.weeklyHours <= 0) continue;
-        // Check if already counted from allClassRequirements
-        const already = allClassRequirements.some(
-          (a) => a.classId === selectedRequirementClassId && a.subjectId === r.subjectId && a.teacherId === tId
-        );
-        if (!already) {
-          const current = map.get(tId) || 0;
-          map.set(tId, current + r.weeklyHours);
-        }
-      }
-    }
-    return map;
-  });
 
   // Derived Preview Grid Slots for TimetableGridTable component
   let previewGridSlots = $derived.by<TimetableCellSlot[]>(() => {
@@ -205,39 +177,11 @@
     return filtered.length > 0 ? filtered : allTeachers;
   }
 
-  // Get Target Hours for Teacher
-  function getTeacherTargetHours(teacherId: string, subjectId: string): number {
-    const st = subjectTeachers.find((x) => x.teacherId === teacherId && x.subjectId === subjectId && x.status === 'Aktif');
-    return st?.targetHours ?? 0;
-  }
-
-  // Generate options with remaining JP for SearchableSelect
-  function getTeacherOptionsForSubject(subjectId: string, currentTeacherId?: string) {
-    const eligibleTeachers = getTeachersForSubject(subjectId);
-    // Ensure the currently assigned teacher is always an option (even if SubjectTeacher changed)
-    const allEligible = currentTeacherId && !eligibleTeachers.some((t) => t.id === currentTeacherId)
-      ? [...eligibleTeachers, ...allTeachers.filter((t) => t.id === currentTeacherId)]
-      : eligibleTeachers;
-    return [
-      { value: '', label: '-- Belum Ditentukan --' },
-      ...allEligible.map((t) => {
-        const allocated = teacherAllocatedHoursMap.get(t.id) || 0;
-        const target = getTeacherTargetHours(t.id, subjectId);
-        const sisa = target - allocated;
-        const statusLabel = sisa < 0 ? ` [OVERLOAD +${Math.abs(sisa)} JP!]` : ` (Beban: ${target} JP | Sisa: ${sisa} JP)`;
-        return {
-          value: t.id,
-          label: `${formatTeacherName(t)}${statusLabel}`,
-        };
-      }),
-    ];
-  }
-
   // Check if any teacher is over-allocated and trigger error toast
   function checkOverAllocatedTeachers(): boolean {
     const combinedMap = new Map<string, ClassSubjectRequirement>();
     for (const r of allClassRequirements) {
-      combinedMap.set(`${r.classId}_${r.subjectId}`, r);
+      combinedMap.set(`${r.classId}_${r.subjectId}_${r.teacherId || ''}`, r);
     }
     for (const r of requirements) {
       for (const tId of r.teacherIds) {
@@ -261,22 +205,26 @@
 
       const stRecords = subjectTeachers.filter((st) => st.teacherId === tId && st.status === 'Aktif');
 
-      // 1. Check per-subject target hours overload
-      for (const st of stRecords) {
-        const allocatedForSubject = Array.from(combinedMap.values())
-          .filter((r) => r.teacherId === tId && r.subjectId === st.subjectId)
-          .reduce((sum, r) => sum + (r.weeklyHours || 0), 0);
+      // Per-subject max "per single class" weekly hours (batch/team teaching tidak dikalikan jumlah kelas).
+      const perSubjectMax = new Map<string, number>();
+      for (const r of Array.from(combinedMap.values()).filter((r) => r.teacherId === tId)) {
+        const current = perSubjectMax.get(r.subjectId) ?? 0;
+        perSubjectMax.set(r.subjectId, Math.max(current, r.weeklyHours || 0));
+      }
 
+      // 1. Check per-subject target hours overload (per single class)
+      for (const st of stRecords) {
+        const allocatedForSubject = perSubjectMax.get(st.subjectId) || 0;
         const targetForSubject = st.targetHours || 0;
 
         if (allocatedForSubject > targetForSubject) {
-          toast.error(`Guru ${formatTeacherName(teacherObj)} melebihi batas beban mengajar! (Dialokasikan: ${allocatedForSubject} JP, Target Beban: ${targetForSubject} JP)`);
+          toast.error(`Guru ${formatTeacherName(teacherObj)} melebihi batas beban mengajar per kelas! (Dialokasikan: ${allocatedForSubject} JP, Target Beban: ${targetForSubject} JP)`);
           return true;
         }
       }
 
-      // 2. Check total teacher target hours overload
-      const totalAllocated = teacherAllocatedHoursMap.get(tId) || 0;
+      // 2. Check total teacher target hours overload (per class per subject)
+      const totalAllocated = Array.from(perSubjectMax.values()).reduce((sum, v) => sum + v, 0);
       const totalTarget = stRecords.reduce((sum, st) => sum + (st.targetHours || 0), 0);
 
       if (totalAllocated > totalTarget) {
@@ -301,11 +249,6 @@
     }
   });
 
-  // Subjects that have at least one active teacher mapping
-  let mappedSubjectIds = $derived(
-    new Set(subjectTeachers.filter((st) => st.status === 'Aktif').map((st) => st.subjectId))
-  );
-
   async function handleCreateMapping() {
     if (!createSubjectId) { toast.error('Pilih mata pelajaran'); return; }
     if (createTeacherIds.length === 0) { toast.error('Pilih minimal satu guru pengampu'); return; }
@@ -321,7 +264,7 @@
             targetHours: createWeeklyHours,
             status: 'Aktif' as const,
           });
-        } catch (e) {
+        } catch (_) {
           // Abaikan error jika mapping sudah ada secara global
         }
       }
@@ -355,10 +298,8 @@
     }
   }
 
-  // Filtered requirements for display (only subjects with teacher mapping)
-  let displayedRequirements = $derived(
-    requirements.filter((r) => mappedSubjectIds.has(r.subjectId))
-  );
+  // Tabel read-only: tampilkan baris yang punya mapping guru (dari requirement ATAU SubjectTeacher).
+  let displayedRequirements = $derived(requirements.filter((r) => r.teacherIds.length > 0));
 
   // Teacher options filtered by selected subject in create mapping modal
   let createTeacherOptions = $derived(
@@ -383,11 +324,14 @@
         grouped.get(sub.id)!.rows.push(rec);
       }
 
-      // Build one row per subject that has teacher mapping (consistent with displayedRequirements)
-      const eligibleSubjects = allSubjects.filter((sub) => mappedSubjectIds.has(sub.id));
+      // Hanya tampilkan subjek yang BENAR-BENAR memiliki data ClassSubjectRequirement tersimpan
+      // untuk kelas ini (tanpa sintesis/fallback dari mapping SubjectTeacher).
+      const eligibleSubjects = allSubjects.filter((sub) => grouped.has(sub.id));
       const merged: SubjectRequirementRow[] = eligibleSubjects.map((sub) => {
         const g = grouped.get(sub.id);
-        const teacherIds: string[] = g ? [...new Set(g.rows.map((r) => r.teacherId).filter((t): t is string => t !== null && t !== undefined))] : [];
+        const reqTeacherIds = g ? g.rows.map((r) => r.teacherId).filter((t): t is string => t !== null && t !== undefined) : [];
+        // Guru diambil hanya dari requirement tersimpan (tidak fallback ke SubjectTeacher).
+        const teacherIds: string[] = [...new Set(reqTeacherIds)];
         const existingIds = g ? g.rows.map((r) => r.id).filter(Boolean) as string[] : [];
         const weeklyHours = g ? (g.rows[0]?.weeklyHours ?? 2) : 2;
         const maxHoursPerDay = g ? Math.min(...g.rows.map((r) => r.maxHoursPerDay || 2)) : 2;
@@ -404,44 +348,6 @@
       requirements = merged;
     } catch {
       toast.error('Gagal memuat kebutuhan jam kelas');
-    }
-  }
-
-  async function saveRequirements() {
-    if (!selectedRequirementClassId) return;
-    if (checkOverAllocatedTeachers()) return; // Stop if over-allocated
-
-    try {
-      isSavingRequirements = true;
-      // Flatten: one record per teacher per subject
-      const flatReqs: any[] = [];
-      for (const r of requirements) {
-        if (r.weeklyHours <= 0) continue;
-        const teacherIds = r.teacherIds.filter(Boolean);
-        if (teacherIds.length === 0) teacherIds.push('');
-        for (const tId of teacherIds) {
-          flatReqs.push({
-            classId: selectedRequirementClassId,
-            subjectId: r.subjectId,
-            teacherId: tId || null,
-            weeklyHours: r.weeklyHours,
-            maxHoursPerDay: r.maxHoursPerDay,
-          });
-        }
-      }
-      await classSubjectRequirementApi.bulkUpsert(flatReqs);
-
-      const refreshReqs = await classSubjectRequirementApi.list({});
-      if (refreshReqs.data) {
-        allClassRequirements = refreshReqs.data as ClassSubjectRequirement[];
-      }
-
-      toast.success('Beban jam pelajaran berhasil disimpan!');
-    } catch (err: any) {
-      const msg = err?.response?.data?.message || err?.message || 'Gagal menyimpan beban jam pelajaran';
-      toast.error(msg);
-    } finally {
-      isSavingRequirements = false;
     }
   }
 
@@ -599,9 +505,16 @@
         previewResult = result.data as GeneratorPreviewResult;
         activeTab = 'preview';
         toast.success(`Generator selesai! Kualitas jadwal: ${previewResult.qualityScore}%`);
+      } else {
+        toast.error('Generator tidak menghasilkan data. Pastikan matriks Beban Jam (Tab 1) sudah terisi.');
       }
     } catch (e) {
-      toast.error(String(e) || 'Gagal menjalankan generator jadwal');
+      const msg =
+        e instanceof Error ? e.message : String(e || 'Gagal menjalankan generator jadwal');
+      toast.error(msg);
+      if (/Kebutuhan Jam/i.test(msg) || /ClassSubjectRequirement/i.test(msg)) {
+        activeTab = 'requirements';
+      }
     } finally {
       isGenerating = false;
     }
@@ -618,8 +531,10 @@
       });
       toast.success('Jadwal pelajaran berhasil dipublikasikan ke database!');
       isPublishModalOpen = false;
-    } catch {
-      toast.error('Gagal mempublikasikan jadwal pelajaran');
+    } catch (e) {
+      const msg =
+        e instanceof Error ? e.message : String(e || 'Gagal mempublikasikan jadwal pelajaran');
+      toast.error(msg);
     } finally {
       isPublishing = false;
     }
@@ -710,7 +625,7 @@
               Matriks Alokasi Jam Pelajaran
             </h2>
             <p class="text-xs text-on-surface-variant font-data-mono uppercase">
-              Tentukan jumlah JP/minggu & pilih guru pengampu (menampilkan Sisa JP & Guru Mapel terkait).
+              Data beban jam per kelas (read-only). Tambah mapping baru lewat form &quot;Buat Mapping Baru&quot;.
             </p>
           </div>
           <div class="flex items-center gap-3 w-full sm:w-auto">
@@ -724,12 +639,6 @@
               />
             </div>
             <div class="mt-5 flex items-center gap-2">
-              <TooltipIconButton
-                icon="save"
-                tooltip={isSavingRequirements ? 'Menyimpankan...' : 'Simpan Beban JP'}
-                onclick={saveRequirements}
-                variant="primary"
-              />
                 <TooltipIconButton
                   icon="checklist"
                   tooltip={selectedReqIds.length > 0 ? 'Batal Pilih Semua' : 'Pilih Semua Data'}
@@ -770,13 +679,18 @@
                 <th class="p-3 border-r-2 border-on-surface">Mata Pelajaran</th>
                 <th class="p-3 border-r-2 border-on-surface w-36">Jam / Minggu</th>
                 <th class="p-3 border-r-2 border-on-surface w-36">Max JP / Hari</th>
-                <th class="p-3">Guru Pengampu Mapel (Beban & Sisa JP)</th>
+                <th class="p-3">Guru Pengampu</th>
               </tr>
             </thead>
             <tbody>
-              {#each displayedRequirements as req, index}
-                {@const eligibleTeachers = getTeachersForSubject(req.subjectId)}
-                {@const teacherOptions = getTeacherOptionsForSubject(req.subjectId, req.teacherIds[0] || '')}
+              {#if displayedRequirements.length === 0}
+                <tr>
+                  <td colspan="5" class="p-10 text-center text-on-surface-variant font-data-mono text-data-mono uppercase">
+                    Belum ada data alokasi jam pelajaran untuk kelas ini. Gunakan tombol &quot;Buat Mapping Baru&quot; di atas untuk menambahkan data Beban Jam (dengan guru pengampu terpilih).
+                  </td>
+                </tr>
+              {:else}
+                {#each displayedRequirements as req}
                   <tr class="neo-border-b hover:bg-surface-container-low">
                     <td class="p-3 border-r-2 border-on-surface text-center">
                       {#if req.existingIds.length > 0}
@@ -789,36 +703,31 @@
                       {req.subjectName}
                       <span class="text-xs text-on-surface-variant block font-normal">{req.subjectCode}</span>
                     </td>
-                    <td class="p-3 border-r-2 border-on-surface">
-                      <input
-                        type="number"
-                        min="0"
-                        max="30"
-                        bind:value={displayedRequirements[index]!.weeklyHours}
-                        class="w-24 h-11 px-3 neo-border bg-surface text-on-surface font-data-mono font-bold text-center"
-                      />
+                    <td class="p-3 border-r-2 border-on-surface text-center font-bold">
+                      {req.weeklyHours} <span class="text-xs font-normal text-on-surface-variant">JP</span>
                     </td>
-                    <td class="p-3 border-r-2 border-on-surface">
-                      <input
-                        type="number"
-                        min="1"
-                        max="6"
-                        bind:value={displayedRequirements[index]!.maxHoursPerDay}
-                        class="w-24 h-11 px-3 neo-border bg-surface text-on-surface font-data-mono font-bold text-center"
-                      />
+                    <td class="p-3 border-r-2 border-on-surface text-center font-bold">
+                      {req.maxHoursPerDay} <span class="text-xs font-normal text-on-surface-variant">JP</span>
                     </td>
                     <td class="p-3">
-                      <SearchableSelect
-                        id={`req-teacher-${req.subjectId}`}
-                        label=""
-                        bind:value={displayedRequirements[index]!.teacherIds}
-                        options={teacherOptions}
-                        placeholder="Pilih Guru Pengampu"
-                        multiple={true}
-                      />
+                      {#if req.teacherIds.length > 0}
+                        <div class="flex flex-wrap gap-1.5">
+                          {#each req.teacherIds as tId}
+                            {@const teacher = allTeachers.find((t) => t.id === tId)}
+                            {#if teacher}
+                              <span class="px-2 py-0.5 border-2 border-on-background bg-secondary-container text-on-secondary-container text-xs font-bold">
+                                {formatTeacherName(teacher)}
+                              </span>
+                            {/if}
+                          {/each}
+                        </div>
+                      {:else}
+                        <span class="text-on-surface-variant text-xs">—</span>
+                      {/if}
                     </td>
                   </tr>
                 {/each}
+              {/if}
             </tbody>
           </table>
         </div>
@@ -976,10 +885,11 @@
           </div>
 
           <div class="flex items-center gap-3">
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" bind:checked={enableBatchTeaching} class="sr-only peer" />
-              <div class="w-11 h-6 neo-border bg-surface peer-checked:bg-primary peer-checked:neo-shadow-xs transition-all after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-on-surface after:peer-checked:bg-on-primary after:w-5 after:h-5 after:neo-border-xs after:transition-all peer-checked:after:translate-x-full"></div>
-            </label>
+            <Checkbox
+              checked={enableBatchTeaching}
+              onchange={() => (enableBatchTeaching = !enableBatchTeaching)}
+              class="shrink-0"
+            />
             <div>
               <span class="font-label-caps text-label-caps uppercase text-on-surface">Batch Teaching</span>
               <p class="text-[10px] text-on-surface-variant">Gabung kelas dengan guru + mapel sama ke satu slot</p>

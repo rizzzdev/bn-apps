@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/atoms';
-	import { PageHeader, Modal, SearchableSelect, TooltipIconButton } from '$lib/components/molecules';
+	import { PageHeader, Modal, TooltipIconButton } from '$lib/components/molecules';
   import { DataTable, TableHead, TableHeadCell, TableBody, TableRow, TableCell } from '$lib/components/organisms/table';
 	import { lessonHourApi } from '$lib/services';
   import type { LessonHour } from '$lib/types';
@@ -138,7 +138,7 @@
 						<TableHeadCell>Jam Mulai</TableHeadCell>
 						<TableHeadCell>Jam Selesai</TableHeadCell>
 						<TableHeadCell align="center">Urutan</TableHeadCell>
-						<TableHeadCell align="right">Aksi</TableHeadCell>
+						<TableHeadCell align="center">Aksi</TableHeadCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
@@ -149,8 +149,8 @@
 							<TableCell>{lh.startTime}</TableCell>
 							<TableCell>{lh.endTime}</TableCell>
 							<TableCell align="center">{lh.order}</TableCell>
-							<TableCell align="right">
-								<div class="flex justify-end gap-2">
+							<TableCell align="center">
+								<div class="flex justify-center gap-2">
 									<TooltipIconButton icon="edit" tooltip="Edit" onclick={() => openEdit(lh)} variant="ghost" />
 									<TooltipIconButton icon="delete" tooltip="Hapus" onclick={() => confirmDelete(lh.id)} variant="danger" />
 								</div>

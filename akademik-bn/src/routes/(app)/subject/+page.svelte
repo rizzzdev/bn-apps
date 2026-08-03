@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { Button } from '$lib/components/atoms';
-	import { PageHeader, Modal, SearchableSelect, Pagination } from '$lib/components/molecules';
+	import {
+		PageHeader,
+		Modal,
+		SearchBar,
+		SearchableSelect,
+		Pagination
+	} from '$lib/components/molecules';
 	import { SubjectTable } from '$lib/features/subject';
 	import { subjectApi, teacherApi } from '$lib/services';
 	import type { ShadowSubject, ShadowTeacher, Subject } from '$lib/types';
@@ -16,9 +22,21 @@
 	let error = $state('');
 
 	let currentPage = $state(1);
+	let searchTerm = $state('');
 	let itemsPerPage = 10;
-	let totalItems = $state(0);
+
+	let filteredSubjects = $derived.by(() => {
+		const q = searchTerm.trim().toLowerCase();
+		if (!q) return subjects;
+		return subjects.filter(
+			(s) => s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q)
+		);
+	});
+	let totalItems = $derived(filteredSubjects.length);
 	let totalPages = $derived(Math.ceil(totalItems / itemsPerPage));
+	let displayedSubjects = $derived(
+		filteredSubjects.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+	);
 
 	// Add Teacher mapping modal
 	let isAddTeacherOpen = $state(false);
@@ -46,7 +64,7 @@
 		error = '';
 		try {
 			const [subjectRes, allSubjectRes, teacherRes, stRes] = await Promise.all([
-				subjectApi.list(currentPage, itemsPerPage),
+				subjectApi.list(1, 1000),
 				subjectApi.list(1, 1000),
 				teacherApi.list(1, 1000),
 				teacherApi.subjectTeachers.list(1, 1000)
@@ -62,7 +80,6 @@
 
 			if (subjectRes.data) {
 				const subjectList = subjectRes.data as ShadowSubject[];
-				totalItems = subjectRes.pagination?.totalData ?? subjectList.length;
 
 				const subjectTeachers = stRes.data || [];
 
@@ -90,8 +107,8 @@
 	}
 
 	$effect(() => {
-		const _ = currentPage;
-		loadSubjects();
+		const _ = searchTerm;
+		currentPage = 1;
 	});
 
 	onMount(() => {
@@ -136,16 +153,16 @@
 	/>
 
 	{#if isLoading}
-		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">
-			Memuat data...
-		</div>
+		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">Memuat data...</div>
 	{:else if error}
 		<div class="neo-border bg-error-container text-error p-4 text-center font-data-mono text-xs">
 			{error}
 		</div>
 	{:else}
+		<SearchBar bind:value={searchTerm} placeholder="Cari mata pelajaran (nama / kode)..." />
+
 		<SubjectTable
-			{subjects}
+			subjects={displayedSubjects}
 			onView={openView}
 			onAddTeacher={openAddTeacher}
 			onHistoryTeacher={openHistory}
@@ -176,7 +193,10 @@
 		/>
 
 		<div>
-			<label for="addTargetHours" class="block text-xs font-label-caps uppercase font-bold text-on-surface mb-1">
+			<label
+				for="addTargetHours"
+				class="block text-xs font-label-caps uppercase font-bold text-on-surface mb-1"
+			>
 				Target Beban Jam Pelajaran (JP/minggu):
 			</label>
 			<input

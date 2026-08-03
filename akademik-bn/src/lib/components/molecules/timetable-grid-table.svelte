@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon } from '$lib/components/atoms';
+  import { Icon, Checkbox } from '$lib/components/atoms';
   import { DataTable } from '$lib/components/organisms/table';
   import type { LessonHour } from '$lib/types';
   import { WORK_DAYS } from '$lib/constants';
@@ -53,6 +53,12 @@
   }
 
   function handleSlotClick(slot: TimetableCellSlot, e: MouseEvent) {
+    const target = e.target as HTMLElement | null;
+    // Klik pada checkbox/label-nya sudah ditangani lewat onchange komponen Checkbox,
+    // jadi jangan ikut memicu toggle dari sel (menghindari toggle ganda).
+    if (target && target.closest('input[type="checkbox"], label')) {
+      return;
+    }
     if (onToggleSelect && selectable) {
       onToggleSelect(slot.id);
     }
@@ -108,20 +114,13 @@
                     >
                       <div class="flex items-start gap-2">
                         {#if selectable}
-                          <button
-                            type="button"
-                            class="w-4 h-4 neo-border-sm flex items-center justify-center shrink-0 mt-0.5 cursor-pointer {selected
-                              ? 'bg-primary text-on-primary'
-                              : 'bg-white hover:bg-surface-container-higher'}"
-                            onclick={(e) => {
-                              e.stopPropagation();
+                          <Checkbox
+                            checked={selected}
+                            onchange={() => {
                               if (onToggleSelect) onToggleSelect(slot.id);
                             }}
-                          >
-                            {#if selected}
-                              <Icon name="check" size="10px" />
-                            {/if}
-                          </button>
+                            class="shrink-0 mt-0.5"
+                          />
                         {/if}
                         <div class="min-w-0 flex-1">
                           <p class="font-bold text-sm leading-tight truncate">{slot.subjectName}</p>

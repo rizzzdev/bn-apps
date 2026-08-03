@@ -1,9 +1,11 @@
 import { AttachmentRepository, attachmentRepository } from '@internship/modules/attachment/repository/index.js';
 import { CreateAttachmentDto, UpdateAttachmentDto } from '@internship/modules/attachment/domain/index.js';
 import { NotFoundError } from '@app/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
+import { withCache, clearCachePattern, setCache, putOptionalToNull } from '@app/index.js';
 import path from 'path';
 import fs from 'fs';
+
+const ATTACHMENT_NULLABLE_UPDATE_FIELDS = ['url'] as const;
 
 export class AttachmentService {
   constructor(private repository: AttachmentRepository) {}
@@ -36,7 +38,7 @@ export class AttachmentService {
 
   async update(id: string, data: UpdateAttachmentDto) {
     await this.getById(id);
-    const updated = await this.repository.update(id, data);
+    const updated = await this.repository.update(id, putOptionalToNull(data, ATTACHMENT_NULLABLE_UPDATE_FIELDS));
     await clearCachePattern(`attachment:all:*`);
     await setCache(`attachment:id:${id}`, updated, 600);
     return updated;

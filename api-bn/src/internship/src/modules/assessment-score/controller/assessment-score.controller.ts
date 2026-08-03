@@ -27,7 +27,8 @@ export class AssessmentScoreController {
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.service.create(req.body);
+      const actorId = req.user?.id;
+      const data = await this.service.create(req.body, actorId);
       sendResponse(res, 201, 'Berhasil menambahkan skor', data);
     } catch (error) {
       next(error);
@@ -36,7 +37,8 @@ export class AssessmentScoreController {
 
   upsert = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.service.upsert(req.body);
+      const actorId = req.user?.id;
+      const data = await this.service.upsert(req.body, actorId);
       sendResponse(res, 200, 'Berhasil menyimpan skor', data);
     } catch (error) {
       next(error);
@@ -45,7 +47,8 @@ export class AssessmentScoreController {
 
   bulkSubmit = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.service.bulkSubmit(req.body);
+      const actorId = req.user?.id;
+      const data = await this.service.bulkSubmit(req.body, actorId);
       sendResponse(res, 200, 'Berhasil menyimpan semua skor', data);
     } catch (error) {
       next(error);
@@ -54,7 +57,8 @@ export class AssessmentScoreController {
 
   update = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.service.update(req.params.id as string, req.body);
+      const actorId = req.user?.id;
+      const data = await this.service.update(req.params.id as string, req.body, actorId);
       sendResponse(res, 200, 'Berhasil memperbarui skor', data);
     } catch (error) {
       next(error);
@@ -63,7 +67,8 @@ export class AssessmentScoreController {
 
   delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await this.service.delete(req.params.id as string);
+      const actorId = req.user?.id;
+      await this.service.delete(req.params.id as string, actorId);
       sendResponse(res, 200, 'Berhasil menghapus skor');
     } catch (error) {
       next(error);

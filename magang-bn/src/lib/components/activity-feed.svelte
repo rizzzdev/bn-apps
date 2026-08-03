@@ -104,6 +104,22 @@
       icon: "⭐",
       color: "bg-amber-100 text-amber-700 border-amber-300",
     },
+    PLACEMENT_COMPLETED: {
+      icon: "🏁",
+      color: "bg-emerald-100 text-emerald-700 border-emerald-300",
+    },
+    INDICATOR_CREATED: {
+      icon: "📋",
+      color: "bg-sky-100 text-sky-700 border-sky-300",
+    },
+    INDICATOR_UPDATED: {
+      icon: "✏️",
+      color: "bg-lime-100 text-lime-700 border-lime-300",
+    },
+    INDICATOR_DELETED: {
+      icon: "🗑️",
+      color: "bg-orange-100 text-orange-700 border-orange-300",
+    },
   };
 
   function getIcon(action: string) {

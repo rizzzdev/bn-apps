@@ -1,6 +1,9 @@
 import { SentriError } from 'sentri/core';
+import { putOptionalToNull } from '@app/index.js';
 import { QuizRepository } from '../repository/quiz.repository';
 import { CreateQuizDto, UpdateQuizDto, createQuizSchema, updateQuizSchema } from '../domain/schemas';
+
+const QUIZ_NULLABLE_UPDATE_FIELDS = ['timeLimit'] as const;
 
 export class QuizService {
   constructor(private repository: QuizRepository) {}
@@ -45,7 +48,7 @@ export class QuizService {
     }
 
     const parsed = updateQuizSchema.parse(data);
-    return this.repository.update(id, parsed);
+    return this.repository.update(id, putOptionalToNull(parsed, QUIZ_NULLABLE_UPDATE_FIELDS));
   }
 
   async delete(id: string, teacherId: string) {

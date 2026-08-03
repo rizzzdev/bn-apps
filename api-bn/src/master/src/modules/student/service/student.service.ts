@@ -2,12 +2,12 @@ import {
   StudentRepository,
   studentRepository,
 } from '@master/modules/student/repository';
-import { CreateStudentDto, UpdateStudentDto } from '@master/modules/student/domain';
+import { CreateStudentDto, UpdateStudentDto, ChangePasswordDto } from '@master/modules/student/domain';
 import { BadRequestError, NotFoundError } from '@app/index.js';
 import { prisma } from '@master/database/index.js';
 import { sentriAuth } from '@auth/index.js';
 import { StudentStatus } from '@master/database/index.js';
-import { parseExcel, generateExcelTemplate, buildHeaderLabelMap, type HeaderSpec } from '@app/index.js';
+import { parseExcel, generateExcelTemplate, buildHeaderLabelMap, putOptionalToNull, type HeaderSpec } from '@app/index.js';
 import { createStudentSchema } from '@master/modules/student/domain/schemas';
 import { randomUUID } from "crypto";
 import { withCache, clearCachePattern, setCache } from '@app/index.js';
@@ -51,12 +51,19 @@ const STUDENT_EXCEL_SAMPLE: Record<string, unknown> = {
   password: "password123",
 };
 
+const STUDENT_NULLABLE_UPDATE_FIELDS = [
+  'nik', 'nis', 'nisn',
+  'birthplace', 'birthdate', 'ethnicGroup',
+  'height', 'weight', 'phoneNumber', 'gender', 'religion',
+] as const;
+
 export class StudentService {
   constructor(private repository: StudentRepository) {}
 
   async getAll(
     page: number,
     limit: number,
+    search?: string,
     userId?: string,
     includeCurrentClass = false,
     includeUser = false,
@@ -68,18 +75,19 @@ export class StudentService {
         this.repository.findAll(
           skip,
           limit,
+          search,
           userId,
           includeCurrentClass,
           includeUser,
           includePicture,
         ),
-        this.repository.count(userId),
+        this.repository.count(search, userId),
       ]);
       return { data, total };
     };
 
     return withCache(
-      `student:all:page:${page}:limit:${limit}:userId:${userId || "none"}:includeClass:${includeCurrentClass}:includeUser:${includeUser}:includePicture:${includePicture}`,
+      `student:all:page:${page}:limit:${limit}:search:${search || "none"}:userId:${userId || "none"}:includeClass:${includeCurrentClass}:includeUser:${includeUser}:includePicture:${includePicture}`,
       600,
       resultFunc,
     );
@@ -253,7 +261,7 @@ export class StudentService {
       }
     }
 
-    const updated = await this.repository.update(id, data);
+    const updated = await this.repository.update(id, putOptionalToNull(data, STUDENT_NULLABLE_UPDATE_FIELDS));
     await clearCachePattern("student:all:*");
     await clearCachePattern(`student:id:${id}:*`);
     await setCache(`student:id:${id}`, updated, 600);
@@ -567,6 +575,15 @@ export class StudentService {
         ],
       },
     );
+  }
+
+  async changePassword(id: string, dto: ChangePasswordDto) {
+    const item = await this.getById(id);
+    if (!item.userId) {
+      throw new BadRequestError('Murid ini tidak memiliki akun (userId)');
+    }
+    await getOrchestrator().masterAuth.changePassword(item.userId, dto.newPassword);
+    return { success: true, message: 'Password berhasil diubah' };
   }
 }
 

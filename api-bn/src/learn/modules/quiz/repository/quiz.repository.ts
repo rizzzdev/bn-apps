@@ -1,6 +1,7 @@
-import { prisma } from '@/database';
-import { CreateQuizDto, UpdateQuizDto } from '../domain/schemas';
-import { getOrchestrator, computeClassStudentCounts } from '../../common/hydrate';
+import { prisma } from '@learn/database/index.js';
+import { shadowSyncService } from '../../../services/shadow-sync.service.js';
+import { CreateQuizDto, UpdateQuizDto } from '../domain/schemas.js';
+import { computeClassStudentCounts } from '../../common/hydrate.js';
 
 export class QuizRepository {
   async create(data: CreateQuizDto, teacherId: string) {
@@ -77,12 +78,20 @@ export class QuizRepository {
 
   private async fetchClassMap(classIds: string[]) {
     if (classIds.length === 0) return new Map<string, string>();
-    return new Map((await getOrchestrator().masterClass.findByIds(classIds)).map((c) => [c.id, c.name]));
+    await shadowSyncService.lazySyncAll().catch(() => {});
+    const classes = await prisma.shadowClass.findMany({
+      where: { id: { in: classIds }, deletedAt: null },
+    });
+    return new Map(classes.map((c) => [c.id, c.name]));
   }
 
   private async fetchTeacherMap(teacherIds: string[]) {
     if (teacherIds.length === 0) return new Map<string, any>();
-    return new Map((await getOrchestrator().masterTeacher.findByIds(teacherIds)).map((t) => [t.id, t]));
+    await shadowSyncService.lazySyncAll().catch(() => {});
+    const teachers = await prisma.shadowTeacher.findMany({
+      where: { id: { in: teacherIds }, deletedAt: null },
+    });
+    return new Map(teachers.map((t) => [t.id, t]));
   }
 
   private async hydrate(items: any[]) {

@@ -1,4 +1,4 @@
-import { getList, createItem, deleteItem, bulkDelete } from './base';
+import { getList, createItem, deleteItem, bulkDelete, parseResponse } from './base';
 import type {
   ClassSubjectRequirement,
   TeacherUnavailability,
@@ -15,14 +15,14 @@ export const classSubjectRequirementApi = {
     createItem<ClassSubjectRequirement, ClassSubjectRequirement>('/academic/class-subject-requirements', data),
   bulkUpsert: (requirements: ClassSubjectRequirement[]) =>
     createItem<{ requirements: ClassSubjectRequirement[] }, ClassSubjectRequirement[]>(
-      '/academic/class-subject-requirements/bulk',
+      '/academic/class-subject-requirements/batch',
       { requirements },
     ),
   delete: (id: string) => deleteItem('/academic/class-subject-requirements', id),
   bulkDelete: (ids: string[]) => bulkDelete('/academic/class-subject-requirements', ids),
   clearAll: async (): Promise<ApiResponse<{ count: number }>> => {
     const res = await apiClient('/academic/class-subject-requirements/clear', { method: 'DELETE' });
-    return res.json();
+    return parseResponse<{ count: number }>(res);
   },
 };
 
@@ -31,7 +31,7 @@ export const teacherUnavailabilityApi = {
     getList<TeacherUnavailability>('/academic/teacher-unavailabilities', teacherId ? { teacherId } : undefined),
   bulkSet: (teacherId: string, unavailabilities: { day: string; lessonHourId: string; reason?: string }[]) =>
     createItem<{ teacherId: string; unavailabilities: { day: string; lessonHourId: string; reason?: string }[] }, TeacherUnavailability[]>(
-      '/academic/teacher-unavailabilities/bulk',
+      '/academic/teacher-unavailabilities/batch',
       { teacherId, unavailabilities },
     ),
   delete: (id: string) => deleteItem('/academic/teacher-unavailabilities', id),

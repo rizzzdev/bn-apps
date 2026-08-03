@@ -3,7 +3,8 @@ import { env as publicEnv } from '$env/dynamic/public';
 export const getApiUrl = (): string => {
 	const pub = publicEnv as Record<string, string | undefined>;
 	const metaEnv = typeof import.meta !== 'undefined' && import.meta.env ? (import.meta.env as Record<string, string | undefined>) : {};
-	return pub.API_URL || pub.PUBLIC_API_URL || metaEnv.API_URL || metaEnv.VITE_API_URL || 'http://localhost:3000';
+	const raw = (pub.API_URL || pub.PUBLIC_API_URL || metaEnv.API_URL || metaEnv.VITE_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
 };
 
 export function getCookie(name: string): string | null {
@@ -18,15 +19,27 @@ export function getCookie(name: string): string | null {
 	return null;
 }
 
+function getCookieDomain(): string {
+	const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || '';
+	if (!raw) return '';
+	return raw.startsWith('.') ? raw : `.${raw}`;
+}
+
+function cookieAttrs(): string {
+	const domain = getCookieDomain();
+	const secure = typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; Secure' : '';
+	return `; SameSite=Lax${secure}${domain ? `; domain=${domain}` : ''}`;
+}
+
 export function setCookie(name: string, value: string, maxAgeSeconds: number = 900): void {
 	if (typeof document === 'undefined') return;
 	const expires = new Date(Date.now() + maxAgeSeconds * 1000).toUTCString();
-	document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+	document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/${cookieAttrs()}`;
 }
 
 export function deleteCookie(name: string): void {
 	if (typeof document === 'undefined') return;
-	document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax`;
+	document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/${cookieAttrs()}`;
 }
 
 export async function apiClient(endpoint: string, options: RequestInit = {}): Promise<Response> {

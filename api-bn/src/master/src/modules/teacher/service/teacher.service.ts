@@ -2,12 +2,12 @@ import {
   TeacherRepository,
   teacherRepository,
 } from '@master/modules/teacher/repository';
-import { CreateTeacherDto, UpdateTeacherDto } from '@master/modules/teacher/domain';
+import { CreateTeacherDto, UpdateTeacherDto, ChangePasswordDto } from '@master/modules/teacher/domain';
 import { BadRequestError, NotFoundError } from '@app/index.js';
 import { prisma } from '@master/database/index.js';
 import { sentriAuth } from '@auth/index.js';
 import { TeacherStatus } from '@master/database/index.js';
-import { parseExcel, generateExcelTemplate, buildHeaderLabelMap, type HeaderSpec } from '@app/index.js';
+import { parseExcel, generateExcelTemplate, buildHeaderLabelMap, putOptionalToNull, type HeaderSpec } from '@app/index.js';
 import { withCache, clearCachePattern, setCache } from '@app/index.js';
 import { createTeacherSchema } from '@master/modules/teacher/domain/schemas';
 import { attachmentRepository } from '@master/modules/attachment/repository';
@@ -53,18 +53,27 @@ const TEACHER_EXCEL_SAMPLE: Record<string, unknown> = {
   password: "password123",
 };
 
+const TEACHER_NULLABLE_UPDATE_FIELDS = [
+  'nik', 'nip',
+  'birthplace', 'birthdate', 'ethnicGroup',
+  'prefixTitle', 'suffixTitle',
+  'height', 'weight', 'phoneNumber', 'gender', 'religion',
+] as const;
+
 export class TeacherService {
   constructor(private repository: TeacherRepository) { }
 
-  async getAll(page: number, limit: number, userId?: string, includeUser = false, includePicture = false) {
-    return withCache(`teacher:all:page:${page}:limit:${limit}:userId:${userId || 'none'}:includeUser:${includeUser}:includePicture:${includePicture}`, 600, async () => {
+  async getAll(page: number, limit: number, search?: string, userId?: string, includeUser = false, includePicture = false) {
+    const resultFunc = async () => {
       const skip = (page - 1) * limit;
       const [data, total] = await Promise.all([
-        this.repository.findAll(skip, limit, userId, includeUser, includePicture),
-        this.repository.count(userId),
+        this.repository.findAll(skip, limit, search, userId, includeUser, includePicture),
+        this.repository.count(search, userId),
       ]);
       return { data, total };
-    });
+    };
+
+    return withCache(`teacher:all:page:${page}:limit:${limit}:search:${search || 'none'}:userId:${userId || 'none'}:includeUser:${includeUser}:includePicture:${includePicture}`, 600, resultFunc);
   }
 
   async getStatistics() {
@@ -177,7 +186,7 @@ export class TeacherService {
       }
     }
 
-    const updated = await this.repository.update(id, data);
+    const updated = await this.repository.update(id, putOptionalToNull(data, TEACHER_NULLABLE_UPDATE_FIELDS));
     await clearCachePattern('teacher:all:*');
     await clearCachePattern('teacher:statistics');
     await clearCachePattern(`teacher:id:${id}:*`);
@@ -415,6 +424,15 @@ export class TeacherService {
       gender: ["L", "P"],
       religion: ["Islam", "Kristen", "Katolik", "Hindu", "Buddha", "Konghucu"]
     });
+  }
+
+  async changePassword(id: string, dto: ChangePasswordDto) {
+    const item = await this.getById(id);
+    if (!item.userId) {
+      throw new BadRequestError('Guru ini tidak memiliki akun (userId)');
+    }
+    await getOrchestrator().masterAuth.changePassword(item.userId, dto.newPassword);
+    return { success: true, message: 'Password berhasil diubah' };
   }
 }
 

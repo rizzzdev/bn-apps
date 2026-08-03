@@ -9,6 +9,7 @@ import {
   changePasswordSchema,
   bulkCreateIndustryMentorSchema,
 } from '@internship/modules/industry-mentor/domain/index.js';
+import { sentriAuth } from '@auth/index.js';
 
 export const industryMentorRoute = Router();
 
@@ -25,5 +26,5 @@ industryMentorRoute.get('/', industryMentorController.getAll);
 industryMentorRoute.get('/:id', industryMentorController.getById);
 industryMentorRoute.post('/', validate(createIndustryMentorSchema), industryMentorController.create);
 industryMentorRoute.put('/:id', validate(updateIndustryMentorSchema), industryMentorController.update);
-industryMentorRoute.patch('/:id/password', validate(changePasswordSchema), industryMentorController.changePassword);
+industryMentorRoute.patch('/:id/password', sentriAuth.authorize("super_admin"), validate(changePasswordSchema), industryMentorController.changePassword);
 industryMentorRoute.delete('/:id', industryMentorController.delete);

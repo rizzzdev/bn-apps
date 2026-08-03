@@ -1,10 +1,11 @@
 import { validate, uploadExcel } from '@master/middlewares';
 import { Router } from 'express';
 import { studentController } from '@master/modules/student/controller';
-import { batchGetStudentSchema, createStudentSchema, updateStudentSchema, bulkUpdateStudentStatusSchema } from '@master/modules/student/domain';
+import { batchGetStudentSchema, createStudentSchema, updateStudentSchema, bulkUpdateStudentStatusSchema, changePasswordSchema } from '@master/modules/student/domain';
 import { z } from 'zod';
 import { uploadAttachment } from '@master/middlewares/upload.middleware';
 import { batchCreateDataSchema } from '@app/utils/batch-schemas';
+import { sentriAuth } from '@auth/index.js';
 
 export const studentRoute = Router();
 
@@ -22,6 +23,9 @@ studentRoute.get('/statistic', studentController.getStatistic);
 // Picture routes
 studentRoute.put('/:id/picture', uploadAttachment, studentController.uploadPicture);
 studentRoute.delete('/:id/picture', studentController.deletePicture);
+
+// Password route
+studentRoute.patch('/:id/password', sentriAuth.authorize("super_admin"), validate(changePasswordSchema), studentController.changePassword);
 
 // CRUD routes
 studentRoute.get('/', studentController.getAll);

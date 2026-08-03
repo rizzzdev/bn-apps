@@ -1,116 +1,111 @@
 import { redirect, type Handle } from '@sveltejs/kit';
-import { PUBLIC_API_URL, PUBLIC_PORTAL_URL } from '$env/static/public';
-import { checkRoleAccess } from '$lib/constants/roles';
+import { env as publicEnv } from '$env/dynamic/public';
+
+const getCookieDomain = (): string => {
+	const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || '';
+	if (!raw) return '';
+	return raw.startsWith('.') ? raw : `.${raw}`;
+};
+
+const getApiUrl = (): string => {
+	const raw = ((publicEnv as Record<string, string | undefined>).PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
+};
+
+const getPortalLoginUrl = (): string => {
+	const raw = ((publicEnv as Record<string, string | undefined>).PUBLIC_PORTAL_URL || 'http://localhost:5173').replace(/\/+$/, '');
+	return raw.endsWith('/login') ? raw : `${raw}/login`;
+};
+
+const clearAuthCookies = (event: Parameters<Handle>[0]['event']) => {
+	const base = { path: '/', ...(getCookieDomain() ? { domain: getCookieDomain() } : {}) };
+	event.cookies.delete('access_token', base);
+	event.cookies.delete('refresh_token', base);
+	event.cookies.delete('sentri-session', base);
+};
 
 /**
- * Pola otentikasi:
- * - access_token: disimpan non-httpOnly agar client (apiClient) bisa menambahkannya ke
- *   header Authorization ketika memanggil API langsung dari browser.
- * - refresh_token: disimpan httpOnly untuk mencegah pencurian via XSS; hanya server
- *   SvelteKit yang dapat membacanya. server-api.ts memanfaatkan cookie ini untuk fetch.
- *
- * Portal login (PUBLIC_PORTAL_URL) bertanggung jawab menyediakan refresh_token awal;
- * hook ini mampu memperbaruinya via /api/v1/auth/refresh dan akan menyalin refresh_token
- * baru ke cookie httpOnly supaya hardening tetap konsisten.
+ * Pola otentikasi terpadu:
+ * - access_token: non-httpOnly agar client (apiClient) bisa membacanya untuk header Authorization.
+ * - refresh_token: httpOnly; hanya server SvelteKit yang membacanya.
+ * - /auth/refresh dibaca dari cookie refresh_token (sesuai sentri), lalu rotasi via Set-Cookie.
  */
 export const handle: Handle = async ({ event, resolve }) => {
-	const refreshToken = event.cookies.get('refresh_token');
 	let accessToken = event.cookies.get('access_token');
+	const refreshToken = event.cookies.get('refresh_token');
 
 	if (!refreshToken) {
-		throw redirect(303, `${PUBLIC_PORTAL_URL}/login`);
+		throw redirect(303, getPortalLoginUrl());
 	}
 
-	if (refreshToken) {
-		let user = null;
+	try {
+		if (!accessToken && refreshToken) {
+			const refreshRes = await event.fetch(`${getApiUrl()}/auth/refresh`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Cookie: `refresh_token=${refreshToken}`
+				}
+			});
 
-		const fetchUser = async (token: string) => {
-			try {
-				return await fetch(`${PUBLIC_API_URL}/api/v1/auth/me`, {
-					headers: {
-						'Authorization': `Bearer ${token}`
-					}
-				});
-			} catch (e) {
-				return null;
-			}
-		};
+			if (refreshRes.ok) {
+				const refreshData = await refreshRes.json().catch(() => ({}));
+				const newAccessToken = refreshData.data?.accessToken || refreshData.accessToken;
 
-		let res = accessToken ? await fetchUser(accessToken) : null;
-
-		if (!res || res.status === 401) {
-			// Retry mechanism
-			let refreshRes = null;
-			try {
-				refreshRes = await fetch(`${PUBLIC_API_URL}/api/v1/auth/refresh`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${refreshToken}`
-					}
-				});
-			} catch (e) {
-				// Backend is unreachable, refreshRes stays null
-			}
-
-			if (refreshRes && refreshRes.ok) {
-				const refreshData = await refreshRes.json();
-				if (!refreshData.error && refreshData.data?.access_token) {
-					accessToken = refreshData.data.access_token;
-					// access_token tetap non-httpOnly agar FE (apiClient) dapat
-					// menambahkannya ke header Authorization untuk fetch langsung.
-					// refresh_token disimpan httpOnly untuk mencegah pencurian via XSS.
-					// maxAge cookie access_token sengaja pendek (5 menit) agar jendela
-					// eksposur saat XSS berkurang; harus <= ACCESS_TOKEN_EXPIRES di api-bn.
-					event.cookies.set('access_token', accessToken as string, {
-						path: '/',
-						httpOnly: false,
-						secure: import.meta.env.PROD,
-						sameSite: 'lax',
-						maxAge: 60 * 5, // 5 minutes (harus <= ACCESS_TOKEN_EXPIRES api-bn)
-					});
-					const newRefreshToken = (
-						refreshData.data as { refresh_token?: unknown }
-					).refresh_token;
-					if (typeof newRefreshToken === 'string' && newRefreshToken.length > 0) {
-						// Refresh token rotation: BE mengembalikan refresh_token baru.
-						// Simpan yang baru dan (overwrite) cookie lama.
-						event.cookies.set('refresh_token', newRefreshToken, {
+				const setCookies = refreshRes.headers.getSetCookie?.() || [];
+				for (const cookie of setCookies) {
+					if (cookie.startsWith('refresh_token=')) {
+						const val = cookie.split(';')[0].split('=')[1];
+						event.cookies.set('refresh_token', val, {
 							path: '/',
+							maxAge: 86400,
 							httpOnly: true,
-							secure: import.meta.env.PROD,
 							sameSite: 'lax',
-							maxAge: 60 * 60 * 24, // 1 day
+							secure: import.meta.env.PROD,
+							...(getCookieDomain() ? { domain: getCookieDomain() } : {})
 						});
 					}
-					// Jika BE tidak mengembalikan refresh_token baru, asumsikan
-					// refresh_token lama masih valid (rotation tidak terjadi). Jangan
-					// hapus cookie, agar tidak memaksa user re-login padahal sesi
-					// sebenarnya masih hidup. Penghapusan refresh_token hanya
-					// dilakukan di path failure (lihat blok !user di bawah).
-					res = await fetchUser(accessToken as string);
+				}
+
+				if (newAccessToken) {
+					accessToken = newAccessToken;
+					event.cookies.set('access_token', newAccessToken, {
+						path: '/',
+						maxAge: 60 * 5,
+						httpOnly: false,
+						sameSite: 'lax',
+						secure: import.meta.env.PROD,
+						...(getCookieDomain() ? { domain: getCookieDomain() } : {})
+					});
 				}
 			}
 		}
 
-		if (res && res.ok) {
-			const result = await res.json();
-			if (!result.error && result.data) {
-				user = result.data;
+		if (accessToken) {
+			const meRes = await event.fetch(`${getApiUrl()}/auth/me`, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			});
+
+			if (meRes.ok) {
+				const meData = await meRes.json();
+				const user = meData.data || meData;
 				event.locals.user = user;
+			} else {
+				clearAuthCookies(event);
+				throw redirect(303, getPortalLoginUrl());
 			}
+		} else {
+			clearAuthCookies(event);
+			throw redirect(303, getPortalLoginUrl());
 		}
-
-		if (!user) {
-			// Failed to authenticate even after retry
-			event.cookies.delete('access_token', { path: '/' });
-			event.cookies.delete('refresh_token', { path: '/' });
-			throw redirect(303, `${PUBLIC_PORTAL_URL}/login`);
+	} catch (error) {
+		if (error && typeof error === 'object' && 'status' in error && 'location' in error) {
+			throw error;
 		}
-
-		if (checkRoleAccess(event.url.pathname, user.roles)) {
-			throw redirect(303, '/403');
-		}
+		clearAuthCookies(event);
+		throw redirect(303, getPortalLoginUrl());
 	}
 
 	return resolve(event, {

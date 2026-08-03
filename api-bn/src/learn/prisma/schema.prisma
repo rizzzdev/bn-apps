@@ -196,3 +196,72 @@ model QuizAnswer {
 
   @@map("quiz_answers")
 }
+
+// ============================================================
+// SHADOW DATABASE MODELS
+// ============================================================
+
+model ShadowStudent {
+  id         String    @id
+  userId     String    @map("user_id")
+  fullname   String
+  nis        String?
+  nisn       String?
+  pictureUrl String?   @map("picture_url")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+  lastSyncAt DateTime  @default(now()) @map("last_sync_at")
+
+  @@index([userId])
+  @@index([deletedAt])
+  @@map("shadow_students")
+}
+
+model ShadowTeacher {
+  id         String    @id
+  userId     String    @map("user_id")
+  fullname   String
+  email      String?
+  nip        String?
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+  lastSyncAt DateTime  @default(now()) @map("last_sync_at")
+
+  @@index([userId])
+  @@index([deletedAt])
+  @@map("shadow_teachers")
+}
+
+model ShadowClass {
+  id             String    @id
+  name           String
+  level          String?
+  majorId        String?   @map("major_id")
+  academicYearId String?   @map("academic_year_id")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
+  lastSyncAt     DateTime  @default(now()) @map("last_sync_at")
+
+  @@index([deletedAt])
+  @@map("shadow_classes")
+}
+
+model ShadowClassStudent {
+  id         String    @id
+  classId    String    @map("class_id")
+  studentId  String    @map("student_id")
+  status     String?   @default("Aktif")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+  lastSyncAt DateTime  @default(now()) @map("last_sync_at")
+
+  @@index([classId])
+  @@index([studentId])
+  @@index([deletedAt])
+  @@map("shadow_class_students")
+}
+

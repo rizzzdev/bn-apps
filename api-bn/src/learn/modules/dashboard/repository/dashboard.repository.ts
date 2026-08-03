@@ -1,15 +1,20 @@
-import { prisma } from '@/database';
-import { getOrchestrator } from '../../common/hydrate';
+import { prisma } from '@learn/database/index.js';
+import { shadowSyncService } from '../../../services/shadow-sync.service.js';
 
 async function hydrateClassNames(items: { classId: string }[]) {
   const classIds = [...new Set(items.map((c) => c.classId).filter(Boolean))];
   if (classIds.length === 0) return new Map<string, string>();
-  const classes = await getOrchestrator().masterClass.findByIds(classIds);
+  await shadowSyncService.lazySyncAll().catch(() => {});
+  const classes = await prisma.shadowClass.findMany({
+    where: { id: { in: classIds }, deletedAt: null },
+  });
   return new Map(classes.map((c) => [c.id, c.name]));
 }
 
 export class DashboardRepository {
   async findTeacherPendingGrading(teacherId: string) {
+    await shadowSyncService.lazySyncAll().catch(() => {});
+
     const assignments = await prisma.assignment.findMany({
       where: { teacherId, status: 'Published', deletedAt: null },
       include: { _count: { select: { submissions: { where: { grade: null } } } } },
@@ -17,9 +22,10 @@ export class DashboardRepository {
     });
 
     const classIds = [...new Set(assignments.flatMap((a: any) => (a.classes || []).map((c: any) => c.classId)))];
-    const classMap = classIds.length > 0
-      ? new Map((await getOrchestrator().masterClass.findByIds(classIds)).map((c) => [c.id, c.name]))
-      : new Map<string, string>();
+    const shadowClasses = classIds.length > 0
+      ? await prisma.shadowClass.findMany({ where: { id: { in: classIds }, deletedAt: null } })
+      : [];
+    const classMap = new Map(shadowClasses.map((c) => [c.id, c.name]));
 
     return assignments
       .filter((a: any) => a._count?.submissions > 0)
@@ -35,6 +41,8 @@ export class DashboardRepository {
   }
 
   async findStudentPendingMaterials(studentId: string, classIds: string[]) {
+    await shadowSyncService.lazySyncAll().catch(() => {});
+
     const materials = await prisma.material.findMany({
       where: {
         classes: { some: { classId: { in: classIds } } },
@@ -47,9 +55,10 @@ export class DashboardRepository {
     });
 
     const allClassIds = [...new Set(materials.flatMap((m: any) => (m.classes || []).map((c: any) => c.classId)))];
-    const classMap = allClassIds.length > 0
-      ? new Map((await getOrchestrator().masterClass.findByIds(allClassIds)).map((c) => [c.id, c.name]))
-      : new Map<string, string>();
+    const shadowClasses = allClassIds.length > 0
+      ? await prisma.shadowClass.findMany({ where: { id: { in: allClassIds }, deletedAt: null } })
+      : [];
+    const classMap = new Map(shadowClasses.map((c) => [c.id, c.name]));
 
     return (materials as any[]).map((m) => ({
       ...m,
@@ -61,6 +70,8 @@ export class DashboardRepository {
   }
 
   async findStudentPendingAssignments(studentId: string, classIds: string[]) {
+    await shadowSyncService.lazySyncAll().catch(() => {});
+
     const assignments = await prisma.assignment.findMany({
       where: {
         classes: { some: { classId: { in: classIds } } },
@@ -74,14 +85,16 @@ export class DashboardRepository {
     });
 
     const teacherIds = [...new Set((assignments as any[]).map((a: any) => a.teacherId).filter(Boolean))];
-    const teacherMap = teacherIds.length > 0
-      ? new Map((await getOrchestrator().masterTeacher.findByIds(teacherIds)).map((t) => [t.id, t]))
-      : new Map<string, { id: string; fullname: string }>();
+    const shadowTeachers = teacherIds.length > 0
+      ? await prisma.shadowTeacher.findMany({ where: { id: { in: teacherIds }, deletedAt: null } })
+      : [];
+    const teacherMap = new Map(shadowTeachers.map((t) => [t.id, { id: t.id, fullname: t.fullname }]));
 
     const allClassIds = [...new Set(assignments.flatMap((a: any) => (a.classes || []).map((c: any) => c.classId)))];
-    const classMap = allClassIds.length > 0
-      ? new Map((await getOrchestrator().masterClass.findByIds(allClassIds)).map((c) => [c.id, c.name]))
-      : new Map<string, string>();
+    const shadowClasses = allClassIds.length > 0
+      ? await prisma.shadowClass.findMany({ where: { id: { in: allClassIds }, deletedAt: null } })
+      : [];
+    const classMap = new Map(shadowClasses.map((c) => [c.id, c.name]));
 
     return (assignments as any[]).map((a) => ({
       ...a,
@@ -94,6 +107,8 @@ export class DashboardRepository {
   }
 
   async findStudentPendingQuizzes(studentId: string, classIds: string[]) {
+    await shadowSyncService.lazySyncAll().catch(() => {});
+
     const quizzes = await prisma.quiz.findMany({
       where: {
         classes: { some: { classId: { in: classIds } } },
@@ -107,14 +122,16 @@ export class DashboardRepository {
     });
 
     const teacherIds = [...new Set((quizzes as any[]).map((q: any) => q.teacherId).filter(Boolean))];
-    const teacherMap = teacherIds.length > 0
-      ? new Map((await getOrchestrator().masterTeacher.findByIds(teacherIds)).map((t) => [t.id, t]))
-      : new Map<string, { id: string; fullname: string }>();
+    const shadowTeachers = teacherIds.length > 0
+      ? await prisma.shadowTeacher.findMany({ where: { id: { in: teacherIds }, deletedAt: null } })
+      : [];
+    const teacherMap = new Map(shadowTeachers.map((t) => [t.id, { id: t.id, fullname: t.fullname }]));
 
     const allClassIds = [...new Set(quizzes.flatMap((q: any) => (q.classes || []).map((c: any) => c.classId)))];
-    const classMap = allClassIds.length > 0
-      ? new Map((await getOrchestrator().masterClass.findByIds(allClassIds)).map((c) => [c.id, c.name]))
-      : new Map<string, string>();
+    const shadowClasses = allClassIds.length > 0
+      ? await prisma.shadowClass.findMany({ where: { id: { in: allClassIds }, deletedAt: null } })
+      : [];
+    const classMap = new Map(shadowClasses.map((c) => [c.id, c.name]));
 
     return (quizzes as any[]).map((q) => ({
       ...q,
@@ -248,10 +265,13 @@ export class DashboardRepository {
   }
 
   async findStudentClassIds(studentId: string) {
-    const records = await getOrchestrator().academicClassStudent.findMany({
-      studentId,
-      status: 'Aktif',
-      deletedAt: null,
+    await shadowSyncService.lazySyncAll().catch(() => {});
+    const records = await prisma.shadowClassStudent.findMany({
+      where: {
+        studentId,
+        status: 'Aktif',
+        deletedAt: null,
+      },
     });
     return records.map((cs) => cs.classId);
   }

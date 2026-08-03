@@ -14,6 +14,7 @@ services:
       ACCESS_TOKEN_EXPIRES: ${ACCESS_TOKEN_EXPIRES:-15m}
       REFRESH_TOKEN_EXPIRES: ${REFRESH_TOKEN_EXPIRES:-7d}
       REDIS_URL: redis://redis:6379
+      COOKIE_DOMAIN: ${DOMAIN_NAME:-}
     volumes:
       - uploads:/app/public
     networks:

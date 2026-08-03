@@ -10,5 +10,5 @@ lessonHoursRoute.post('/', validate(createLessonHourSchema), lessonHourControlle
 lessonHoursRoute.delete('/batch', lessonHourController.deleteBulk);
 lessonHoursRoute.patch('/batch/status', lessonHourController.updateStatusBulk);
 lessonHoursRoute.get('/:id', lessonHourController.getById);
-lessonHoursRoute.patch('/:id', validate(updateLessonHourSchema), lessonHourController.update);
+lessonHoursRoute.put('/:id', validate(updateLessonHourSchema), lessonHourController.update);
 lessonHoursRoute.delete('/:id', lessonHourController.delete);

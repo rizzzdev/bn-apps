@@ -87,3 +87,23 @@ export type QuizSubmission = Prisma.QuizSubmissionModel
  * 
  */
 export type QuizAnswer = Prisma.QuizAnswerModel
+/**
+ * Model ShadowStudent
+ * 
+ */
+export type ShadowStudent = Prisma.ShadowStudentModel
+/**
+ * Model ShadowTeacher
+ * 
+ */
+export type ShadowTeacher = Prisma.ShadowTeacherModel
+/**
+ * Model ShadowClass
+ * 
+ */
+export type ShadowClass = Prisma.ShadowClassModel
+/**
+ * Model ShadowClassStudent
+ * 
+ */
+export type ShadowClassStudent = Prisma.ShadowClassStudentModel

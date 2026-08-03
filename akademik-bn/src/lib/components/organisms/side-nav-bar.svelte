@@ -1,12 +1,35 @@
 <script lang="ts">
 	import { Icon } from '$lib/components/atoms';
 	import { PUBLIC_API_URL, PUBLIC_PORTAL_URL } from '$env/static/public';
+	import { env as publicEnv } from '$env/dynamic/public';
 	import { toast } from '$lib/stores/toast.svelte';
+	import { page } from '$app/stores';
+	import { formatTeacherName, getInitials } from '$lib/utils/image';
+	import type { CurrentUser, TeacherProfile } from '$lib/types';
+
+	const cookieDomain = (() => {
+		const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || '';
+		if (!raw) return '';
+		return raw.startsWith('.') ? raw : `.${raw}`;
+	})();
 
 	let { currentPath = '/', isMobileMenuOpen = $bindable(false) } = $props<{
 		currentPath?: string;
 		isMobileMenuOpen?: boolean;
 	}>();
+
+	const user = $derived(($page.data.user as CurrentUser | undefined) ?? null);
+	const profile = $derived(($page.data.profile as TeacherProfile | undefined) ?? null);
+
+	const displayName = $derived(profile?.fullname ? formatTeacherName(profile) : 'Admin Utama');
+	const displayRole = $derived(
+		profile
+			? user?.roles?.includes('teacher')
+				? 'Guru'
+				: 'Administrator Sistem'
+			: 'Administrator Sistem'
+	);
+	const initials = $derived(getInitials(displayName));
 
 	const rawApiUrl = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
 	const API_BASE = rawApiUrl.endsWith('/api/v1') ? rawApiUrl : `${rawApiUrl}/api/v1`;
@@ -25,7 +48,10 @@
 		document.cookie.split(';').forEach((c) => {
 			document.cookie = c
 				.replace(/^ +/, '')
-				.replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
+				.replace(
+					/=.*/,
+					`=;expires=${new Date().toUTCString()};path=/;SameSite=Lax${cookieDomain ? `;domain=${cookieDomain}` : ''}`
+				);
 		});
 		toast.success('Logged out');
 		window.location.href = PORTAL_LOGIN_URL;
@@ -87,14 +113,14 @@
 			<div
 				class="w-10 h-10 bg-primary neo-border neo-shadow-sm flex items-center justify-center flex-shrink-0"
 			>
-				<Icon name="person" class="text-on-primary" size="20px" fill />
+				<span class="font-headline font-black text-on-primary text-sm">{initials}</span>
 			</div>
 			<div class="flex-1 min-w-0">
 				<p class="font-label-caps text-label-caps font-bold text-on-surface truncate">
-					Admin Utama
+					{displayName}
 				</p>
 				<p class="font-data-mono text-[10px] text-on-surface-variant truncate">
-					ADMINISTRATOR SISTEM
+					{displayRole.toUpperCase()}
 				</p>
 			</div>
 		</div>

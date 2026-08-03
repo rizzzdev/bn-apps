@@ -1,6 +1,7 @@
 import { prisma } from '@academic/database/index.js';
 import type { Prisma } from '@academic/database/index.js';
 import { getOrchestrator } from '@app/orchestrator.js';
+import { putOptionalToNull } from '@app/index.js';
 
 export type LessonScheduleFilters = {
   day?: string;
@@ -150,11 +151,12 @@ export class LessonScheduleRepository {
       classIds?: string[];
     },
   ) {
+    const normalized = putOptionalToNull({ ...data }, ['notes']);
     const updateData: Record<string, unknown> = {};
-    if (data.subjectId !== undefined) updateData.subjectId = data.subjectId;
-    if (data.lessonHourId !== undefined) updateData.lessonHourId = data.lessonHourId;
-    if (data.day !== undefined) updateData.day = data.day;
-    if (data.notes !== undefined) updateData.notes = data.notes;
+    if (normalized.subjectId !== undefined) updateData.subjectId = normalized.subjectId;
+    if (normalized.lessonHourId !== undefined) updateData.lessonHourId = normalized.lessonHourId;
+    if (normalized.day !== undefined) updateData.day = normalized.day;
+    if (normalized.notes !== undefined) updateData.notes = normalized.notes;
 
     if (data.teacherIds) {
       await prisma.lessonScheduleTeacher.updateMany({

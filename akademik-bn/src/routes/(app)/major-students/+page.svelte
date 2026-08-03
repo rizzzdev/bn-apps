@@ -1,18 +1,44 @@
 <script lang="ts">
-	import { PageHeader, Pagination, AssignStudentModal, AssignTeacherModal } from '$lib/components/molecules';
+	import {
+		PageHeader,
+		Pagination,
+		SearchBar,
+		AssignStudentModal,
+		AssignTeacherModal
+	} from '$lib/components/molecules';
 	import { MajorTable } from '$lib/features/major';
 	import { majorApi, academicYearApi, studentApi, teacherApi, majorHeadApi } from '$lib/services';
-	import type { Major, ShadowMajor, MajorStudent, ShadowStudent, ShadowTeacher, CreateMajorStudentRequest } from '$lib/types';
+	import type {
+		Major,
+		ShadowMajor,
+		MajorStudent,
+		ShadowStudent,
+		ShadowTeacher,
+		CreateMajorStudentRequest
+	} from '$lib/types';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 
 	let majors = $state<Major[]>([]);
 	let currentPage = $state(1);
-	let totalPages = $state(1);
-	let totalItems = $state(0);
+	let searchTerm = $state('');
 	let itemsPerPage = 10;
 	let isLoading = $state(true);
 	let error = $state('');
+
+	let filteredMajors = $derived.by(() => {
+		const q = searchTerm.trim().toLowerCase();
+		if (!q) return majors;
+		return majors.filter(
+			(m) => m.name.toLowerCase().includes(q) || m.code.toLowerCase().includes(q)
+		);
+	});
+	let totalItems = $derived(filteredMajors.length);
+	let totalPages = $derived(Math.max(1, Math.ceil(totalItems / itemsPerPage)));
+	let displayedMajors = $derived(
+		filteredMajors.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+	);
 
 	let activeYearId = $state('');
 	let isAddStudentOpen = $state(false);
@@ -37,7 +63,7 @@
 			}
 
 			const [res, studentsRes] = await Promise.all([
-				majorApi.list(currentPage, itemsPerPage),
+				majorApi.list(1, 1000),
 				majorApi.majorStudents.list(1, 1000)
 			]);
 
@@ -61,10 +87,6 @@
 					};
 				});
 			}
-			if (res.pagination) {
-				totalPages = res.pagination.totalPage;
-				totalItems = res.pagination.totalData;
-			}
 		} catch (e) {
 			error = String(e);
 			toast.error('Gagal memuat data jurusan');
@@ -74,7 +96,11 @@
 	}
 
 	$effect(() => {
-		currentPage;
+		const _ = searchTerm;
+		currentPage = 1;
+	});
+
+	onMount(() => {
 		loadMajors();
 	});
 
@@ -184,16 +210,16 @@
 	/>
 
 	{#if isLoading}
-		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">
-			Memuat data...
-		</div>
+		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">Memuat data...</div>
 	{:else if error}
 		<div class="neo-border bg-error-container text-error p-4 text-center font-data-mono text-xs">
 			{error}
 		</div>
 	{:else}
+		<SearchBar bind:value={searchTerm} placeholder="Cari jurusan (nama / kode)..." />
+
 		<MajorTable
-			{majors}
+			majors={displayedMajors}
 			onView={openView}
 			onAddStudent={openAddStudent}
 			onSetHead={openSetHead}

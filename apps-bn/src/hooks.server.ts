@@ -3,7 +3,14 @@ import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 
 const getApiUrl = (): string => {
-	return env.API_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:3000';
+	const raw = (env.API_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
+};
+
+const getCookieDomain = (): string => {
+	const raw = publicEnv.PUBLIC_COOKIE_DOMAIN || '';
+	if (!raw) return '';
+	return raw.startsWith('.') ? raw : `.${raw}`;
 };
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -41,13 +48,29 @@ export const handle: Handle = async ({ event, resolve }) => {
 				if (refreshRes.ok) {
 					const data = await refreshRes.json();
 					const newAccessToken = data.accessToken || data.access_token;
+
+					const setCookies = refreshRes.headers.getSetCookie?.() || [];
+					for (const cookie of setCookies) {
+						if (cookie.startsWith('refresh_token=')) {
+							const val = cookie.split(';')[0].split('=')[1];
+							event.cookies.set('refresh_token', val, {
+								path: '/',
+								maxAge: 86400,
+								httpOnly: true,
+								sameSite: 'lax',
+								...(getCookieDomain() ? { domain: getCookieDomain() } : {})
+							});
+						}
+					}
+
 					if (newAccessToken) {
 						accessToken = newAccessToken;
 						event.cookies.set('access_token', newAccessToken, {
 							path: '/',
 							maxAge: 900,
 							httpOnly: false,
-							sameSite: 'lax'
+							sameSite: 'lax',
+							...(getCookieDomain() ? { domain: getCookieDomain() } : {})
 						});
 					}
 				}
@@ -72,8 +95,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 					console.log('[Hooks] Authenticated User Session:', event.locals.user);
 				} else if (userRes.status === 401 || userRes.status === 403 || userRes.status === 404) {
 					console.error(`Token invalid (Status: ${userRes.status}). Logging out...`);
-					event.cookies.delete('access_token', { path: '/' });
-					event.cookies.delete('refresh_token', { path: '/' });
+					event.cookies.delete('access_token', { path: '/', ...(getCookieDomain() ? { domain: getCookieDomain() } : {}) });
+					event.cookies.delete('refresh_token', { path: '/', ...(getCookieDomain() ? { domain: getCookieDomain() } : {}) });
 					if (!isLoginPage) {
 						throw redirect(303, '/login');
 					}

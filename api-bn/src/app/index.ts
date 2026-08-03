@@ -1,4 +1,4 @@
-import express, { type Request, type Response, type NextFunction } from "express";
+import express, { type Request, type Response, type NextFunction, type CookieOptions } from "express";
 import cors from "cors";
 import { env } from "./configs/env.js";
 import { appRouter } from "./routes/index.js"
@@ -12,6 +12,7 @@ interface AppError {
 
 const createApp = () => {
     const app = express()
+    app.set("trust proxy", 1)
     app.use(cors({
         origin: (origin, callback) => {
             if (!origin) return callback(null, true);
@@ -32,6 +33,20 @@ const createApp = () => {
         optionsSuccessStatus: 200,
     }))
     app.use(express.json())
+
+    if (env.COOKIE_DOMAIN) {
+        const cookieDomain = env.COOKIE_DOMAIN.startsWith(".") ? env.COOKIE_DOMAIN : `.${env.COOKIE_DOMAIN}`;
+        // sentri tidak mendukung opsi `domain`, jadi disuntikkan lewat override
+        // res.cookie per-request. res.clearCookie juga memanggil this.cookie,
+        // sehingga pembersihan cookie ikut mendapat Domain yang sama.
+        app.use((_req: Request, res: Response, next: NextFunction) => {
+            const originalCookie = res.cookie.bind(res);
+            res.cookie = function (name: string, val: any, options: CookieOptions = {}) {
+                return originalCookie(name, val, { ...options, domain: cookieDomain });
+            };
+            next();
+        });
+    }
 
     app.get("/health", (_req: Request, res: Response) => {
         res.json({ status: "ok", timestamp: new Date().toISOString() })
@@ -62,3 +77,4 @@ export * from "./utils/batch-schemas.js"
 export * from "./utils/cache.js"
 export * from "./utils/storage.js"
 export * from "./utils/zod-error-map.js"
+export * from "./utils/put-update.js"

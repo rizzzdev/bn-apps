@@ -18,7 +18,8 @@ function getCookieDomain(): string {
 
 function cookieAttrs(): string {
 	const domain = getCookieDomain();
-	const secure = typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; Secure' : '';
+	const secure =
+		typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; Secure' : '';
 	return `; SameSite=Lax${secure}${domain ? `; domain=${domain}` : ''}`;
 }
 

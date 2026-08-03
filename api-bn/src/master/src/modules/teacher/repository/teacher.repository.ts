@@ -4,9 +4,18 @@ import { TeacherStatus } from '@master/database/index.js';
 import { getOrchestrator } from '@app/orchestrator.js';
 
 export class TeacherRepository {
-  async findAll(skip: number, take: number | "all", userId?: string, includeUser = false, includePicture = false) {
+  async findAll(skip: number, take: number | "all", search?: string, userId?: string, includeUser = false, includePicture = false) {
     const where: import('@master/database/index.js').Prisma.TeacherWhereInput = { deletedAt: null };
     if (userId) where.userId = userId;
+    if (search) {
+      where.OR = [
+        { fullname: { contains: search, mode: 'insensitive' } },
+        { nik: { contains: search, mode: 'insensitive' } },
+        { nip: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { phoneNumber: { contains: search, mode: 'insensitive' } },
+      ];
+    }
     const teachers = await prisma.teacher.findMany({
       where,
       ...(includePicture ? { include: { picture: true } } : {}),
@@ -25,9 +34,18 @@ export class TeacherRepository {
     }));
   }
 
-  async count(userId?: string) {
+  async count(search?: string, userId?: string) {
     const where: import('@master/database/index.js').Prisma.TeacherWhereInput = { deletedAt: null };
     if (userId) where.userId = userId;
+    if (search) {
+      where.OR = [
+        { fullname: { contains: search, mode: 'insensitive' } },
+        { nik: { contains: search, mode: 'insensitive' } },
+        { nip: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { phoneNumber: { contains: search, mode: 'insensitive' } },
+      ];
+    }
     return prisma.teacher.count({ where });
   }
 

@@ -34,6 +34,12 @@ export class AssessmentIndicatorRepository {
     });
   }
 
+  async findByIds(ids: string[]) {
+    return prisma.assessmentIndicator.findMany({
+      where: { id: { in: ids }, deletedAt: null },
+    });
+  }
+
   async create(data: CreateAssessmentIndicatorDto) {
     return prisma.assessmentIndicator.create({
       data: data as Prisma.AssessmentIndicatorUncheckedCreateInput,

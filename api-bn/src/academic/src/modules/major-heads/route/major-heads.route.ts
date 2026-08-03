@@ -9,5 +9,5 @@ majorHeadsRoute.post('/', majorHeadController.create);
 majorHeadsRoute.delete('/batch', majorHeadController.deleteBulk);
 majorHeadsRoute.patch('/batch/status', majorHeadController.updateStatusBulk);
 majorHeadsRoute.get('/:id', majorHeadController.getById);
-majorHeadsRoute.patch('/:id', majorHeadController.update);
+majorHeadsRoute.put('/:id', majorHeadController.update);
 majorHeadsRoute.delete('/:id', majorHeadController.delete);

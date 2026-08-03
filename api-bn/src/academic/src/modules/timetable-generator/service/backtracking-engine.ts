@@ -106,7 +106,8 @@ export class BacktrackingEngine {
         subjectName: teacherList[0]!.subjectName,
         teacherIds: teacherList.map((r) => r.teacherId),
         teacherNames: teacherList.map((r) => r.teacherName),
-        weeklyHours: teacherList.reduce((s, r) => s + r.weeklyHours, 0),
+        // Team teaching: semua guru pada (class, subject) yang sama berbagi total jam yang sama.
+        weeklyHours: Math.max(...teacherList.map((r) => r.weeklyHours)),
         maxHoursPerDay: Math.min(...teacherList.map((r) => r.maxHoursPerDay || 2)),
       });
     }

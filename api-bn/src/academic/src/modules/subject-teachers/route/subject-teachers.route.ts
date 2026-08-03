@@ -9,5 +9,5 @@ subjectTeachersRoute.delete('/batch', subjectTeacherController.deleteBulk);
 subjectTeachersRoute.patch('/batch/status', subjectTeacherController.updateStatusBulk);
 subjectTeachersRoute.patch('/batch/target-hours', subjectTeacherController.updateTargetHoursBulk);
 subjectTeachersRoute.get('/:id', subjectTeacherController.getById);
-subjectTeachersRoute.patch('/:id', subjectTeacherController.update);
+subjectTeachersRoute.put('/:id', subjectTeacherController.update);
 subjectTeachersRoute.delete('/:id', subjectTeacherController.delete);

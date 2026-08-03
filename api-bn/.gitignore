@@ -1,18 +1,29 @@
-# Dependencies
+# ─── Dependencies ────────────────────────────────────────────
 node_modules/
 
-# Build output
+# ─── Build output ─────────────────────────────────────────────
 dist/
+*.tsbuildinfo
 
-# Environment
+# ─── Environment ──────────────────────────────────────────────
 .env
+.env.local
+.env.*.local
+# .env.example IS tracked intentionally (template reference)
 
-# Logs
+# ─── Logs ─────────────────────────────────────────────────────
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Runtime files
-nul
+# ─── Runtime uploads (local file storage, recreated at boot) ─
+public/*
+!public/.gitkeep
 
-# IDE
+# ─── OS / Editor ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
 .vscode/
 .idea/

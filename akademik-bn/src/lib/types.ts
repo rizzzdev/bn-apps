@@ -92,6 +92,29 @@ export interface ApiResponse<T> {
 }
 
 // ──────────────────────────────────────────────
+// Auth & Current User (logged-in session)
+// ──────────────────────────────────────────────
+export interface CurrentUser {
+	id: string;
+	identifier?: string;
+	identifiers?: { id: string; type: string; value: string }[];
+	roles: string[];
+	[key: string]: unknown;
+}
+
+export interface TeacherProfile {
+	id: string;
+	fullname: string;
+	prefixTitle?: string | null;
+	suffixTitle?: string | null;
+	nip?: string | null;
+	userId?: string | null;
+	pictureUrl?: string | null;
+	status?: string;
+	[key: string]: unknown;
+}
+
+// ──────────────────────────────────────────────
 // Shadow Entities (read-only mirror)
 // ──────────────────────────────────────────────
 export interface ShadowAcademicYear {
@@ -260,7 +283,7 @@ export interface CreateLessonScheduleRequest {
   subjectId: string;
   lessonHourId: string;
   day: string;
-  notes?: string;
+  notes?: string | null;
   teacherIds: string[];
   classIds: string[];
 }

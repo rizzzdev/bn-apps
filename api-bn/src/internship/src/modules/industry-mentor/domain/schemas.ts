@@ -33,5 +33,9 @@ export const bulkDeleteSchema = z.object({
 });
 
 export const changePasswordSchema = z.object({
-  newPassword: z.string().min(8, 'Password minimal 8 karakter!')
+  newPassword: z.string().min(8, 'Password minimal 8 karakter!'),
+  confirmPassword: z.string().min(8, 'Password minimal 8 karakter!'),
+}).refine((d) => d.newPassword === d.confirmPassword, {
+  message: 'Password dan konfirmasi password tidak sama',
+  path: ['confirmPassword'],
 });

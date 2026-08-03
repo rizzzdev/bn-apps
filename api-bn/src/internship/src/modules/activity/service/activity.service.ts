@@ -1,9 +1,11 @@
 import { ActivityRepository, activityRepository } from '@internship/modules/activity/repository/index.js';
 import { CreateActivityDto, UpdateActivityDto } from '@internship/modules/activity/domain/index.js';
 import { NotFoundError } from '@app/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
+import { withCache, clearCachePattern, setCache, putOptionalToNull } from '@app/index.js';
 import { prisma } from '@internship/database/index.js';
 import { Prisma } from '@internship/database/index.js';
+
+const ACTIVITY_NULLABLE_UPDATE_FIELDS = ['actorId', 'targetId', 'action'] as const;
 
 export class ActivityService {
   constructor(private repository: ActivityRepository) {}
@@ -40,7 +42,7 @@ export class ActivityService {
 
   async update(id: string, data: UpdateActivityDto) {
     await this.getById(id);
-    const updated = await this.repository.update(id, data);
+    const updated = await this.repository.update(id, putOptionalToNull(data, ACTIVITY_NULLABLE_UPDATE_FIELDS));
     await clearCachePattern(`activity:all:*`);
     await setCache(`activity:id:${id}`, updated, 600);
     return updated;

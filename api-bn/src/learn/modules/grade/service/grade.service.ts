@@ -1,14 +1,31 @@
 import { SentriError } from 'sentri/core';
-import { GradeRepository } from '../repository/grade.repository';
-import { getOrchestrator } from '../../common/hydrate';
+import { prisma } from '@learn/database/index.js';
+import { shadowSyncService } from '../../../services/shadow-sync.service.js';
+import { GradeRepository } from '../repository/grade.repository.js';
+import { getOrchestrator } from '../../common/hydrate.js';
 
 export class GradeService {
   constructor(private repository: GradeRepository) {}
 
   async getMyGrades(classId: string, studentId: string) {
-    const classStudent = await getOrchestrator().academicClassStudent.findFirst({
-      classId, studentId, status: 'Aktif',
+    await shadowSyncService.lazySyncAll().catch(() => {});
+
+    let classStudent = await prisma.shadowClassStudent.findFirst({
+      where: { classId, studentId, status: 'Aktif', deletedAt: null },
     });
+
+    if (!classStudent) {
+      // Fallback: coba dari orchestrator jika shadow DB belum terisi
+      try {
+        const cs = await getOrchestrator().academicClassStudent.findFirst({
+          classId, studentId, status: 'Aktif',
+        });
+        if (cs) classStudent = cs as any;
+      } catch {
+        // Master down, abaikan error
+      }
+    }
+
     if (!classStudent) {
       throw new SentriError('FORBIDDEN', 'Anda tidak terdaftar di kelas ini', 403);
     }
@@ -39,7 +56,22 @@ export class GradeService {
   }
 
   async getClassGrades(classId: string, teacherId: string) {
-    const classExists = await getOrchestrator().masterClass.findById(classId);
+    await shadowSyncService.lazySyncAll().catch(() => {});
+
+    let classExists = await prisma.shadowClass.findFirst({
+      where: { id: classId, deletedAt: null },
+    });
+
+    if (!classExists) {
+      // Fallback: coba dari orchestrator jika shadow DB belum terisi
+      try {
+        const c = await getOrchestrator().masterClass.findById(classId);
+        if (c) classExists = c as any;
+      } catch {
+        // Master down, abaikan error
+      }
+    }
+
     if (!classExists) {
       throw new SentriError('NOT_FOUND', 'Kelas tidak ditemukan', 404);
     }
@@ -71,5 +103,5 @@ export class GradeService {
   }
 }
 
-import { gradeRepository } from '../repository/grade.repository';
+import { gradeRepository } from '../repository/grade.repository.js';
 export const gradeService = new GradeService(gradeRepository);

@@ -2,6 +2,17 @@ import { prisma } from '@academic/database/index.js';
 import { getOrchestrator } from '@app/orchestrator.js';
 import { clearCachePattern } from '@app/index.js';
 
+// Format gelar (prefix/suffix title) langsung ke fullname pada data shadow.
+function buildTeacherFullname(teacher: {
+  fullname?: string | null;
+  prefixTitle?: string | null;
+  suffixTitle?: string | null;
+}): string {
+  const prefix = teacher.prefixTitle?.trim() ? `${teacher.prefixTitle.trim()} ` : '';
+  const suffix = teacher.suffixTitle?.trim() ? `, ${teacher.suffixTitle.trim()}` : '';
+  return `${prefix}${teacher.fullname?.trim() ?? ''}${suffix}`;
+}
+
 export class ShadowSyncService {
   async syncAcademicYears(): Promise<number> {
     try {
@@ -158,7 +169,7 @@ export class ShadowSyncService {
         await prisma.shadowTeacher.upsert({
           where: { id: t.id },
           update: {
-            fullname: t.fullname,
+            fullname: buildTeacherFullname(t),
             nip: t.nip ?? null,
             phone: (t as any).phone ?? null,
             photoUrl: (t as any).photoUrl ?? null,
@@ -168,7 +179,7 @@ export class ShadowSyncService {
           },
           create: {
             id: t.id,
-            fullname: t.fullname,
+            fullname: buildTeacherFullname(t),
             nip: t.nip ?? null,
             phone: (t as any).phone ?? null,
             photoUrl: (t as any).photoUrl ?? null,

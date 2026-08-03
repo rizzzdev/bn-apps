@@ -1,6 +1,13 @@
 import { PUBLIC_API_URL, PUBLIC_PORTAL_URL } from '$env/static/public';
+import { env as publicEnv } from '$env/dynamic/public';
 import { toast } from '$lib/stores/toast.svelte';
 import { browser } from '$app/environment';
+
+function getCookieDomain(): string {
+	const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || '';
+	if (!raw) return '';
+	return raw.startsWith('.') ? raw : `.${raw}`;
+}
 
 const rawApiUrl = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
 const BASE_URL = rawApiUrl.endsWith('/api/v1') ? rawApiUrl : `${rawApiUrl}/api/v1`;
@@ -15,10 +22,12 @@ function getCookie(name: string): string | null {
 
 export function clearAllCookies() {
 	if (!browser) return;
+	const domain = getCookieDomain();
+	const domainPart = domain ? `;domain=${domain}` : '';
 	document.cookie.split(';').forEach((c) => {
 		document.cookie = c
 			.replace(/^ +/, '')
-			.replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
+			.replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/;SameSite=Lax${domainPart}`);
 	});
 }
 

@@ -8,5 +8,5 @@ homeroomTeachersRoute.post('/', homeroomTeacherController.create);
 homeroomTeachersRoute.delete('/batch', homeroomTeacherController.deleteBulk);
 homeroomTeachersRoute.patch('/batch/status', homeroomTeacherController.updateStatusBulk);
 homeroomTeachersRoute.get('/:id', homeroomTeacherController.getById);
-homeroomTeachersRoute.patch('/:id', homeroomTeacherController.update);
+homeroomTeachersRoute.put('/:id', homeroomTeacherController.update);
 homeroomTeachersRoute.delete('/:id', homeroomTeacherController.delete);

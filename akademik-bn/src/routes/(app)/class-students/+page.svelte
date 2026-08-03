@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { PageHeader, Pagination, AssignStudentModal, AssignTeacherModal } from '$lib/components/molecules';
+	import {
+		PageHeader,
+		Pagination,
+		SearchBar,
+		AssignStudentModal,
+		AssignTeacherModal
+	} from '$lib/components/molecules';
 	import { ClassTable } from '$lib/features/class';
 	import { classApi, majorApi, academicYearApi, studentApi, teacherApi } from '$lib/services';
 	import type {
@@ -12,24 +18,35 @@
 		ShadowTeacher
 	} from '$lib/types';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 
 	let classes = $state<Class[]>([]);
 	let currentPage = $state(1);
-	let totalPages = $state(1);
-	let totalItems = $state(0);
+	let searchTerm = $state('');
 	let itemsPerPage = 10;
 	let isLoading = $state(true);
 	let error = $state('');
 
+	let filteredClasses = $derived.by(() => {
+		const q = searchTerm.trim().toLowerCase();
+		if (!q) return classes;
+		return classes.filter(
+			(c) => c.name.toLowerCase().includes(q) || c.majorCode.toLowerCase().includes(q)
+		);
+	});
+	let totalItems = $derived(filteredClasses.length);
+	let totalPages = $derived(Math.max(1, Math.ceil(totalItems / itemsPerPage)));
+	let displayedClasses = $derived(
+		filteredClasses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+	);
+
 	let activeYearId = $state('');
-	let majorOptions = $state<{ value: string; label: string; code: string }[]>([]);
 
 	let isAddStudentOpen = $state(false);
 	let selectedClassId = $state('');
 	let addStudentIds = $state<string[]>([]);
 	let allStudents = $state<ShadowStudent[]>([]);
-	let allMajors = $state<ShadowMajor[]>([]);
 	let majorStudentMap = $state<Record<string, string>>({});
 
 	let selectedClassMajorId = $state('');
@@ -96,18 +113,13 @@
 			}
 
 			const [res, studentsRes, majorsRes] = await Promise.all([
-				classApi.list(currentPage, itemsPerPage),
+				classApi.list(1, 1000),
 				classApi.classStudents.list(1, 1000),
 				majorApi.list(1, 100)
 			]);
 
 			const classStudents = studentsRes.data || [];
 			const majors = majorsRes.data || [];
-			majorOptions = majors.map((m: ShadowMajor) => ({
-				value: m.id,
-				label: m.name,
-				code: m.code
-			}));
 
 			if (res.data) {
 				classes = res.data.map((c: ShadowClass) => {
@@ -129,10 +141,6 @@
 					};
 				});
 			}
-			if (res.pagination) {
-				totalPages = res.pagination.totalPage;
-				totalItems = res.pagination.totalData;
-			}
 		} catch (e) {
 			error = String(e);
 			toast.error('Gagal memuat data kelas');
@@ -142,7 +150,12 @@
 	}
 
 	$effect(() => {
-		if (currentPage) loadClasses();
+		const _ = searchTerm;
+		currentPage = 1;
+	});
+
+	onMount(() => {
+		loadClasses();
 	});
 
 	function openView(cls: Class) {
@@ -156,13 +169,11 @@
 				studentParams.excludeWithClass = 'true';
 				studentParams.academicYearId = activeYearId;
 			}
-			const [studRes, majRes, msRes] = await Promise.all([
+			const [studRes, msRes] = await Promise.all([
 				studentApi.list(1, 1000, studentParams),
-				majorApi.list(1, 1000),
 				majorApi.majorStudents.list(1, 10000)
 			]);
 			if (studRes.data) allStudents = studRes.data;
-			if (majRes.data) allMajors = majRes.data;
 
 			if (msRes.data) {
 				const activeMS = (msRes.data as MajorStudent[]).filter(
@@ -223,16 +234,16 @@
 	/>
 
 	{#if isLoading}
-		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">
-			Memuat data...
-		</div>
+		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">Memuat data...</div>
 	{:else if error}
 		<div class="neo-border bg-error-container text-error p-4 font-data-mono text-xs">
 			{error}
 		</div>
 	{:else}
+		<SearchBar bind:value={searchTerm} placeholder="Cari kelas (nama / kode jurusan)..." />
+
 		<ClassTable
-			{classes}
+			classes={displayedClasses}
 			onView={openView}
 			onAddStudent={openAddStudent}
 			onSetHomeroom={openSetHomeroom}
@@ -251,7 +262,11 @@
 	bind:selectedTargetId={selectedClassId}
 	targetOptions={classes.map((c) => ({ value: c.id, label: c.name }))}
 	bind:selectedStudentIds={addStudentIds}
-	students={allStudents.filter((s) => s.status === 'Aktif' && (selectedClassMajorId ? majorStudentMap[s.id] === selectedClassMajorId : true))}
+	students={allStudents.filter(
+		(s) =>
+			s.status === 'Aktif' &&
+			(selectedClassMajorId ? majorStudentMap[s.id] === selectedClassMajorId : true)
+	)}
 	onSave={handleAddStudent}
 />
 

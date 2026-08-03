@@ -7,6 +7,7 @@ export class StudentRepository {
   async findAll(
     skip: number,
     take: number | "all",
+    search?: string,
     userId?: string,
     includeCurrentClass = false,
     includeUser = false,
@@ -15,6 +16,16 @@ export class StudentRepository {
     const where: import('@master/database/index.js').Prisma.StudentWhereInput =
       { deletedAt: null };
     if (userId) where.userId = userId;
+    if (search) {
+      where.OR = [
+        { fullname: { contains: search, mode: 'insensitive' } },
+        { nik: { contains: search, mode: 'insensitive' } },
+        { nis: { contains: search, mode: 'insensitive' } },
+        { nisn: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { phoneNumber: { contains: search, mode: 'insensitive' } },
+      ];
+    }
     const include:
       | import('@master/database/index.js').Prisma.StudentInclude
       | undefined = {
@@ -42,10 +53,20 @@ export class StudentRepository {
     }));
   }
 
-  async count(userId?: string) {
+  async count(search?: string, userId?: string) {
     const where: import('@master/database/index.js').Prisma.StudentWhereInput =
       { deletedAt: null };
     if (userId) where.userId = userId;
+    if (search) {
+      where.OR = [
+        { fullname: { contains: search, mode: 'insensitive' } },
+        { nik: { contains: search, mode: 'insensitive' } },
+        { nis: { contains: search, mode: 'insensitive' } },
+        { nisn: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { phoneNumber: { contains: search, mode: 'insensitive' } },
+      ];
+    }
     return prisma.student.count({ where });
   }
 

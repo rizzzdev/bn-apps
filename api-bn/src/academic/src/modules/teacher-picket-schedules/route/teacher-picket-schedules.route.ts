@@ -9,5 +9,5 @@ teacherPicketSchedulesRoute.post('/batch', teacherPicketScheduleController.creat
 teacherPicketSchedulesRoute.delete('/batch', teacherPicketScheduleController.deleteBulk);
 teacherPicketSchedulesRoute.patch('/batch/status', teacherPicketScheduleController.updateStatusBulk);
 teacherPicketSchedulesRoute.get('/:id', teacherPicketScheduleController.getById);
-teacherPicketSchedulesRoute.patch('/:id', teacherPicketScheduleController.update);
+teacherPicketSchedulesRoute.put('/:id', teacherPicketScheduleController.update);
 teacherPicketSchedulesRoute.delete('/:id', teacherPicketScheduleController.delete);

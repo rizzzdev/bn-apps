@@ -15,7 +15,7 @@ export const lessonScheduleApi = {
     updateItem<UpdateLessonScheduleRequest, LessonSchedule>('/academic/lesson-schedules', id, data),
   delete: (id: string) => deleteItem('/academic/lesson-schedules', id),
   bulkCreate: (items: CreateLessonScheduleRequest[]) =>
-    bulkAction('/academic/lesson-schedules', 'bulk', { data: items }),
+    bulkAction('/academic/lesson-schedules', 'batch', { data: items }),
   bulkDelete: (ids: string[]) => bulkDelete('/academic/lesson-schedules', ids),
   bulkStatus: (ids: string[], status: string) =>
     bulkUpdateStatus('/academic/lesson-schedules', ids, status)

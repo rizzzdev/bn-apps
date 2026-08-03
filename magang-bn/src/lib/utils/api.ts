@@ -1,5 +1,12 @@
 import { PUBLIC_API_URL, PUBLIC_PORTAL_URL } from "$env/static/public";
+import { env as publicEnv } from "$env/dynamic/public";
 import { toast } from "$lib/stores/toast.svelte";
+
+function getCookieDomain(): string {
+  const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || "";
+  if (!raw) return "";
+  return raw.startsWith(".") ? raw : `.${raw}`;
+}
 
 export function getCookie(name: string) {
   if (typeof document === "undefined") return null;
@@ -11,7 +18,10 @@ export function getCookie(name: string) {
 
 export function deleteCookie(name: string) {
   if (typeof document !== "undefined") {
-    document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+    const domain = getCookieDomain();
+    const secure =
+      window.location.protocol === "https:" ? "; Secure" : "";
+    document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax${secure}${domain ? `; domain=${domain}` : ""}`;
   }
 }
 

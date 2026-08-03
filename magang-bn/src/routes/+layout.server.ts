@@ -1,5 +1,4 @@
 import type { LayoutServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
 import { checkRoleAccess } from '$lib/constants/roles';
 import { getEmailFromUser } from '$lib/utils/helpers';
 import { fetchApi } from '$lib/utils/server-api';
@@ -9,8 +8,9 @@ export const load: LayoutServerLoad = async ({ locals, url, cookies, fetch }) =>
 	const path = url.pathname;
 	const user = locals.user;
 
-	if (user && checkRoleAccess(path, user.roles ?? [])) {
-		throw redirect(303, '/403');
+	const requiredRole = user ? checkRoleAccess(path, user.roles ?? []) : null;
+	if (requiredRole) {
+		return { user, profileData: null, accessDenied: true, requiredRole };
 	}
 
 	let profileData: ProfileData | null = null;

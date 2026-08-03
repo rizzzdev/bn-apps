@@ -82,6 +82,8 @@
 		currentMajorId: ''
 	};
 
+	const CLEARABLE_FIELDS = ['nik', 'nis', 'nisn'];
+
 	// Picture state — managed via FormField type="image"
 	let pictureFile = $state<File | null>(null);
 	let picturePreview = $state<string>('');
@@ -258,9 +260,14 @@
 				weight: formData.weight ? parseInt(formData.weight) : undefined
 			};
 
-			// Hapus properti kosong agar tidak dikirim ke API
+			// Hapus properti kosong agar tidak dikirim ke API, kecuali field yang boleh dikosongkan saat edit
 			Object.keys(payload).forEach((key) => {
-				if (payload[key] === '' || payload[key] === undefined) delete payload[key];
+				if (payload[key] === undefined) delete payload[key];
+				else if (
+					payload[key] === '' &&
+					!(isEditOpen && selectedStudent && CLEARABLE_FIELDS.includes(key))
+				)
+					delete payload[key];
 			});
 
 			if (isCreateOpen) {
@@ -275,9 +282,6 @@
 					toast.error(result.message || 'Gagal menambahkan murid');
 				}
 			} else if (isEditOpen && selectedStudent) {
-				delete payload.nik;
-				delete payload.nis;
-				delete payload.nisn;
 				delete payload.userId;
 
 				const res = await apiClient(`/students/${selectedStudent.id}`, {
@@ -469,11 +473,11 @@
 		}
 	};
 
-	const fetchStudents = async (page: number, limitPerPage: number) => {
+	const fetchStudents = async (page: number, limitPerPage: number, search: string = '') => {
 		isLoading = true;
 		try {
 			const res = await apiClient(
-				`/students?page=${page}&limit=${limitPerPage}&includeCurrentClass=true`
+				`/students?page=${page}&limit=${limitPerPage}&includeCurrentClass=true${search ? `&search=${encodeURIComponent(search)}` : ''}`
 			);
 			const result = await res.json();
 			if (!result.error && result.data) {
@@ -490,8 +494,14 @@
 		}
 	};
 
+	let previousSearch = $state('');
+
 	$effect(() => {
-		fetchStudents(currentPage, limit);
+		if (searchQuery !== previousSearch) {
+			previousSearch = searchQuery;
+			currentPage = 1;
+		}
+		fetchStudents(currentPage, limit, searchQuery);
 		fetchMajorsAndClasses();
 	});
 
@@ -514,15 +524,8 @@
 
 	let filteredStudents = $derived(
 		students.filter((t) => {
-			const name = t.fullname || t.name || '';
-			const nis = t.nis || '';
-			const nisn = t.nisn || '';
-			const matchesSearch =
-				name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				nis.includes(searchQuery) ||
-				nisn.includes(searchQuery);
 			const matchesStatus = statusFilter.length > 0 ? statusFilter.includes(t.status) : true;
-			return matchesSearch && matchesStatus;
+			return matchesStatus;
 		})
 	);
 </script>

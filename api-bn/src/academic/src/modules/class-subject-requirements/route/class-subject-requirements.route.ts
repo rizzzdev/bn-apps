@@ -15,5 +15,5 @@ classSubjectRequirementsRoute.post('/batch', validate(bulkUpsertClassSubjectRequ
 classSubjectRequirementsRoute.delete('/batch', classSubjectRequirementController.bulkDelete);
 classSubjectRequirementsRoute.delete('/clear', classSubjectRequirementController.clearAll);
 classSubjectRequirementsRoute.get('/:id', classSubjectRequirementController.getById);
-classSubjectRequirementsRoute.patch('/:id', validate(updateClassSubjectRequirementSchema), classSubjectRequirementController.update);
+classSubjectRequirementsRoute.put('/:id', validate(updateClassSubjectRequirementSchema), classSubjectRequirementController.update);
 classSubjectRequirementsRoute.delete('/:id', classSubjectRequirementController.delete);

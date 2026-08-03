@@ -12,7 +12,7 @@
   }>();
 </script>
 
-<label class="inline-flex items-center justify-center w-5 h-5 neo-border-xs bg-surface cursor-pointer {disabled ? 'opacity-40 pointer-events-none' : ''} hover:bg-surface-container-high transition-colors {customClass}">
+<label class="relative inline-flex items-center justify-center w-5 h-5 neo-border-xs bg-surface cursor-pointer {disabled ? 'opacity-40 pointer-events-none' : ''} hover:bg-surface-container-high transition-colors {customClass}">
   <input
     type="checkbox"
     {checked}

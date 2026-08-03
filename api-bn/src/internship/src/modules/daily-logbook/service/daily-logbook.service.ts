@@ -1,13 +1,15 @@
 import { DailyLogbookRepository, dailyLogbookRepository } from '@internship/modules/daily-logbook/repository/index.js';
 import { CreateDailyLogbookDto, UpdateDailyLogbookDto } from '@internship/modules/daily-logbook/domain/index.js';
 import { NotFoundError } from '@app/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
+import { withCache, clearCachePattern, setCache, putOptionalToNull } from '@app/index.js';
 import { prisma } from '@internship/database/index.js';
 import { activityService } from '@internship/modules/activity/service/index.js';
 import { getAdminName, getReviewerName } from '@internship/utils/activity-helper.js';
 import { Prisma, LogbookApprovalStatus } from '@internship/database/index.js';
 import path from 'path';
 import fs from 'fs';
+
+const DAILY_LOGBOOK_NULLABLE_UPDATE_FIELDS = ['description'] as const;
 
 export class DailyLogbookService {
   constructor(private repository: DailyLogbookRepository) {}
@@ -136,7 +138,8 @@ export class DailyLogbookService {
   async update(id: string, data: UpdateDailyLogbookDto, files?: Express.Multer.File[], actorId?: string) {
     await this.getById(id);
     
-    const { deletedAttachmentIds, ...logbookData } = data;
+    const { deletedAttachmentIds, ...rawLogbookData } = data;
+    const logbookData = putOptionalToNull(rawLogbookData, DAILY_LOGBOOK_NULLABLE_UPDATE_FIELDS);
 
     const updated = await prisma.$transaction(async (tx) => {
       // 1. Update logbook

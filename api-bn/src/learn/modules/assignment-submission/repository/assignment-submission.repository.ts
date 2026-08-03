@@ -1,6 +1,7 @@
-import { prisma } from '@/database';
-import { SubmitAssignmentDto, GradeAssignmentDto } from '../domain/schemas';
-import { getOrchestrator, fetchStudentNames } from '../../common/hydrate';
+import { prisma } from '@learn/database/index.js';
+import { shadowSyncService } from '../../../services/shadow-sync.service.js';
+import { SubmitAssignmentDto, GradeAssignmentDto } from '../domain/schemas.js';
+import { fetchStudentNames } from '../../common/hydrate.js';
 
 export class AssignmentSubmissionRepository {
   async submit(assignmentId: string, studentId: string, data: SubmitAssignmentDto) {
@@ -29,6 +30,8 @@ export class AssignmentSubmissionRepository {
   }
 
   async findAllByAssignment(assignmentId: string) {
+    await shadowSyncService.lazySyncAll().catch(() => {});
+
     const assignment = await prisma.assignment.findUnique({
       where: { id: assignmentId },
       select: { classes: { select: { classId: true } } },
@@ -43,21 +46,22 @@ export class AssignmentSubmissionRepository {
       const studentMap = await fetchStudentNames(studentIds);
       return submissions.map((s) => ({
         id: s.id, studentId: s.studentId,
-        student: studentMap.get(s.studentId) ?? { id: s.studentId, fullname: '', nis: '', pictureUrl: null },
+        student: studentMap.get(s.studentId) ?? { id: s.studentId, fullname: '', nis: null, nisn: null, pictureUrl: null },
         createdAt: s.createdAt, fileUrl: s.fileUrl, fileName: s.fileName,
         content: s.content, grade: s.grade, feedback: s.feedback, submission: s,
       }));
     }
 
     const classIds = assignment.classes.map((c) => c.classId);
-    const [csRecords, classMap] = await Promise.all([
-      getOrchestrator().academicClassStudent.findMany({
-        classId: { in: classIds },
-        status: 'Aktif',
-        deletedAt: null,
+    const [csRecords, shadowClasses] = await Promise.all([
+      prisma.shadowClassStudent.findMany({
+        where: { classId: { in: classIds }, status: 'Aktif', deletedAt: null },
       }),
-      getOrchestrator().masterClass.findByIds(classIds).then((cs) => new Map(cs.map((c) => [c.id, c]))),
+      prisma.shadowClass.findMany({
+        where: { id: { in: classIds }, deletedAt: null },
+      }),
     ]);
+    const classMap = new Map(shadowClasses.map((c) => [c.id, c]));
 
     const studentIds = [...new Set([...submissions.map((s) => s.studentId), ...csRecords.map((cs) => cs.studentId)])];
     const studentMap = await fetchStudentNames(studentIds);
@@ -67,7 +71,7 @@ export class AssignmentSubmissionRepository {
       const sub = submissionMap.get(cs.studentId);
       return {
         id: sub?.id, studentId: cs.studentId,
-        student: studentMap.get(cs.studentId) ?? { id: cs.studentId, fullname: '', nis: '', pictureUrl: null },
+        student: studentMap.get(cs.studentId) ?? { id: cs.studentId, fullname: '', nis: null, nisn: null, pictureUrl: null },
         class: classMap.get(cs.classId) ?? { id: cs.classId, name: '' },
         createdAt: sub?.createdAt || null,
         fileUrl: sub?.fileUrl || null, fileName: sub?.fileName || null,

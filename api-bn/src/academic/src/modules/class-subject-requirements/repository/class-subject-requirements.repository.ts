@@ -2,6 +2,7 @@ import { prisma } from '@academic/database/index.js';
 import type { Prisma } from '@academic/database/index.js';
 import type { CreateClassSubjectRequirementDto, UpdateClassSubjectRequirementDto } from '../domain';
 import { getOrchestrator } from '@app/orchestrator.js';
+import { putOptionalToNull } from '@app/index.js';
 
 type HydratedRequirement = Prisma.ClassSubjectRequirementGetPayload<{}> & {
   class: { id: string; name: string; majorId: string } | null;
@@ -64,6 +65,7 @@ export class ClassSubjectRequirementRepository {
       where: {
         classId: data.classId,
         subjectId: data.subjectId,
+        teacherId: data.teacherId || null,
         deletedAt: null,
       },
     });
@@ -94,12 +96,13 @@ export class ClassSubjectRequirementRepository {
   }
 
   async update(id: string, data: UpdateClassSubjectRequirementDto) {
+    const normalized = putOptionalToNull({ ...data }, ['teacherId']);
     const item = await prisma.classSubjectRequirement.update({
       where: { id },
       data: {
-        ...(data.teacherId !== undefined && { teacherId: data.teacherId }),
-        ...(data.weeklyHours !== undefined && { weeklyHours: data.weeklyHours }),
-        ...(data.maxHoursPerDay !== undefined && { maxHoursPerDay: data.maxHoursPerDay }),
+        ...(normalized.teacherId !== undefined && { teacherId: normalized.teacherId }),
+        ...(normalized.weeklyHours !== undefined && { weeklyHours: normalized.weeklyHours }),
+        ...(normalized.maxHoursPerDay !== undefined && { maxHoursPerDay: normalized.maxHoursPerDay }),
       },
     });
     return (await hydrate([item]))[0] ?? null;
