@@ -1,0 +1,55 @@
+# =============================================================================
+# docker-compose — deploy master-bn (frontend admin master data) ke VPS
+#
+# Prasyarat di VPS:
+#   - Docker + docker compose
+#   - Traefik sudah jalan dengan network external: `proxy` dan `backend`
+#   - Export env DOMAIN_NAME di shell / .env (contoh: export DOMAIN_NAME=example.com)
+#
+# Cara pakai:
+#   docker compose up -d --build
+# =============================================================================
+
+services:
+  master-bn:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # build-arg -> di-bake ke bundle ($env/static/public) saat `npm run build`
+        PUBLIC_API_URL: https://api-bn.${DOMAIN_NAME}/api/v1
+        PUBLIC_PORTAL_URL: https://apps-bn.${DOMAIN_NAME}
+    image: master-bn:latest
+    container_name: master-bn-app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=3000
+      # runtime env -> dibaca $env/dynamic/public di hooks.server.ts
+      - PUBLIC_API_URL=https://api-bn.${DOMAIN_NAME}/api/v1
+      - PUBLIC_PORTAL_URL=https://apps-bn.${DOMAIN_NAME}
+      - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME:-}
+      # Opsional: rewrite URL server-side (http://localhost:9091 -> internal)
+      # - INTERNAL_API_BASE=http://api-bn:3000
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/robots.txt"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - proxy
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.master-bn.rule=Host(`master-bn.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.master-bn.entrypoints=websecure"
+      - "traefik.http.routers.master-bn.tls.certresolver=myresolver"
+      - "traefik.http.services.master-bn.loadbalancer.server.port=3000"
+
+networks:
+  proxy:
+    external: true
+  backend:
+    external: true

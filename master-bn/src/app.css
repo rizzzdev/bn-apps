@@ -1,0 +1,127 @@
+@import 'tailwindcss';
+
+@theme {
+	--color-on-surface-variant: #444749;
+	--color-surface-container-low: #f6f3f2;
+	--color-error-container: #ffdad6;
+	--color-surface-variant: #e5e2e1;
+	--color-on-primary-fixed-variant: #454748;
+	--color-primary-fixed: #e1e3e4;
+	--color-on-secondary-fixed-variant: #003ea8;
+	--color-on-secondary-container: #fefcff;
+	--color-secondary-container: #316bf3;
+	--color-tertiary: #5e5e5e;
+	--color-background: #fcf8f8;
+	--color-surface-container: #f1edec;
+	--color-inverse-primary: #c5c7c8;
+	--color-on-error-container: #93000a;
+	--color-primary-fixed-dim: #c5c7c8;
+	--color-inverse-on-surface: #f3f0ef;
+	--color-surface-dim: #dcd9d9;
+	--color-on-primary: #ffffff;
+	--color-on-background: #1c1b1b;
+	--color-tertiary-container: #f9f9f9;
+	--color-outline: #747879;
+	--color-surface-container-highest: #e5e2e1;
+	--color-on-primary-container: #707273;
+	--color-secondary-fixed-dim: #b4c5ff;
+	--color-outline-variant: #c4c7c8;
+	--color-error: #ba1a1a;
+	--color-on-tertiary-container: #727272;
+	--color-tertiary-fixed: #e2e2e2;
+	--color-on-surface: #1c1b1b;
+	--color-on-tertiary-fixed: #1b1b1b;
+	--color-on-secondary-fixed: #00174b;
+	--color-surface-bright: #fcf8f8;
+	--color-on-primary-fixed: #191c1d;
+	--color-surface: #fcf8f8;
+	--color-tertiary-fixed-dim: #c6c6c6;
+	--color-primary-container: #f8f9fa;
+	--color-inverse-surface: #313030;
+	--color-on-error: #ffffff;
+	--color-primary: #5c5f60;
+	--color-surface-container-high: #ebe7e7;
+	--color-on-tertiary: #ffffff;
+	--color-on-tertiary-fixed-variant: #474747;
+	--color-surface-container-lowest: #ffffff;
+	--color-secondary: #0051d5;
+	--color-surface-tint: #5c5f60;
+	--color-secondary-fixed: #dbe1ff;
+	--color-on-secondary: #ffffff;
+
+	--spacing-lg: 14px;
+	--spacing-sm: 6px;
+	--spacing-xs: 3px;
+	--spacing-border-width: 2px;
+	--spacing-shadow-offset: 2px;
+	--spacing-base: 3px;
+	--spacing-md: 10px;
+	--spacing-xl: 16px;
+
+	--font-display-lg-mobile: 'Archivo Narrow', sans-serif;
+	--font-body-bold: 'Hanken Grotesk', sans-serif;
+	--font-display-lg: 'Archivo Narrow', sans-serif;
+	--font-headline-md: 'Archivo Narrow', sans-serif;
+	--font-label-sm: 'Geist', sans-serif;
+	--font-body-base: 'Hanken Grotesk', sans-serif;
+
+	--text-display-lg-mobile: 15px;
+	--text-display-lg-mobile--line-height: 1.2;
+	--text-display-lg-mobile--font-weight: 700;
+
+	--text-body-bold: 10.5px;
+	--text-body-bold--line-height: 1.35;
+	--text-body-bold--font-weight: 700;
+
+	--text-display-lg: 18px;
+	--text-display-lg--line-height: 1.1;
+	--text-display-lg--letter-spacing: -0.02em;
+	--text-display-lg--font-weight: 700;
+
+	--text-headline-md: 13.5px;
+	--text-headline-md--line-height: 1.2;
+	--text-headline-md--font-weight: 600;
+
+	--text-label-sm: 8px;
+	--text-label-sm--line-height: 1;
+	--text-label-sm--letter-spacing: 0.04em;
+	--text-label-sm--font-weight: 600;
+
+	--text-body-base: 10.5px;
+	--text-body-base--line-height: 1.35;
+	--text-body-base--font-weight: 400;
+
+	--shadow-neo: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+	--shadow-neo-sm: 1.5px 1.5px 0px 0px rgba(0, 0, 0, 1);
+	--shadow-neo-xs: 1px 1px 0px 0px rgba(0, 0, 0, 1);
+	--shadow-neo-2xs: 0.5px 0.5px 0px 0px rgba(0, 0, 0, 1);
+
+	--border-width-3: 2px;
+
+	--text-2xs: 7.5px;
+}
+
+@layer utilities {
+	/* Custom Neo-Brutalism Scrollbar */
+	::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+	::-webkit-scrollbar-track {
+		background: var(--color-surface);
+		border-left: 2px solid var(--color-on-background);
+	}
+	::-webkit-scrollbar-thumb {
+		background: var(--color-primary);
+		border: 2px solid var(--color-on-background);
+		border-radius: 8px;
+	}
+	::-webkit-scrollbar-thumb:hover {
+		background: var(--color-secondary);
+	}
+	::-webkit-scrollbar-track:horizontal {
+		border-left: none;
+		border-top: 2px solid var(--color-on-background);
+	}
+	/* End Custom Scrollbar */
+}

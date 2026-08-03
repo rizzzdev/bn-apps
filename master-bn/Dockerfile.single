@@ -1,0 +1,40 @@
+# syntax=docker/dockerfile:1
+# =============================================================================
+# Dockerfile SINGLE-STAGE — master-bn (SvelteKit / @sveltejs/adapter-node)
+#
+# Segala sesuatu diinstal & dibuild dalam SATU stage, lalu semuanya ikut
+# tersimpan di image final (source code, node_modules dev+prod, npm cache).
+# Ukuran image jauh lebih besar dibanding multi-stage, hanya untuk perbandingan.
+# =============================================================================
+
+FROM node:24-alpine
+
+WORKDIR /app
+
+# PUBLIC_* dipakai oleh $env/static/public -> dibake ke bundle saat build
+ARG PUBLIC_API_URL
+ARG PUBLIC_PORTAL_URL
+ENV PUBLIC_API_URL=${PUBLIC_API_URL} \
+    PUBLIC_PORTAL_URL=${PUBLIC_PORTAL_URL}
+
+# Install SEMUA dependency (dev + prod) - tanpa npm cache clean agar
+# image benar-benar merepresentasikan build "naif" satu tahap.
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Salin source lalu build
+COPY . .
+RUN npm run build
+
+# NODE_ENV baru di-set setelah build agar `npm ci` di atas tadi tidak
+# melewatkan devDependencies (vite, svelte, dll).
+ENV NODE_ENV=production \
+    HOST=0.0.0.0 \
+    PORT=3000
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/robots.txt || exit 1
+
+CMD ["node", "build"]
