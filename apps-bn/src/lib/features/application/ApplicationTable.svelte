@@ -248,16 +248,18 @@
 		if (selectedIds.length === 0) return;
 		const count = selectedIds.length;
 		try {
-			const res = await apiClient('/master/applications/bulk', {
-				method: 'DELETE',
+			const res = await apiClient('/master/applications/batch/delete', {
+				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ ids: selectedIds })
 			});
 
 			const json = await res.json().catch(() => ({}));
 			if (res.ok) {
+				const deletedIds = [...selectedIds];
 				selectedIds = [];
 				isBulkDeleteModalOpen = false;
+				appsStore.bulkDeleteApps(deletedIds);
 				toast.success(json.message || `${count} aplikasi berhasil dihapus massal`, 'Bulk Delete');
 				await fetchApplications();
 			} else {
@@ -267,6 +269,33 @@
 			console.error('Bulk delete apps error:', err);
 			toast.error('Terjadi kesalahan saat menghapus data massal di server', 'Error');
 		}
+	}
+
+	function getPaginationPages(current: number, total: number): (number | '...')[] {
+		if (total <= 7) {
+			return Array.from({ length: total }, (_, i) => i + 1);
+		}
+		const pages: (number | '...')[] = [];
+		pages.push(1);
+
+		if (current > 3) {
+			pages.push('...');
+		}
+
+		const start = Math.max(2, current - 1);
+		const end = Math.min(total - 1, current + 1);
+
+		for (let i = start; i <= end; i++) {
+			pages.push(i);
+		}
+
+		if (current < total - 2) {
+			pages.push('...');
+		}
+
+		pages.push(total);
+
+		return pages;
 	}
 
 	function goToPage(page: number) {
@@ -427,17 +456,20 @@
 				Prev
 			</Button>
 
-			{#each Array(totalPages) as _, i (i)}
-				{@const pageNum = i + 1}
-				<Button
-					variant={currentPage === pageNum ? 'primary' : 'secondary'}
-					className="!w-auto !py-1.5 !px-3 {currentPage === pageNum
-						? '!bg-primary-container text-white'
-						: ''}"
-					onclick={() => goToPage(pageNum)}
-				>
-					{pageNum}
-				</Button>
+			{#each getPaginationPages(currentPage, totalPages) as item, idx (idx)}
+				{#if item === '...'}
+					<span class="px-2 py-1.5 font-bold text-on-surface">...</span>
+				{:else}
+					<Button
+						variant={currentPage === item ? 'primary' : 'secondary'}
+						className="!w-auto !py-1.5 !px-3 {currentPage === item
+							? '!bg-primary-container text-white'
+							: ''}"
+						onclick={() => goToPage(item)}
+					>
+						{item}
+					</Button>
+				{/if}
 			{/each}
 
 			<Button

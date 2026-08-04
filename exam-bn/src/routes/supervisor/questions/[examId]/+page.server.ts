@@ -1,7 +1,8 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { serverApi, BACKEND_URL } from '$lib/server/api';
+import { serverApi, API_URL } from '$lib/server/api';
 import type { Question, Option } from '$lib/types';
+
 
 export const actions: Actions = {
 	addQuestion: async ({ request, cookies }) => {
@@ -22,7 +23,7 @@ export const actions: Actions = {
 			return fail(400, { action: 'addQuestion', error: 'Tidak ada ruangan ujian ditemukan.' });
 
 		try {
-			const question = await serverApi.post<Question>(token, '/questions', { text, type });
+			const question = await serverApi.post<Question>(token, '/exam/questions', { text, type });
 
 			if (type === 'MULTIPLE_CHOICE') {
 				const optionCount = Number(data.get('optionCount') ?? 0);
@@ -31,7 +32,7 @@ export const actions: Actions = {
 				for (let i = 0; i < optionCount; i++) {
 					const optText = ((data.get(`option_${i}`) as string) ?? '').trim();
 					if (optText) {
-						const created = await serverApi.post<Option>(token, '/options', {
+						const created = await serverApi.post<Option>(token, '/exam/options', {
 							questionId: question.id,
 							text: optText
 						});
@@ -40,7 +41,7 @@ export const actions: Actions = {
 				}
 				const nonNull = createdOptions.filter(Boolean);
 				if (nonNull.length < 2) {
-					await serverApi.delete(token, `/questions/${question.id}`);
+					await serverApi.delete(token, `/exam/questions/${question.id}`);
 					return fail(400, {
 						action: 'addQuestion',
 						error: 'Minimal 2 pilihan jawaban untuk soal pilihan ganda.'
@@ -48,7 +49,7 @@ export const actions: Actions = {
 				}
 				const correctOption = createdOptions[correctIndex];
 				if (correctOption) {
-					await serverApi.post(token, '/question-correct-answers', {
+					await serverApi.post(token, '/exam/question-correct-answers', {
 						questionId: question.id,
 						optionId: correctOption.id
 					});
@@ -56,7 +57,7 @@ export const actions: Actions = {
 			}
 
 			for (const examRoomId of examRoomIdsRaw) {
-				await serverApi.post(token, '/exam-questions', {
+				await serverApi.post(token, '/exam/exam-questions', {
 					examRoomId,
 					questionId: question.id,
 					questionNumber
@@ -88,17 +89,18 @@ export const actions: Actions = {
 			return fail(400, { action: 'editQuestion', error: 'Teks soal dan tipe wajib diisi.' });
 
 		try {
-			await serverApi.patch(token, `/questions/${questionId}`, { text, type });
+			await serverApi.patch(token, `/exam/questions/${questionId}`, { text, type });
 			for (const eqId of examQuestionIds) {
 				if (questionNumber)
-					await serverApi.patch(token, `/exam-questions/${eqId}`, { questionNumber });
+					await serverApi.patch(token, `/exam/exam-questions/${eqId}`, { questionNumber });
 			}
 
 			if (type === 'MULTIPLE_CHOICE') {
 				const correctIndex = Number(data.get('correct') ?? 0);
 				const optionCount = Number(data.get('optionCount') ?? 0);
 				const deletedOptionIds = data.getAll('deletedOptionId') as string[];
-				for (const optId of deletedOptionIds) await serverApi.delete(token, `/options/${optId}`);
+				for (const optId of deletedOptionIds)
+					await serverApi.delete(token, `/exam/options/${optId}`);
 
 				const resultOptionIds: (string | null)[] = new Array(optionCount).fill(null);
 				for (let i = 0; i < optionCount; i++) {
@@ -106,10 +108,10 @@ export const actions: Actions = {
 					const existingId = ((data.get(`existingOptionId_${i}`) as string) ?? '').trim() || null;
 					if (optText) {
 						if (existingId) {
-							await serverApi.patch(token, `/options/${existingId}`, { text: optText });
+							await serverApi.patch(token, `/exam/options/${existingId}`, { text: optText });
 							resultOptionIds[i] = existingId;
 						} else {
-							const created = await serverApi.post<Option>(token, '/options', {
+							const created = await serverApi.post<Option>(token, '/exam/options', {
 								questionId,
 								text: optText
 							});
@@ -130,18 +132,25 @@ export const actions: Actions = {
 						error: 'Pilihan jawaban yang benar tidak valid.'
 					});
 				if (existingCorrectAnswerId) {
-					await serverApi.patch(token, `/question-correct-answers/${existingCorrectAnswerId}`, {
-						optionId: correctOptionId
-					});
+					await serverApi.patch(
+						token,
+						`/exam/question-correct-answers/${existingCorrectAnswerId}`,
+						{
+							optionId: correctOptionId
+						}
+					);
 				} else {
-					await serverApi.post(token, '/question-correct-answers', {
+					await serverApi.post(token, '/exam/question-correct-answers', {
 						questionId,
 						optionId: correctOptionId
 					});
 				}
 			} else {
 				if (existingCorrectAnswerId)
-					await serverApi.delete(token, `/question-correct-answers/${existingCorrectAnswerId}`);
+					await serverApi.delete(
+						token,
+						`/exam/question-correct-answers/${existingCorrectAnswerId}`
+					);
 				const allExistingOptionIds = data.getAll('deletedOptionId') as string[];
 				const optionCount = Number(data.get('optionCount') ?? 0);
 				for (let i = 0; i < optionCount; i++) {
@@ -150,7 +159,7 @@ export const actions: Actions = {
 						allExistingOptionIds.push(existingId);
 				}
 				for (const optId of allExistingOptionIds)
-					await serverApi.delete(token, `/options/${optId}`);
+					await serverApi.delete(token, `/exam/options/${optId}`);
 			}
 
 			return { action: 'editQuestion', success: true, message: 'Soal berhasil diperbarui.' };
@@ -165,8 +174,9 @@ export const actions: Actions = {
 		const examQuestionIds = data.getAll('examQuestionId') as string[];
 		const questionId = data.get('questionId') as string;
 		try {
-			for (const eqId of examQuestionIds) await serverApi.delete(token, `/exam-questions/${eqId}`);
-			await serverApi.delete(token, `/questions/${questionId}`);
+			for (const eqId of examQuestionIds)
+				await serverApi.delete(token, `/exam/exam-questions/${eqId}`);
+			await serverApi.delete(token, `/exam/questions/${questionId}`);
 			return {
 				action: 'deleteQuestion',
 				success: true,
@@ -195,7 +205,7 @@ export const actions: Actions = {
 			const body = new FormData();
 			body.append('file', file);
 
-			const res = await fetch(`${BACKEND_URL}/api/v1/questions/import?${params.toString()}`, {
+			const res = await fetch(`${API_URL}/api/v1/exam/questions/import?${params.toString()}`, {
 				method: 'POST',
 				headers: { Authorization: `Bearer ${token}` },
 				body

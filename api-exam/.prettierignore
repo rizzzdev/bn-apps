@@ -1,0 +1,7 @@
+node_modules
+dist
+build
+coverage
+agent
+prisma
+src/app/database/generate

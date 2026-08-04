@@ -14,10 +14,21 @@ function hasLocalStorage(): boolean {
 	return typeof localStorage !== 'undefined';
 }
 
+export function getCookie(name: string): string | null {
+	if (typeof document === 'undefined') return null;
+	const value = `; ${document.cookie}`;
+	const parts = value.split(`; ${name}=`);
+	if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+	return null;
+}
+
 export function getAccessToken(): string | null {
+	const cookieToken = getCookie('access_token');
+	if (cookieToken) return cookieToken;
 	if (!hasLocalStorage()) return null;
 	return localStorage.getItem(STORAGE_KEY);
 }
+
 
 export function setAccessToken(token: string | null): void {
 	if (!hasLocalStorage()) return;
@@ -62,7 +73,7 @@ type FetchFn = typeof fetch;
 /** Calls the refresh endpoint once. Returns the new access token, or null on any failure. */
 async function callRefreshEndpoint(fetchFn: FetchFn): Promise<string | null> {
 	try {
-		const res = await fetchFn(`${BASE}/auth/access-token`, {
+		const res = await fetchFn(`${BASE}/auth/refresh`, {
 			method: 'POST',
 			credentials: 'include'
 		});

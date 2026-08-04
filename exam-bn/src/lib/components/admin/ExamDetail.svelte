@@ -16,9 +16,44 @@
 	let roomToRemove = $state<string | null>(null);
 	let removeForm: HTMLFormElement;
 
+	let editRoomClassIds = $state<string[]>([]);
+
+	$effect(() => {
+		if (editRoomItem) {
+			editRoomClassIds = editRoomItem.examRoomClasses?.map((erc: any) => erc.classId) ?? [];
+		}
+	});
+
+	let roomMap = $derived(new Map((data.rooms ?? []).map((r: any) => [r.id, r])));
+	let classMap = $derived(new Map((data.classes ?? []).map((c: any) => [c.id, c])));
+
+	let roomOptions = $derived(
+		(data.rooms ?? []).map((room: any) => ({
+			value: room.id,
+			label: `${room.name}${roomCapacityLabel(room)}`,
+			disabled: isRoomFull(room)
+		}))
+	);
+
+	let classOptions = $derived(
+		(data.classes ?? []).map((c: any) => ({
+			value: c.id,
+			label: c.name
+		}))
+	);
+
+	function getEditRoomOptions(currentRoomId: string) {
+		return (data.rooms ?? []).map((room: any) => ({
+			value: room.id,
+			label: `${room.name}${roomCapacityLabel(room)}`,
+			disabled: isRoomFull(room, currentRoomId)
+		}));
+	}
+
 	function closeModals() {
 		showAddRoom = false;
 		editRoomItem = null;
+		editRoomClassIds = [];
 	}
 
 	// Shows capacity and remaining seats for this room at the exam's time slot,
@@ -101,12 +136,24 @@
 	{:else}
 		<div class="grid gap-4">
 			{#each data.examRooms as er (er.id)}
+				{@const assignedClasses = (er.examRoomClasses ?? []).map((erc: any) => classMap.get(erc.classId)).filter(Boolean)}
 				<div class="card p-5 flex items-center justify-between">
 					<div>
 						<h3 class="text-base font-black text-(--text-primary)">
 							Ruangan: {er.room?.name ?? er.roomId}
 						</h3>
-						<p class="text-xs font-medium text-(--text-secondary) mt-1">ID Setup: {er.id}</p>
+						<div class="flex items-center gap-1.5 mt-1 flex-wrap">
+							<span class="text-xs font-bold text-(--text-secondary)">Kelas:</span>
+							{#if assignedClasses.length > 0}
+								{#each assignedClasses as c}
+									<span class="text-xs font-bold px-2 py-0.5 rounded border border-(--nb-border) bg-primary-100 text-primary-800 dark:bg-primary-950 dark:text-primary-200">
+										{c.name}
+									</span>
+								{/each}
+							{:else}
+								<span class="text-xs font-bold text-red-600">⚠️ Belum set kelas (0 murid)</span>
+							{/if}
+						</div>
 					</div>
 					<div class="flex items-center gap-1">
 						<IconButton
@@ -192,14 +239,15 @@
 	<h2 class="text-lg font-black text-(--text-primary) mb-4">Tambah Ruangan</h2>
 	<form method="POST" action="?/addRoom" class="space-y-4" use:enhance={makeEnhance()}>
 		<input type="hidden" name="examId" value={data.examId} />
-		<Select name="roomId" label="Ruangan" required>
-			<option value="">-- Pilih Ruangan --</option>
-			{#each data.rooms as room (room.id)}
-				<option value={room.id} disabled={isRoomFull(room)}
-					>{room.name}{roomCapacityLabel(room)}</option
-				>
-			{/each}
-		</Select>
+		<Select name="roomId" label="Ruangan" options={roomOptions} required placeholder="-- Pilih Ruangan --" />
+		<Select
+			name="classIds"
+			label="Alokasi Kelas"
+			options={classOptions}
+			multiple={true}
+			placeholder="-- Pilih Kelas (Multiple) --"
+			hint="Hanya siswa aktif pada kelas yang dipilih yang dapat dijadikan peserta ujian di ruangan ini."
+		/>
 		<div class="flex justify-end gap-3 pt-2">
 			<Button variant="secondary" onclick={closeModals}>Batal</Button>
 			<Button type="submit" loading={submitting}>{submitting ? 'Menyimpan...' : 'Simpan'}</Button>
@@ -213,14 +261,22 @@
 	{#if editRoomItem}
 		<form method="POST" action="?/updateRoom" class="space-y-4" use:enhance={makeEnhance()}>
 			<input type="hidden" name="id" value={editRoomItem.id} />
-			<Select name="roomId" label="Ganti Ruangan" value={editRoomItem.roomId} required>
-				<option value="">-- Pilih Ruangan --</option>
-				{#each data.rooms as room (room.id)}
-					<option value={room.id} disabled={isRoomFull(room, editRoomItem.roomId)}
-						>{room.name}{roomCapacityLabel(room)}</option
-					>
-				{/each}
-			</Select>
+			<Select
+				name="roomId"
+				label="Ganti Ruangan"
+				value={editRoomItem.roomId}
+				options={getEditRoomOptions(editRoomItem.roomId)}
+				required
+			/>
+			<Select
+				name="classIds"
+				label="Alokasi Kelas"
+				value={editRoomClassIds}
+				options={classOptions}
+				multiple={true}
+				placeholder="-- Pilih Kelas (Multiple) --"
+				hint="Siswa dari kelas yang dilepas akan otomatis dicabut (soft-delete) dari peserta ruangan ini."
+			/>
 			<div class="flex justify-end gap-3 pt-2">
 				<Button variant="secondary" onclick={closeModals}>Batal</Button>
 				<Button type="submit" loading={submitting}>{submitting ? 'Menyimpan...' : 'Simpan'}</Button>

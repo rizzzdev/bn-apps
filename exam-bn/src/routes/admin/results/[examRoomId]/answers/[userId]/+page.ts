@@ -22,28 +22,36 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 
 	const examRoom = await api.safeGet<ExamRoom>(
 		fetch,
-		`/exam-rooms/${examRoomId}`,
+		`/exam/exam-rooms/${examRoomId}`,
 		null as unknown as ExamRoom
 	);
 
 	const [exam, allQuestions, examQuestions, answers, grades, participant, room, examScores] =
 		await Promise.all([
 			examRoom?.examId
-				? api.safeGet<Exam>(fetch, `/exams/${examRoom.examId}`, null as unknown as Exam)
+				? api.safeGet<Exam>(fetch, `/exam/exams/${examRoom.examId}`, null as unknown as Exam)
 				: Promise.resolve(null),
-			api.safeGet<Question[]>(fetch, '/questions', [], {
+			api.safeGet<Question[]>(fetch, '/exam/questions', [], {
 				allOptions: true,
 				correctAnswer: true,
 				limit: 1000
 			}),
-			api.safeGet<ExamQuestionRaw[]>(fetch, '/exam-questions', [], { examRoomId, limit: 200 }),
-			api.safeGet<ExamAnswer[]>(fetch, '/exam-answers', [], { examRoomId, userId, limit: 200 }),
-			api.safeGet<EssayGrade[]>(fetch, '/essay-grades', [], { examRoomId, userId, limit: 200 }),
-			api.safeGet<User>(fetch, `/users/${userId}`, null as unknown as User),
+			api.safeGet<ExamQuestionRaw[]>(fetch, '/exam/exam-questions', [], { examRoomId, limit: 200 }),
+			api.safeGet<ExamAnswer[]>(fetch, '/exam/exam-answers', [], {
+				examRoomId,
+				userId,
+				limit: 200
+			}),
+			api.safeGet<EssayGrade[]>(fetch, '/exam/essay-grades', [], {
+				examRoomId,
+				userId,
+				limit: 200
+			}),
+			api.safeGet<User>(fetch, `/exam/users/${userId}`, null as unknown as User),
 			examRoom?.roomId
-				? api.safeGet<Room>(fetch, `/rooms/${examRoom.roomId}`, null as unknown as Room)
+				? api.safeGet<Room>(fetch, `/exam/rooms/${examRoom.roomId}`, null as unknown as Room)
 				: Promise.resolve(null),
-			api.safeGet<ExamScore[]>(fetch, '/exam-scores', [], { examRoomId, userId, limit: 1 })
+			api.safeGet<ExamScore[]>(fetch, '/exam/exam-scores', [], { examRoomId, userId, limit: 1 })
 		]);
 
 	const qMap = new Map(allQuestions.map((q) => [q.id, q]));
@@ -84,7 +92,7 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 		passingGrade: exam?.passingGrade ?? 75,
 		totalScore: examScores[0]?.score ?? null,
 		participantName: participant?.fullname ?? userId,
-		participantUsername: participant?.username ?? userId,
+		participantEmail: participant?.email ?? userId,
 		questions
 	};
 };

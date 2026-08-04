@@ -4,4 +4,4 @@
 	let { data }: { data: any } = $props();
 </script>
 
-<ExamMonitor {data} role="ADMIN" />
+<ExamMonitor {data} role="super_admin" />

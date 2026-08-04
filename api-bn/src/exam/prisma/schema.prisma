@@ -1,0 +1,366 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/database/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  ESSAY
+}
+
+enum ExamRoomStatus {
+  PENDING
+  ONGOING
+  ENDED
+}
+
+enum ParticipantSubmitStatus {
+  NOT_SUBMITTED
+  SUBMITTED
+}
+
+model Room {
+  id        String   @id @default(uuid())
+  name      String
+  capacity  Int?
+
+  examRooms ExamRoom[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("room")
+}
+
+model Exam {
+  id                String   @id @default(uuid())
+  questionCreatorId String?  @map("question_creator_id")
+  name              String
+  description       String?
+  startTime         DateTime @map("start_time")
+  endTime           DateTime @map("end_time")
+  mcWeight          Float?   @map("mc_weight")
+  essayWeight       Float?   @map("essay_weight")
+  passingGrade      Float    @default(75) @map("passing_grade")
+
+  examRooms ExamRoom[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("exam")
+}
+
+model ExamRoom {
+  id        String         @id @default(uuid())
+  examId    String         @map("exam_id")
+  roomId    String         @map("room_id")
+  status    ExamRoomStatus @default(PENDING)
+
+  exam             Exam              @relation(fields: [examId], references: [id], onDelete: Cascade)
+  room             Room              @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  examParticipants ExamParticipant[]
+  examSupervisors  ExamSupervisor[]
+  examQuestions    ExamQuestion[]
+  examAnswers      ExamAnswer[]
+  examScores       ExamScore[]
+  examLogs         ExamLog[]
+  essayGrades      EssayGrade[]
+  examRoomClasses  ExamRoomClass[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("exam_room")
+}
+
+model ExamLog {
+  id         String   @id @default(uuid())
+  examRoomId String   @map("exam_room_id")
+  userId     String?  @map("user_id")
+  type       String
+  message    String
+
+  examRoom ExamRoom @relation(fields: [examRoomId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([examRoomId])
+  @@map("exam_log")
+}
+
+model ExamChat {
+  id         String   @id @default(uuid())
+  senderId   String   @map("sender_id")
+  receiverId String   @map("receiver_id")
+  message    String
+  replyToId  String?  @map("reply_to_id")
+  read       Boolean  @default(false)
+
+  replyTo ExamChat?  @relation("ChatReply", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies ExamChat[] @relation("ChatReply")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([senderId, receiverId])
+  @@index([receiverId, senderId])
+  @@map("exam_chat")
+}
+
+model ExamParticipant {
+  id         String                  @id @default(uuid())
+  examRoomId String                  @map("exam_room_id")
+  userId     String                  @map("user_id")
+  status     ParticipantSubmitStatus @default(NOT_SUBMITTED)
+
+  examRoom ExamRoom @relation(fields: [examRoomId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@unique([examRoomId, userId])
+  @@index([deletedAt])
+  @@map("exam_participant")
+}
+
+model ExamRoomClass {
+  id         String    @id @default(uuid())
+  examRoomId String    @map("exam_room_id")
+  classId    String    @map("class_id")
+
+  examRoom ExamRoom @relation(fields: [examRoomId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@unique([examRoomId, classId])
+  @@index([examRoomId])
+  @@index([classId])
+  @@index([deletedAt])
+  @@map("exam_room_class")
+}
+
+model ExamSupervisor {
+  id         String   @id @default(uuid())
+  examRoomId String   @map("exam_room_id")
+  userId     String   @map("user_id")
+
+  examRoom ExamRoom @relation(fields: [examRoomId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([examRoomId, userId])
+  @@map("exam_supervisor")
+}
+
+model Question {
+  id   String       @id @default(uuid())
+  text String
+  type QuestionType
+
+  options       Option[]
+  correctAnswer QuestionCorrectAnswer?
+  examQuestions ExamQuestion[]
+  examAnswers   ExamAnswer[]
+  essayGrades   EssayGrade[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("question")
+}
+
+model Option {
+  id         String   @id @default(uuid())
+  questionId String   @map("question_id")
+  text       String
+
+  question      Question               @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  correctAnswer QuestionCorrectAnswer[]
+  examAnswers   ExamAnswer[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("option")
+}
+
+model QuestionCorrectAnswer {
+  id         String @id @default(uuid())
+  questionId String @unique @map("question_id")
+  optionId   String @map("option_id")
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  option   Option   @relation(fields: [optionId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("question_correct_answer")
+}
+
+model ExamQuestion {
+  id             String   @id @default(uuid())
+  examRoomId     String   @map("exam_room_id")
+  questionId     String   @map("question_id")
+  questionNumber Int      @map("question_number")
+
+  examRoom ExamRoom @relation(fields: [examRoomId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@unique([examRoomId, questionId])
+  @@map("exam_question")
+}
+
+model ExamAnswer {
+  id         String  @id @default(uuid())
+  examRoomId String  @map("exam_room_id")
+  userId     String  @map("user_id")
+  questionId String  @map("question_id")
+  optionId   String? @map("option_id")
+  text       String?
+
+  examRoom ExamRoom @relation(fields: [examRoomId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  option   Option?  @relation(fields: [optionId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([examRoomId, userId, questionId])
+  @@map("exam_answer")
+}
+
+model ExamScore {
+  id         String   @id @default(uuid())
+  examRoomId String   @map("exam_room_id")
+  userId     String   @map("user_id")
+  score      Float?
+  passed     Boolean?
+
+  examRoom ExamRoom @relation(fields: [examRoomId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([examRoomId, userId])
+  @@map("exam_score")
+}
+
+model EssayGrade {
+  id         String @id @default(uuid())
+  examRoomId String @map("exam_room_id")
+  userId     String @map("user_id")
+  questionId String @map("question_id")
+  points     Int    @default(0)
+
+  examRoom ExamRoom @relation(fields: [examRoomId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([examRoomId, userId, questionId])
+  @@map("essay_grade")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  type      String
+  title     String
+  message   String
+  meta      String?
+  read      Boolean  @default(false)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([userId])
+  @@map("notification")
+}
+
+// ============================================================
+// SHADOW DATABASE MODELS — sync dari service master (status Aktif)
+// ============================================================
+
+model ShadowStudent {
+  id         String    @id
+  userId     String    @map("user_id")
+  fullname   String
+  nis        String?
+  nisn       String?
+  pictureUrl String?   @map("picture_url")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+  lastSyncAt DateTime  @default(now()) @map("last_sync_at")
+
+  @@index([userId])
+  @@index([deletedAt])
+  @@map("shadow_students")
+}
+
+model ShadowTeacher {
+  id         String    @id
+  userId     String    @map("user_id")
+  fullname   String
+  email      String?
+  nip        String?
+  pictureUrl String?   @map("picture_url")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+  lastSyncAt DateTime  @default(now()) @map("last_sync_at")
+
+  @@index([userId])
+  @@index([deletedAt])
+  @@map("shadow_teachers")
+}
+
+model ShadowClass {
+  id             String    @id
+  name           String
+  majorId        String?   @map("major_id")
+  academicYearId String?   @map("academic_year_id")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
+  lastSyncAt     DateTime  @default(now()) @map("last_sync_at")
+
+  @@index([deletedAt])
+  @@map("shadow_classes")
+}
+
+model ShadowClassStudent {
+  id         String    @id
+  classId    String    @map("class_id")
+  studentId  String    @map("student_id")
+  status     String?   @default("Aktif")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+  lastSyncAt DateTime  @default(now()) @map("last_sync_at")
+
+  @@index([classId])
+  @@index([studentId])
+  @@index([deletedAt])
+  @@map("shadow_class_students")
+}
+

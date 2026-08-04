@@ -14,7 +14,9 @@
       "#learn": ["./src/learn/index.ts"],
       "#learn/*": ["./src/learn/src/*"],
       "#internship": ["./src/internship/index.ts"],
-      "#internship/*": ["./src/internship/src/*"]
+      "#internship/*": ["./src/internship/src/*"],
+      "#exam": ["./src/exam/index.ts"],
+      "#exam/*": ["./src/exam/src/*"]
     },
     "module": "esnext",
     "moduleResolution": "bundler",

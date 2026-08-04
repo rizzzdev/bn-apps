@@ -33,15 +33,25 @@
 		otherUserId: string;
 		otherUserName: string;
 		otherUserRole: string;
+		otherUserPictureUrl?: string | null;
+		otherUserEmail?: string | null;
 		lastMessage: string;
 		lastAt: string | null;
 		unreadCount: number;
 	};
-	type Contact = { id: string; fullname: string; username: string; role: string };
+	type Contact = {
+		id: string;
+		fullname: string;
+		email: string | null;
+		pictureUrl?: string | null;
+		role: string;
+	};
 
 	let open = $state(false);
 	let view = $state<'list' | 'chat' | 'contacts'>('list');
 	let text = $state('');
+	let listSearch = $state('');
+	let contactSearch = $state('');
 	let messagesEl = $state<HTMLDivElement | null>(null);
 	let loadingList = $state(false);
 	let loadingContacts = $state(false);
@@ -67,6 +77,32 @@
 		activeId && conversations[activeId] ? conversations[activeId] : null
 	);
 
+	function getAvatarName(name?: string, role?: string): string {
+		if (!name || role === 'super_admin' || name.trim().toLowerCase() === 'super_admin') {
+			return 'Super Admin';
+		}
+		return name;
+	}
+
+	function getInitials(fullname: string | null | undefined): string {
+		if (!fullname || fullname.trim().toLowerCase() === 'super admin' || fullname.trim().toLowerCase() === 'super_admin') {
+			return 'SA';
+		}
+
+		// Remove common academic prefix/suffix titles (e.g. Dr., Drs., Ir., Prof., H., Hj., M.Pd, S.Pd, S.T., M.Kom, etc.)
+		let cleanName = fullname
+			.split(',')[0]
+			.replace(/\b(Dr|Drs|Dra|Ir|Prof|H|Hj|M|S)\b\.?/gi, '')
+			.trim();
+
+		if (!cleanName) cleanName = fullname.trim();
+
+		const words = cleanName.split(/\s+/).filter(Boolean);
+		if (words.length === 0) return 'SA';
+		if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+		return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+	}
+
 	// Access token is short-lived (15min). If it expired since the last full
 	// page navigation, retry once after forcing a layout reload (which
 	// refreshes the access token via the refresh_token cookie).
@@ -84,7 +120,7 @@
 	async function fetchConversations() {
 		loadingList = true;
 		try {
-			const res = await authFetch(`${API_BASE}/chats/conversations`);
+			const res = await authFetch(`${API_BASE}/exam/chats/conversations`);
 			if (res.ok) serverConversations = (await res.json()).data ?? [];
 		} catch {
 			/* ignore */
@@ -96,7 +132,7 @@
 	async function fetchContacts() {
 		loadingContacts = true;
 		try {
-			const res = await authFetch(`${API_BASE}/chats/contacts`);
+			const res = await authFetch(`${API_BASE}/exam/chats/contacts`);
 			if (res.ok) contacts = (await res.json()).data ?? [];
 		} catch {
 			/* ignore */
@@ -122,6 +158,8 @@
 			otherUserId,
 			otherUserName,
 			otherUserRole,
+			otherUserPictureUrl: existing?.otherUserPictureUrl ?? null,
+			otherUserEmail: existing?.otherUserEmail ?? null,
 			lastMessage: message,
 			lastAt,
 			unreadCount: viewingThis ? 0 : (existing?.unreadCount ?? 0) + 1
@@ -215,37 +253,43 @@
 
 	function toggle() {
 		open = !open;
-		if (open) {
-			view = 'list';
-			void fetchConversations();
-		}
+		if (open && serverConversations.length === 0) void fetchConversations();
 	}
 
 	function openConversation(otherUserId: string, otherUserName: string, otherUserRole: string) {
-		chatConversations.ensureConversation(otherUserId, otherUserName, otherUserRole);
 		activeChatUserId.set(otherUserId);
+		chatConversations.ensureConversation(otherUserId, otherUserName, otherUserRole);
+
+		const conv = conversations[otherUserId];
+		if (!conv || conv.messages.length === 0) {
+			socket?.emit('chat:history', { otherUserId });
+		}
+
 		chatConversations.markRead(otherUserId);
-		serverConversations = serverConversations.map((c) =>
-			c.otherUserId === otherUserId ? { ...c, unreadCount: 0 } : c
-		);
-		socket?.emit('chat:history', { otherUserId });
-		replyingTo = null;
+		const existing = serverConversations.find((c) => c.otherUserId === otherUserId);
+		if (existing) existing.unreadCount = 0;
+
 		view = 'chat';
+		replyingTo = null;
+
+		void authFetch(`${API_BASE}/exam/chats/conversations/${otherUserId}`);
 	}
 
 	function backToList() {
 		view = 'list';
-		replyingTo = null;
+		listSearch = '';
 		void fetchConversations();
 	}
 
 	function openContacts() {
 		view = 'contacts';
+		contactSearch = '';
 		void fetchContacts();
 	}
 
 	function pickContact(contact: Contact) {
-		openConversation(contact.id, contact.fullname, contact.role);
+		const name = getAvatarName(contact.fullname, contact.role);
+		openConversation(contact.id, name, contact.role);
 	}
 
 	function startReply(msg: ChatMessage) {
@@ -264,9 +308,10 @@
 		}
 	}
 
-	function send() {
+	function send(e?: Event) {
+		if (e) e.preventDefault();
 		const msg = text.trim();
-		if (!msg || !socket || !activeConversation) return;
+		if (!msg || !activeConversation || !socket) return;
 		socket.emit('chat:send', {
 			receiverId: activeConversation.otherUserId,
 			message: msg,
@@ -298,6 +343,24 @@
 			...c,
 			unreadCount: conversations[c.otherUserId]?.unreadCount ?? c.unreadCount
 		}))
+	);
+
+	const filteredConversations = $derived(
+		mergedConversations.filter((c) => {
+			const name = getAvatarName(c.otherUserName, c.otherUserRole).toLowerCase();
+			const email = (c.otherUserEmail ?? '').toLowerCase();
+			const q = listSearch.toLowerCase().trim();
+			return name.includes(q) || email.includes(q);
+		})
+	);
+
+	const filteredContacts = $derived(
+		contacts.filter((c) => {
+			const name = getAvatarName(c.fullname, c.role).toLowerCase();
+			const email = (c.email ?? '').toLowerCase();
+			const q = contactSearch.toLowerCase().trim();
+			return name.includes(q) || email.includes(q);
+		})
 	);
 
 	const totalUnread = $derived(mergedConversations.reduce((sum, c) => sum + c.unreadCount, 0));
@@ -335,6 +398,16 @@
 					{/snippet}
 				</ChatHeader>
 
+				<!-- Search input -->
+				<div class="p-2 border-b-2 border-(--nb-border) bg-(--bg-secondary)">
+					<input
+						type="text"
+						class="input-field text-xs py-1.5 px-2.5 w-full"
+						placeholder="Cari nama atau email..."
+						bind:value={listSearch}
+					/>
+				</div>
+
 				<!-- List body -->
 				<div class="flex-1 overflow-y-auto">
 					{#if loadingList}
@@ -348,7 +421,7 @@
 								style="color:var(--text-secondary);">Memuat...</span
 							>
 						</div>
-					{:else if mergedConversations.length === 0}
+					{:else if filteredConversations.length === 0}
 						<div class="flex flex-col items-center justify-center h-full gap-3 p-6">
 							<div
 								class="w-10 h-10 border-2 rounded-lg flex items-center justify-center"
@@ -374,36 +447,48 @@
 									class="text-sm font-black uppercase tracking-wide"
 									style="color:var(--text-secondary);"
 								>
-									Belum ada chat
+									{listSearch ? 'Hasil tidak ditemukan' : 'Belum ada chat'}
 								</p>
-								<p class="text-xs mt-1" style="color:var(--text-secondary);">
-									Tekan + untuk memulai chat baru
-								</p>
+								{#if !listSearch}
+									<p class="text-xs mt-1" style="color:var(--text-secondary);">
+										Tekan + untuk memulai chat baru
+									</p>
+								{/if}
 							</div>
 						</div>
 					{:else}
 						<ul>
-							{#each mergedConversations as conv (conv.otherUserId)}
+							{#each filteredConversations as conv (conv.otherUserId)}
+								{@const displayName = getAvatarName(conv.otherUserName, conv.otherUserRole)}
 								<li>
 									<button
 										class="w-full text-left px-4 py-3 flex items-start gap-3 transition-colors duration-100 hover:bg-(--bg-secondary)"
 										style="border-bottom:2px solid var(--nb-border);"
 										onclick={() =>
-											openConversation(conv.otherUserId, conv.otherUserName, conv.otherUserRole)}
+											openConversation(conv.otherUserId, displayName, conv.otherUserRole)}
 									>
 										<!-- Avatar -->
-										<span
-											class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center font-black text-sm uppercase"
-											style="border:2px solid var(--nb-border); background-color:var(--bg-secondary); color:var(--text-primary);"
-										>
-											{conv.otherUserName?.charAt(0) ?? '?'}
-										</span>
+										{#if conv.otherUserPictureUrl}
+											<img
+												src={conv.otherUserPictureUrl}
+												alt={displayName}
+												class="shrink-0 w-9 h-9 rounded-lg object-cover"
+												style="border:2px solid var(--nb-border);"
+											/>
+										{:else}
+											<span
+												class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center font-black text-xs uppercase"
+												style="border:2px solid var(--nb-border); background-color:var(--bg-secondary); color:var(--text-primary);"
+											>
+												{getInitials(displayName)}
+											</span>
+										{/if}
 
 										<!-- Info -->
 										<div class="flex-1 min-w-0">
 											<div class="flex items-baseline justify-between gap-2">
 												<p class="text-sm font-black truncate" style="color:var(--text-primary);">
-													{conv.otherUserName}
+													{displayName}
 												</p>
 												<span
 													class="text-[10px] font-bold uppercase shrink-0"
@@ -444,6 +529,16 @@
 
 				<ChatHeader title="Pilih Kontak" onBack={backToList} onClose={toggle} />
 
+				<!-- Search input -->
+				<div class="p-2 border-b-2 border-(--nb-border) bg-(--bg-secondary)">
+					<input
+						type="text"
+						class="input-field text-xs py-1.5 px-2.5 w-full"
+						placeholder="Cari nama atau email..."
+						bind:value={contactSearch}
+					/>
+				</div>
+
 				<div class="flex-1 overflow-y-auto">
 					{#if loadingContacts}
 						<div class="flex items-center justify-center h-full gap-2">
@@ -456,37 +551,49 @@
 								style="color:var(--text-secondary);">Memuat...</span
 							>
 						</div>
-					{:else if contacts.length === 0}
+					{:else if filteredContacts.length === 0}
 						<div class="flex flex-col items-center justify-center h-full gap-2 p-6">
 							<p
 								class="text-xs font-black uppercase tracking-wide"
 								style="color:var(--text-secondary);"
 							>
-								Tidak ada kontak
+								{contactSearch ? 'Kontak tidak ditemukan' : 'Tidak ada kontak'}
 							</p>
 						</div>
 					{:else}
 						<ul>
-							{#each contacts as contact (contact.id)}
+							{#each filteredContacts as contact (contact.id)}
+								{@const displayName = getAvatarName(contact.fullname, contact.role)}
 								<li>
 									<button
 										class="w-full text-left px-4 py-3 flex items-center gap-3 transition-colors duration-100 hover:bg-(--bg-secondary)"
 										style="border-bottom:2px solid var(--nb-border);"
 										onclick={() => pickContact(contact)}
 									>
-										<span
-											class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center font-black text-sm uppercase"
-											style="border:2px solid var(--nb-border); background-color:var(--bg-secondary); color:var(--text-primary);"
-										>
-											{contact.fullname?.charAt(0) ?? '?'}
-										</span>
+										{#if contact.pictureUrl}
+											<img
+												src={contact.pictureUrl}
+												alt={displayName}
+												class="shrink-0 w-9 h-9 rounded-lg object-cover"
+												style="border:2px solid var(--nb-border);"
+											/>
+										{:else}
+											<span
+												class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center font-black text-xs uppercase"
+												style="border:2px solid var(--nb-border); background-color:var(--bg-secondary); color:var(--text-primary);"
+											>
+												{getInitials(displayName)}
+											</span>
+										{/if}
 										<div class="flex-1 min-w-0">
 											<p class="text-sm font-black truncate" style="color:var(--text-primary);">
-												{contact.fullname}
+												{displayName}
 											</p>
-											<p class="text-xs font-bold truncate" style="color:var(--text-secondary);">
-												@{contact.username}
-											</p>
+											{#if contact.email}
+												<p class="text-xs font-bold truncate" style="color:var(--text-secondary);">
+													{contact.email}
+												</p>
+											{/if}
 										</div>
 									</button>
 								</li>
@@ -498,8 +605,8 @@
 				<!-- ══ CHAT VIEW ══════════════════════════════ -->
 
 				<ChatHeader
-					title={activeConversation?.otherUserName ?? ''}
-					subtitle={activeConversation?.otherUserRole === 'ADMIN' ? 'Admin' : 'Pengawas'}
+					title={getAvatarName(activeConversation?.otherUserName, activeConversation?.otherUserRole)}
+					subtitle={activeConversation?.otherUserRole === 'super_admin' ? 'Admin' : 'Pengawas'}
 					onBack={backToList}
 					onClose={toggle}
 				/>

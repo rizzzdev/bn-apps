@@ -1,12 +1,21 @@
-declare namespace App {
-	interface Locals {
-		user?: UserProfile;
+declare global {
+	namespace App {
+		interface Locals {
+			user?: UserProfile;
+			accessDenied?: boolean;
+		}
 	}
 }
 
-interface UserProfile {
+export interface UserProfile {
 	id: string;
 	fullname: string;
-	username: string;
-	role: 'ADMIN' | 'SUPERVISOR' | 'PARTICIPANT';
+	email: string | null;
+	role: 'super_admin' | 'teacher' | 'student';
+	roles?: string[];
+	pictureUrl?: string | null;
+	[key: string]: unknown;
 }
+
+export {};
+

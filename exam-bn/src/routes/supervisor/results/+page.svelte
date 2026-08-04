@@ -19,7 +19,7 @@
 	type ParticipantResult = {
 		userId: string;
 		fullname: string;
-		username: string;
+		email: string;
 		score: number | null;
 		submitted: boolean;
 		examRoomId: string;
@@ -30,8 +30,6 @@
 		examName: string;
 		startTime: string;
 		endTime: string;
-		mcWeight: number;
-		essayWeight: number;
 		passingGrade: number;
 		participants: ParticipantResult[];
 	};
@@ -57,14 +55,16 @@
 		const key = `${participant.examRoomId}:${participant.userId}`;
 		recalculating = { ...recalculating, [key]: true };
 		try {
-			const res = await fetch(
-				`${API}/exam-rooms/${participant.examRoomId}/grade/${participant.userId}`,
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.token}` },
-					body: JSON.stringify({ mcWeight: exam.mcWeight, essayWeight: exam.essayWeight })
-				}
-			);
+		// Don't send bobot here: the server recomputes using the weights that were
+		// set during "Koreksi Esai", so recalculation never resets them.
+		const res = await fetch(
+			`${API}/exam/exam-rooms/${participant.examRoomId}/grade/${participant.userId}`,
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.token}` },
+				body: JSON.stringify({})
+			}
+		);
 			const json = await res.json();
 			if (!json.error) scoreOverrides = { ...scoreOverrides, [key]: json.data.score };
 		} finally {
@@ -104,8 +104,8 @@
 		return key in scoreOverrides ? scoreOverrides[key] : p.score;
 	}
 
-	const EXAM_HEADERS = ['No', 'Nama Lengkap', 'Username', 'Nilai', 'Status'];
-	const EXAM_KEYS = ['no', 'fullname', 'username', 'score', 'status'];
+	const EXAM_HEADERS = ['No', 'Nama Lengkap', 'Email', 'Nilai', 'Status'];
+	const EXAM_KEYS = ['no', 'fullname', 'email', 'score', 'status'];
 
 	function examRows(exam: ExamResult) {
 		return exam.participants.map((p, i) => {
@@ -115,7 +115,7 @@
 			return {
 				no: i + 1,
 				fullname: p.fullname,
-				username: p.username,
+				email: p.email,
 				score: scoreVisible ? score : p.submitted ? 'Belum dinilai' : 'Tidak hadir',
 				status: scoreVisible
 					? score! >= exam.passingGrade
@@ -241,7 +241,7 @@
 					<tr>
 						<th class="w-8">#</th>
 						<th>Nama</th>
-						<th>Username</th>
+						<th>Email</th>
 						<th class="text-right">Nilai</th>
 						<th class="text-center">Status</th>
 						<th class="text-right">Aksi</th>
@@ -263,7 +263,7 @@
 					<tr>
 						<td class="font-bold text-(--text-secondary) w-8">{idx + 1}</td>
 						<td class="font-black text-(--text-primary) whitespace-nowrap">{p.fullname}</td>
-						<td class="font-medium text-(--text-secondary) whitespace-nowrap">{p.username}</td>
+						<td class="font-medium text-(--text-secondary) whitespace-nowrap">{p.email}</td>
 						<td class="text-right whitespace-nowrap">
 							{#if scoreVisible}
 								<span

@@ -16,6 +16,7 @@ const getCookieDomain = (): string => {
 export const handle: Handle = async ({ event, resolve }) => {
 	let accessToken = event.cookies.get('access_token');
 	const refreshToken = event.cookies.get('refresh_token');
+	const apiSetCookies: string[] = [];
 
 	const isLoggedIn = !!(accessToken || refreshToken);
 	const pathname = event.url.pathname;
@@ -46,33 +47,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 				});
 
 				if (refreshRes.ok) {
-					const data = await refreshRes.json();
-					const newAccessToken = data.accessToken || data.access_token;
-
 					const setCookies = refreshRes.headers.getSetCookie?.() || [];
-					for (const cookie of setCookies) {
-						if (cookie.startsWith('refresh_token=')) {
-							const val = cookie.split(';')[0].split('=')[1];
-							event.cookies.set('refresh_token', val, {
-								path: '/',
-								maxAge: 86400,
-								httpOnly: true,
-								sameSite: 'lax',
-								...(getCookieDomain() ? { domain: getCookieDomain() } : {})
-							});
-						}
-					}
+					apiSetCookies.push(...setCookies);
 
-					if (newAccessToken) {
-						accessToken = newAccessToken;
-						event.cookies.set('access_token', newAccessToken, {
-							path: '/',
-							maxAge: 900,
-							httpOnly: false,
-							sameSite: 'lax',
-							...(getCookieDomain() ? { domain: getCookieDomain() } : {})
-						});
-					}
+					const data = await refreshRes.json();
+					accessToken = data.accessToken || data.access_token;
 				}
 			} catch (e) {
 				console.error('Server auto-refresh error:', e);
@@ -113,5 +92,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	return resolve(event);
+	const response = await resolve(event);
+	for (const header of apiSetCookies) {
+		response.headers.append('set-cookie', header);
+	}
+	return response;
 };

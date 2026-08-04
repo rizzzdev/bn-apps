@@ -20,7 +20,7 @@ export const actions: Actions = {
 
 		try {
 			for (let i = 0; i < questionIds.length; i++) {
-				await serverApi.post(token, '/essay-grades', {
+				await serverApi.post(token, '/exam/essay-grades', {
 					examRoomId,
 					userId: targetUserId,
 					questionId: questionIds[i],
@@ -30,7 +30,7 @@ export const actions: Actions = {
 
 			const result = await serverApi.post<{ score: number }>(
 				token,
-				`/exam-rooms/${examRoomId}/grade/${targetUserId}`,
+				`/exam/exam-rooms/${examRoomId}/grade/${targetUserId}`,
 				{ mcWeight, essayWeight }
 			);
 

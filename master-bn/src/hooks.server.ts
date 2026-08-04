@@ -33,6 +33,7 @@ const clearAuthCookies = (event: Parameters<Handle>[0]['event']) => {
 export const handle: Handle = async ({ event, resolve }) => {
 	let accessToken = event.cookies.get('access_token');
 	const refreshToken = event.cookies.get('refresh_token');
+	const apiSetCookies: string[] = [];
 
 	if (!refreshToken) {
 		throw redirect(303, getPortalLoginUrl());
@@ -49,35 +50,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 			});
 
 			if (refreshRes.ok) {
-				const refreshData = await refreshRes.json().catch(() => ({}));
-				const newAccessToken = refreshData.data?.accessToken || refreshData.accessToken;
-
 				const setCookies = refreshRes.headers.getSetCookie?.() || [];
-				for (const cookie of setCookies) {
-					if (cookie.startsWith('refresh_token=')) {
-						const val = cookie.split(';')[0].split('=')[1];
-						event.cookies.set('refresh_token', val, {
-							path: '/',
-							maxAge: 86400 * 7,
-							httpOnly: true,
-							sameSite: 'lax',
-							secure: import.meta.env.PROD,
-							...(getCookieDomain() ? { domain: getCookieDomain() } : {})
-						});
-					}
-				}
+				apiSetCookies.push(...setCookies);
 
-				if (newAccessToken) {
-					accessToken = newAccessToken;
-					event.cookies.set('access_token', newAccessToken, {
-						path: '/',
-						maxAge: 900,
-						httpOnly: false,
-						sameSite: 'lax',
-						secure: import.meta.env.PROD,
-						...(getCookieDomain() ? { domain: getCookieDomain() } : {})
-					});
-				}
+				const refreshData = await refreshRes.json().catch(() => ({}));
+				accessToken = refreshData.data?.accessToken || refreshData.accessToken;
 			}
 		}
 
@@ -112,7 +89,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 		throw redirect(303, getPortalLoginUrl());
 	}
 
-	return resolve(event);
+	const response = await resolve(event);
+	for (const header of apiSetCookies) {
+		response.headers.append('set-cookie', header);
+	}
+	return response;
 };
 
 export const handleFetch: import('@sveltejs/kit').HandleFetch = async ({ request, fetch }) => {

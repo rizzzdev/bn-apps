@@ -6,19 +6,19 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 	const { token } = await parent();
 
 	const [exams, allExamRooms, allUsers] = await Promise.all([
-		api.safeGet<Exam[]>(fetch, '/exams', [], { limit: 1000 }),
-		api.safeGet<ExamRoom[]>(fetch, '/exam-rooms', [], { limit: 1000 }),
-		api.safeGet<User[]>(fetch, '/users', [], { limit: 1000 })
+		api.safeGet<Exam[]>(fetch, '/exam/exams', [], { limit: 1000 }),
+		api.safeGet<ExamRoom[]>(fetch, '/exam/exam-rooms', [], { limit: 1000 }),
+		api.safeGet<User[]>(fetch, '/exam/users', [], { limit: 1000 })
 	]);
 
 	const roomData = await Promise.all(
 		allExamRooms.map(async (er) => {
 			const [participants, scores] = await Promise.all([
-				api.safeGet<ExamParticipant[]>(fetch, '/exam-participants', [], {
+				api.safeGet<ExamParticipant[]>(fetch, '/exam/exam-participants', [], {
 					examRoomId: er.id,
 					limit: 500
 				}),
-				api.safeGet<ExamScore[]>(fetch, '/exam-scores', [], { examRoomId: er.id, limit: 500 })
+				api.safeGet<ExamScore[]>(fetch, '/exam/exam-scores', [], { examRoomId: er.id, limit: 500 })
 			]);
 			return { examRoomId: er.id, examId: er.examId, participants, scores };
 		})
@@ -34,7 +34,7 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 				{
 					userId: string;
 					fullname: string;
-					username: string;
+					email: string;
 					score: number | null;
 					submitted: boolean;
 					examRoomId: string;
@@ -50,7 +50,7 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 						participantMap.set(p.userId, {
 							userId: p.userId,
 							fullname: userMap.get(p.userId)?.fullname ?? p.userId,
-							username: userMap.get(p.userId)?.username ?? p.userId,
+							email: userMap.get(p.userId)?.email ?? p.userId,
 							score: scoreMap.has(p.userId) ? (scoreMap.get(p.userId) ?? null) : null,
 							submitted: scoreMap.has(p.userId),
 							examRoomId: rd.examRoomId

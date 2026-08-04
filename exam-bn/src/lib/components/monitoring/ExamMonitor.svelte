@@ -9,7 +9,7 @@
 	// Shared room-monitoring view used by both the supervisor's own room
 	// detail page and the admin "Pantau Ruangan" view. `role` decides which
 	// join event is used and whether the >5-violation unlock cap applies.
-	let { data, role = 'SUPERVISOR' }: { data: any; role?: 'SUPERVISOR' | 'ADMIN' } = $props();
+	let { data, role = 'teacher' }: { data: any; role?: 'teacher' | 'super_admin' } = $props();
 
 	const SUPERVISOR_UNLOCK_VIOLATION_LIMIT = 5;
 
@@ -17,7 +17,7 @@
 
 	type ParticipantStatus = {
 		userId: string;
-		username: string;
+		email: string;
 		fullname: string;
 		isLocked: boolean;
 		violationCount: number;
@@ -49,7 +49,7 @@
 	}
 
 	function canUnlock(p: ParticipantStatus): boolean {
-		return role === 'ADMIN' || p.violationCount <= SUPERVISOR_UNLOCK_VIOLATION_LIMIT;
+		return role === 'super_admin' || p.violationCount <= SUPERVISOR_UNLOCK_VIOLATION_LIMIT;
 	}
 
 	// Focuses the warning textarea when the dialog opens, without the a11y
@@ -88,7 +88,7 @@
 
 		socket = connectSocket(data.token);
 
-		const joinEvent = role === 'ADMIN' ? 'exam:monitor:join' : 'exam:supervisor:join';
+		const joinEvent = role === 'super_admin' ? 'exam:monitor:join' : 'exam:supervisor:join';
 		function joinRoom() {
 			socket!.emit(joinEvent, { examRoomId: data.examRoomId });
 		}
@@ -126,7 +126,7 @@
 		socket.on('exam:participant:violated', (payload) => {
 			addLog(
 				'violation',
-				`${(payload as any).fullname ?? payload.username} melakukan pelanggaran: ${payload.violationType} (ke-${payload.violationCount}).`
+				`${(payload as any).fullname ?? payload.email} melakukan pelanggaran: ${payload.violationType} (ke-${payload.violationCount}).`
 			);
 		});
 
@@ -174,8 +174,10 @@
 	}
 
 	function navigateToMonitor(userId: string) {
-		if (role === 'ADMIN') {
-			goto(`/admin/exams/${data.examRoom?.examId ?? data.examId}/rooms/${data.examRoomId}/answers/${userId}`);
+		if (role === 'super_admin') {
+			goto(
+				`/admin/exams/${data.examRoom?.examId ?? data.examId}/rooms/${data.examRoomId}/answers/${userId}`
+			);
 		} else {
 			goto(`/supervisor/rooms/${data.examRoomId}/answers/${userId}`);
 		}
@@ -186,7 +188,7 @@
 <div class="mb-6 flex flex-wrap justify-between items-center gap-4">
 	<div class="flex items-center gap-3">
 		<a
-			href={role === 'ADMIN' ? `/admin/exams/${data.examRoom.examId}/rooms/` : '/supervisor/rooms'}
+			href={role === 'super_admin' ? `/admin/exams/${data.examRoom.examId}/rooms/` : '/supervisor/rooms'}
 			class="btn-secondary p-2"
 			aria-label="Kembali"
 		>

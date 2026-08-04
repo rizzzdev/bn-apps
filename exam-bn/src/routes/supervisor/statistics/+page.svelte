@@ -47,8 +47,8 @@
 		return 'text-red-600';
 	}
 
-	const PART_HEADERS = ['No', 'Nama Lengkap', 'Username', 'Nilai', 'Status'];
-	const PART_KEYS = ['no', 'fullname', 'username', 'score', 'status'];
+	const PART_HEADERS = ['No', 'Nama Lengkap', 'Email', 'Nilai', 'Status'];
+	const PART_KEYS = ['no', 'fullname', 'email', 'score', 'status'];
 
 	function exportExam(exam: any) {
 		const safeName = exam.examName.replace(/[^a-zA-Z0-9_\-]/g, '_');

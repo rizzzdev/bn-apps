@@ -60,7 +60,7 @@ export function clearAll(): void {
 // Load persisted notifications from the API on mount
 export async function loadNotifications(token: string): Promise<void> {
 	try {
-		const res = await fetch(`${API_BASE}/notifications`, {
+		const res = await fetch(`${API_BASE}/exam/notifications`, {
 			headers: { Authorization: `Bearer ${token}` }
 		});
 		if (!res.ok) return;
@@ -94,7 +94,7 @@ export async function loadNotifications(token: string): Promise<void> {
 export async function clearAllPersisted(token: string): Promise<void> {
 	if (token) {
 		try {
-			await fetch(`${API_BASE}/notifications`, {
+			await fetch(`${API_BASE}/exam/notifications`, {
 				method: 'DELETE',
 				headers: { Authorization: `Bearer ${token}` }
 			});
@@ -110,7 +110,7 @@ export async function markAllReadPersisted(token: string): Promise<void> {
 	markAllRead();
 	if (!token) return;
 	try {
-		await fetch(`${API_BASE}/notifications/mark-all-read`, {
+		await fetch(`${API_BASE}/exam/notifications/mark-all-read`, {
 			method: 'PATCH',
 			headers: { Authorization: `Bearer ${token}` }
 		});

@@ -31,12 +31,7 @@
 				const accessToken = data.accessToken || data.access_token || data.data?.accessToken || data.data?.access_token;
 				const refreshToken = data.refreshToken || data.refresh_token || data.data?.refreshToken || data.data?.refresh_token;
 
-				if (accessToken) {
-					setCookie('access_token', accessToken, 900);
-				}
-				if (refreshToken) {
-					setCookie('refresh_token', refreshToken, 86400);
-				}
+				// Cookie telah otomatis tersimpan oleh browser melalui header Set-Cookie dari api-bn (credentials: 'include')
 				
 				toast.success('Login berhasil! Mengalihkan...', 'Sukses');
 				

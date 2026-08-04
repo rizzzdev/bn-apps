@@ -1,13 +1,15 @@
 export interface User {
 	id: string;
 	fullname: string;
-	username: string;
-	passwordHash?: string;
-	role: 'ADMIN' | 'SUPERVISOR' | 'PARTICIPANT';
+	email: string | null;
+	role: 'super_admin' | 'teacher' | 'student';
+	pictureUrl?: string | null;
+	className?: string | null;
 	createdAt: string;
 	updatedAt: string;
 	deletedAt: string | null;
 }
+
 
 export interface Exam {
 	id: string;
@@ -40,6 +42,15 @@ export interface RoomAvailability {
 	remaining: number | null;
 }
 
+export interface ExamRoomClass {
+	id: string;
+	examRoomId: string;
+	classId: string;
+	createdAt?: string;
+	updatedAt?: string;
+	deletedAt?: string | null;
+}
+
 export interface ExamRoom {
 	id: string;
 	examId: string;
@@ -47,6 +58,7 @@ export interface ExamRoom {
 	status: 'PENDING' | 'ONGOING' | 'ENDED';
 	exam?: Exam;
 	room?: Room;
+	examRoomClasses?: ExamRoomClass[];
 	createdAt: string;
 	updatedAt: string;
 	deletedAt: string | null;

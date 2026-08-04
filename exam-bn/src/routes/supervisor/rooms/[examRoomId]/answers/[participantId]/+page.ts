@@ -13,8 +13,8 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 	}
 
 	const [examQuestions, existingAnswers] = await Promise.all([
-		api.safeGet<ExamQuestion[]>(fetch, '/exam-questions', [], { examRoomId, limit: 300 }),
-		api.safeGet<ExamAnswer[]>(fetch, '/exam-answers', [], {
+		api.safeGet<ExamQuestion[]>(fetch, '/exam/exam-questions', [], { examRoomId, limit: 300 }),
+		api.safeGet<ExamAnswer[]>(fetch, '/exam/exam-answers', [], {
 			examRoomId,
 			userId: participantId,
 			limit: 300

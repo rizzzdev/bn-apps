@@ -4,4 +4,4 @@
 	let { data }: { data: any } = $props();
 </script>
 
-<ExamMonitor {data} role="SUPERVISOR" />
+<ExamMonitor {data} role="teacher" />

@@ -12,7 +12,7 @@
 
 	let { data, form }: { data: any; form: any } = $props();
 
-	const templateUrl = resolveBackendUrl() + '/api/v1/questions/template';
+	const templateUrl = resolveBackendUrl() + '/api/v1/exam/questions/template';
 
 	type Question = NonNullable<(typeof data.questions)[0]>;
 
@@ -565,7 +565,12 @@
 	{/if}
 </Modal>
 
-<form bind:this={removeQuestionForm} method="POST" action="?/deleteQuestion" use:enhance={makeEnhance(() => {})}>
+<form
+	bind:this={removeQuestionForm}
+	method="POST"
+	action="?/deleteQuestion"
+	use:enhance={makeEnhance(() => {})}
+>
 	<input type="hidden" name="examId" value={data.examId} />
 	{#if questionToRemove}
 		{#each questionToRemove.allExamQuestionIds as eqId}

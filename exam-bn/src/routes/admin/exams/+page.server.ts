@@ -20,7 +20,7 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			await serverApi.post(token, '/exams', {
+			await serverApi.post(token, '/exam/exams', {
 				name,
 				description: description || undefined,
 				questionCreatorId: questionCreatorId || undefined,
@@ -51,7 +51,7 @@ export const actions: Actions = {
 		if (endTime) body.endTime = new Date(endTime + ':00+07:00').toISOString();
 		if (passingGradeRaw) body.passingGrade = parseFloat(passingGradeRaw);
 		try {
-			await serverApi.patch(token, `/exams/${id}`, body);
+			await serverApi.patch(token, `/exam/exams/${id}`, body);
 			return { action: 'update', success: true, message: 'Ujian berhasil diperbarui.' };
 		} catch (e: unknown) {
 			return fail(400, { action: 'update', error: (e as Error).message });
@@ -62,7 +62,7 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const id = data.get('id') as string;
 		try {
-			await serverApi.delete(token, `/exams/${id}`);
+			await serverApi.delete(token, `/exam/exams/${id}`);
 			return { action: 'delete', success: true, message: 'Ujian berhasil dihapus.' };
 		} catch (e: unknown) {
 			return fail(400, { action: 'delete', error: (e as Error).message });

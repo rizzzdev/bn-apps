@@ -11,7 +11,7 @@
 	}: {
 		participant: {
 			userId: string;
-			username: string;
+			email: string;
 			fullname: string;
 			isLocked: boolean;
 			violationCount: number;
@@ -36,7 +36,7 @@
 	<div class="flex justify-between items-start mb-2">
 		<div class="min-w-0">
 			<h3 class="font-black text-(--text-primary) truncate">{participant.fullname}</h3>
-			<p class="text-xs font-medium text-(--text-secondary)">{participant.username}</p>
+			<p class="text-xs font-medium text-(--text-secondary)">{participant.email}</p>
 			{#if participant.violationCount > 0}
 				<p class="text-xs font-black mt-0.5 text-amber-600">
 					{participant.violationCount}× pelanggaran

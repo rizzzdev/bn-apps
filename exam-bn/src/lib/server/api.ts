@@ -1,8 +1,8 @@
-import { env } from '$env/dynamic/private';
+import { env as publicEnv } from '$env/dynamic/public';
 
-export const BACKEND_URL = env.BACKEND_URL ?? 'http://127.0.0.1:3000';
+export const API_URL = (publicEnv as Record<string, string | undefined>).PUBLIC_API_URL ?? 'http://127.0.0.1:3000';
 
-const BASE = BACKEND_URL + '/api/v1';
+const BASE = API_URL + '/api/v1';
 
 type Params = Record<string, string | number | boolean | undefined>;
 

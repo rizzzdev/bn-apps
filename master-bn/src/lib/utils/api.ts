@@ -91,8 +91,7 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}): Pr
 				}
 
 				if (newAccessToken) {
-					// Simpan accessToken baru (jika belum tersimpan atau untuk perpanjang max-age)
-					setCookie('access_token', newAccessToken, 900); // 15 mins
+					// Token baru tersedia (browser juga telah menyimpan Set-Cookie dari api-bn via credentials: 'include')
 				}
 
 				if (newAccessToken) {

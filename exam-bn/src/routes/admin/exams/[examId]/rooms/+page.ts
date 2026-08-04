@@ -11,11 +11,12 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 		throw redirect(302, '/admin/exams');
 	}
 
-	const [exam, examRooms, rooms, availability] = await Promise.all([
-		api.safeGet<Exam>(fetch, `/exams/${examId}`, null as unknown as Exam),
-		api.safeGet<ExamRoom[]>(fetch, '/exam-rooms', [], { examId, limit: 100 }),
-		api.safeGet<Room[]>(fetch, '/rooms', [], { limit: 100 }),
-		api.safeGet<RoomAvailability[]>(fetch, '/exam-rooms/availability', [], { examId })
+	const [exam, examRooms, rooms, classes, availability] = await Promise.all([
+		api.safeGet<Exam>(fetch, `/exam/exams/${examId}`, null as unknown as Exam),
+		api.safeGet<ExamRoom[]>(fetch, '/exam/exam-rooms', [], { examId, limit: 100 }),
+		api.safeGet<Room[]>(fetch, '/exam/rooms', [], { limit: 100 }),
+		api.safeGet<any[]>(fetch, '/exam/classes', []),
+		api.safeGet<RoomAvailability[]>(fetch, '/exam/exam-rooms/availability', [], { examId })
 	]);
 
 	if (!exam) {
@@ -29,6 +30,7 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 		exam,
 		examRooms: examRooms.map((er) => ({ ...er, room: roomMap.get(er.roomId) })),
 		rooms: rooms.map((r) => ({ ...r, availability: availabilityMap.get(r.id) })),
+		classes,
 		token
 	};
 };

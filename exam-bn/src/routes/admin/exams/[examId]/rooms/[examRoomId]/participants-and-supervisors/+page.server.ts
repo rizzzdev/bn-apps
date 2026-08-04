@@ -16,7 +16,7 @@ export const actions: Actions = {
 		try {
 			await Promise.all(
 				userIds.map((userId) =>
-					serverApi.post(token, '/exam-participants', { examRoomId, userId })
+					serverApi.post(token, '/exam/exam-participants', { examRoomId, userId })
 				)
 			);
 			return { action: 'addParticipants', success: true, message: 'Peserta berhasil ditambahkan.' };
@@ -34,7 +34,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await serverApi.delete(token, `/exam-participants/${id}`);
+			await serverApi.delete(token, `/exam/exam-participants/${id}`);
 			return { action: 'removeParticipant', success: true, message: 'Peserta berhasil dihapus.' };
 		} catch (e: unknown) {
 			return fail(400, { action: 'removeParticipant', error: (e as Error).message });
@@ -53,10 +53,14 @@ export const actions: Actions = {
 		try {
 			await Promise.all(
 				userIds.map((userId) =>
-					serverApi.post(token, '/exam-supervisors', { examRoomId, userId })
+					serverApi.post(token, '/exam/exam-supervisors', { examRoomId, userId })
 				)
 			);
-			return { action: 'addRoomMonitors', success: true, message: 'Pengawas berhasil ditambahkan.' };
+			return {
+				action: 'addRoomMonitors',
+				success: true,
+				message: 'Pengawas berhasil ditambahkan.'
+			};
 		} catch (e: unknown) {
 			return fail(400, { action: 'addRoomMonitors', error: (e as Error).message });
 		}
@@ -71,7 +75,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await serverApi.delete(token, `/exam-supervisors/${id}`);
+			await serverApi.delete(token, `/exam/exam-supervisors/${id}`);
 			return { action: 'removeRoomMonitor', success: true, message: 'Pengawas berhasil dihapus.' };
 		} catch (e: unknown) {
 			return fail(400, { action: 'removeRoomMonitor', error: (e as Error).message });

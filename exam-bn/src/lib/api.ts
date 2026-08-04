@@ -1,6 +1,6 @@
 import { redirect, isRedirect } from '@sveltejs/kit';
-import { ensureAccessToken, SessionExpiredError } from './utils/access-token';
-import { resolveBackendUrl } from './utils/backend-url';
+import { ensureAccessToken, setAccessToken, SessionExpiredError } from './utils/access-token';
+import { resolveBackendUrl, getPortalLoginUrl } from './utils/backend-url';
 
 const BASE = resolveBackendUrl() + '/api/v1';
 
@@ -13,12 +13,17 @@ async function req<T>(
 	init: RequestInit = {},
 	params?: Params
 ): Promise<T> {
-	let token: string;
+	let token: string | null = null;
 	try {
 		token = await ensureAccessToken(fetchFn);
 	} catch (err) {
-		if (err instanceof SessionExpiredError) throw redirect(302, '/login');
-		throw err;
+		if (err instanceof SessionExpiredError) {
+			if (typeof window !== 'undefined') {
+				window.location.href = getPortalLoginUrl();
+				return undefined as unknown as T;
+			}
+			throw redirect(303, getPortalLoginUrl());
+		}
 	}
 
 	const filtered = params
@@ -32,14 +37,54 @@ async function req<T>(
 		filtered && Object.keys(filtered).length > 0
 			? '?' + new URLSearchParams(filtered).toString()
 			: '';
-	const res = await fetchFn(`${BASE}${path}${query}`, {
+
+	const headers: Record<string, string> = {
+		'Content-Type': 'application/json',
+		...((init.headers as Record<string, string>) || {})
+	};
+	if (token) {
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+
+	let res = await fetchFn(`${BASE}${path}${query}`, {
 		...init,
-		headers: {
-			'Content-Type': 'application/json',
-			...init.headers,
-			Authorization: `Bearer ${token}`
-		}
+		headers,
+		credentials: 'include'
 	});
+
+	if (res.status === 401) {
+		try {
+			const refreshRes = await fetchFn(`${BASE}/auth/refresh`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include'
+			});
+			if (refreshRes.ok) {
+				const refreshData = await refreshRes.json();
+				const newToken = refreshData.data?.accessToken || refreshData.accessToken;
+				if (newToken) {
+					setAccessToken(newToken);
+					headers['Authorization'] = `Bearer ${newToken}`;
+					res = await fetchFn(`${BASE}${path}${query}`, {
+						...init,
+						headers,
+						credentials: 'include'
+					});
+				}
+			}
+		} catch {
+			/* refresh failed */
+		}
+	}
+
+	if (res.status === 401) {
+		if (typeof window !== 'undefined') {
+			window.location.href = getPortalLoginUrl();
+			return undefined as unknown as T;
+		}
+		throw redirect(303, getPortalLoginUrl());
+	}
+
 	const json = await res.json();
 	if (res.status === 404 && (!init.method || init.method === 'GET')) return (json.data ?? []) as T;
 	if (!res.ok) throw new Error(json.message || 'Request failed');
@@ -56,7 +101,7 @@ async function safeReq<T>(
 	try {
 		return await req<T>(fetchFn, path, init, params);
 	} catch (err) {
-		if (isRedirect(err)) throw err; // session expired — let SvelteKit redirect to /login
+		if (isRedirect(err)) throw err; // session expired — let SvelteKit redirect
 		return fallback;
 	}
 }
@@ -71,3 +116,4 @@ export const api = {
 	safeGet: <T>(fetchFn: FetchFn, path: string, fallback: T, params?: Params) =>
 		safeReq<T>(fetchFn, path, fallback, {}, params)
 };
+

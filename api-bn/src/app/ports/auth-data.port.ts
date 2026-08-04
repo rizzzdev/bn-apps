@@ -32,4 +32,5 @@ export interface IAuthDataRepository {
   findUserById(userId: string): Promise<AuthUser | null>;
   findUsersByIds(userIds: string[]): Promise<AuthUser[]>;
   getUserIdentifiers(userId: string): Promise<AuthUserIdentifier[]>;
+  findAllByRoles(roles: Role[]): Promise<Array<{ id: string; email: string | null }>>;
 }

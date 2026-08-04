@@ -27,6 +27,12 @@ import {
   LearnAttachmentRepository,
 } from '#learn/services/learn-data.service.js';  // @learn/* → ./src/learn/*
 import {
+  ExamRoomRepository,
+  ExamRepository,
+  ExamParticipantRepository,
+  ExamSupervisorRepository,
+} from '#exam/services/exam-data.service.js';
+import {
   authDataService,
 } from '#auth/services/auth-data.service.js';
 import type {
@@ -58,6 +64,12 @@ import type {
   ILearnSubmissionRepository,
   ILearnAttachmentRepository,
 } from '#app/ports/learn-data.port.js';
+import type {
+  IExamRoomRepository,
+  IExamRepository,
+  IExamParticipantRepository,
+  IExamSupervisorRepository,
+} from '#app/ports/exam-data.port.js';
 
 export class Orchestrator {
   // -- Master data ------------------------------------------------------------
@@ -89,6 +101,12 @@ export class Orchestrator {
   readonly learnSubmission: ILearnSubmissionRepository;
   readonly learnAttachment: ILearnAttachmentRepository;
 
+  // -- Exam (derivative data) -------------------------------------------------
+  readonly examRoom: IExamRoomRepository;
+  readonly exam: IExamRepository;
+  readonly examParticipant: IExamParticipantRepository;
+  readonly examSupervisor: IExamSupervisorRepository;
+
   constructor() {
     this.masterAcademicYear = new MasterAcademicYearRepository();
     this.masterClass = new MasterClassRepository();
@@ -109,6 +127,10 @@ export class Orchestrator {
     this.learnQuiz = new LearnQuizRepository();
     this.learnSubmission = new LearnSubmissionRepository();
     this.learnAttachment = new LearnAttachmentRepository();
+    this.examRoom = new ExamRoomRepository();
+    this.exam = new ExamRepository();
+    this.examParticipant = new ExamParticipantRepository();
+    this.examSupervisor = new ExamSupervisorRepository();
   }
 }
 

@@ -18,7 +18,7 @@
 	type ParticipantRow = {
 		userId: string;
 		fullname: string;
-		username: string;
+		email: string;
 		score: number | null;
 		answers: ExamAnswer[];
 		grades: Record<string, EssayGrade>;
@@ -152,7 +152,7 @@
 						</div>
 						<div>
 							<p class="font-black text-(--text-primary)">{p.fullname}</p>
-							<p class="text-xs font-medium text-(--text-secondary)">{p.username}</p>
+							<p class="text-xs font-medium text-(--text-secondary)">{p.email}</p>
 						</div>
 					</div>
 					<div class="flex items-center gap-4 shrink-0">

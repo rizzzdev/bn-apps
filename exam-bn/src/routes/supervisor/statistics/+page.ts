@@ -7,9 +7,9 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 	const userId = user?.id ?? '';
 
 	const [exams, allExamRooms, allUsers] = await Promise.all([
-		api.safeGet<Exam[]>(fetch, '/exams', [], { questionCreatorId: userId, limit: 100 }),
-		api.safeGet<ExamRoom[]>(fetch, '/exam-rooms', [], { limit: 1000 }),
-		api.safeGet<User[]>(fetch, '/users', [], { limit: 1000 })
+		api.safeGet<Exam[]>(fetch, '/exam/exams', [], { questionCreatorId: userId, limit: 100 }),
+		api.safeGet<ExamRoom[]>(fetch, '/exam/exam-rooms', [], { limit: 1000 }),
+		api.safeGet<User[]>(fetch, '/exam/users', [], { limit: 1000 })
 	]);
 
 	const myExamIds = new Set(exams.map((e) => e.id));
@@ -18,11 +18,11 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 	const roomData = await Promise.all(
 		myExamRooms.map(async (er) => {
 			const [participants, scores] = await Promise.all([
-				api.safeGet<ExamParticipant[]>(fetch, '/exam-participants', [], {
+				api.safeGet<ExamParticipant[]>(fetch, '/exam/exam-participants', [], {
 					examRoomId: er.id,
 					limit: 500
 				}),
-				api.safeGet<ExamScore[]>(fetch, '/exam-scores', [], { examRoomId: er.id, limit: 500 })
+				api.safeGet<ExamScore[]>(fetch, '/exam/exam-scores', [], { examRoomId: er.id, limit: 500 })
 			]);
 			return { examRoomId: er.id, examId: er.examId, participants, scores };
 		})
@@ -76,7 +76,7 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 				return {
 					no: i + 1,
 					fullname: u?.fullname ?? uid,
-					username: u?.username ?? uid,
+					email: u?.email ?? uid,
 					score: score !== undefined ? (score !== null ? score : 'Belum dinilai') : 'Tidak hadir',
 					status:
 						score !== undefined

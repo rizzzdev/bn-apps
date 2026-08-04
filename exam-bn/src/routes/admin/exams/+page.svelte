@@ -4,6 +4,7 @@
 	import Pagination from '$lib/components/Pagination.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Table from '$lib/components/ui/Table.svelte';
+	import Select from '$lib/components/ui/Select.svelte';
 	import { addToast } from '$lib/stores/toast';
 	import type { Exam } from '$lib/types';
 	import IconButton from '$lib/components/ui/IconButton.svelte';
@@ -18,6 +19,13 @@
 	let submitting = $state(false);
 	let page = $state(1);
 	const PAGE_SIZE = 10;
+
+	let supervisorOptions = $derived(
+		(data.supervisors ?? []).map((s: any) => ({
+			value: s.id,
+			label: s.fullname
+		}))
+	);
 	const paginatedExams = $derived(
 		(data.exams ?? []).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 	);
@@ -163,21 +171,13 @@
 		<input name="name" type="text" class="input-field" placeholder="Nama Ujian" required />
 		<textarea name="description" class="input-field" placeholder="Deskripsi (opsional)" rows="3"
 		></textarea>
-		<div>
-			<label
-				for="create-questionCreatorId"
-				class="block text-sm font-black text-(--text-primary) mb-1"
-				>Pembuat Soal <span class="font-medium text-(--text-secondary)">(opsional)</span></label
-			>
-			<select id="create-questionCreatorId" name="questionCreatorId" class="input-field">
-				<option value="">-- Pilih Pembuat Soal --</option>
-				{#if data.supervisors}
-					{#each data.supervisors as supervisor (supervisor.id)}
-						<option value={supervisor.id}>{supervisor.fullname}</option>
-					{/each}
-				{/if}
-			</select>
-		</div>
+		<Select
+			id="create-questionCreatorId"
+			name="questionCreatorId"
+			label="Pembuat Soal (opsional)"
+			options={supervisorOptions}
+			placeholder="-- Pilih Pembuat Soal --"
+		/>
 		<div>
 			<label for="create-startTime" class="block text-sm font-black text-(--text-primary) mb-1"
 				>Waktu Mulai <span class="font-medium text-(--text-secondary)">(WIB)</span></label
@@ -241,26 +241,14 @@
 			<textarea name="description" class="input-field" placeholder="Deskripsi (opsional)" rows="3"
 				>{editItem.description ?? ''}</textarea
 			>
-			<div>
-				<label
-					for="edit-questionCreatorId"
-					class="block text-sm font-black text-(--text-primary) mb-1"
-					>Pembuat Soal <span class="font-medium text-(--text-secondary)">(opsional)</span></label
-				>
-				<select
-					id="edit-questionCreatorId"
-					name="questionCreatorId"
-					class="input-field"
-					value={editItem.questionCreatorId ?? ''}
-				>
-					<option value="">-- Pilih Pembuat Soal --</option>
-					{#if data.supervisors}
-						{#each data.supervisors as supervisor (supervisor.id)}
-							<option value={supervisor.id}>{supervisor.fullname}</option>
-						{/each}
-					{/if}
-				</select>
-			</div>
+			<Select
+				id="edit-questionCreatorId"
+				name="questionCreatorId"
+				label="Pembuat Soal (opsional)"
+				value={editItem.questionCreatorId ?? ''}
+				options={supervisorOptions}
+				placeholder="-- Pilih Pembuat Soal --"
+			/>
 			<div>
 				<label for="edit-startTime" class="block text-sm font-black text-(--text-primary) mb-1"
 					>Waktu Mulai <span class="font-medium text-(--text-secondary)">(WIB)</span></label

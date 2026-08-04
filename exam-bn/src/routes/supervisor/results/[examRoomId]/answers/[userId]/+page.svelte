@@ -49,7 +49,7 @@
 	<div>
 		<h1 class="text-2xl font-black text-(--text-primary)">{data.participantName}</h1>
 		<p class="text-sm text-(--text-secondary) mt-1">
-			{data.examName} &middot; {data.roomName} &middot; @{data.participantUsername}
+			{data.examName} &middot; {data.roomName} &middot; {data.participantEmail}
 		</p>
 	</div>
 	{#if computedTotal !== null}

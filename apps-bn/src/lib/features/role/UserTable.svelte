@@ -9,7 +9,8 @@
   import { toast } from '$lib/stores/toast';
 
   const getApiUrl = (): string => {
-    return publicEnv.PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+    const raw = (publicEnv.PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+    return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
   };
 
   export type Role = { id: string; name: string; description?: string };
@@ -19,13 +20,45 @@
   let { users: initialUsers, roles, pagination }: { users: User[]; roles: Role[]; pagination?: Pagination } = $props();
   
   // State
-  let users = $state(initialUsers);
+  let users = $state(initialUsers || []);
+
+  $effect(() => {
+    users = initialUsers || [];
+  });
+
   let searchQuery = $state('');
   let selectedIds = $state<string[]>([]);
   let searchTimeout: ReturnType<typeof setTimeout>;
 
   // Editing state for single user modal
   let editingUser = $state<User | null>(null);
+
+  function getPaginationPages(current: number, total: number): (number | '...')[] {
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    const pages: (number | '...')[] = [];
+    pages.push(1);
+
+    if (current > 3) {
+      pages.push('...');
+    }
+
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (current < total - 2) {
+      pages.push('...');
+    }
+
+    pages.push(total);
+
+    return pages;
+  }
 
   function goToPage(newPage: number) {
     if (newPage < 1 || (pagination && newPage > pagination.totalPage)) return;
@@ -287,15 +320,18 @@
         Prev
       </Button>
 
-      {#each Array(pagination?.totalPage ?? 1) as _page, i (i)}
-        {@const pageNum = i + 1}
-        <Button 
-          variant={(pagination?.currentPage ?? 1) === pageNum ? 'primary' : 'secondary'}
-          className="!w-auto !py-1.5 !px-3 {(pagination?.currentPage ?? 1) === pageNum ? '!bg-primary-container text-white' : ''}"
-          onclick={() => goToPage(pageNum)}
-        >
-          {pageNum}
-        </Button>
+      {#each getPaginationPages(pagination?.currentPage ?? 1, pagination?.totalPage ?? 1) as item, idx (idx)}
+        {#if item === '...'}
+          <span class="px-2 py-1.5 font-bold text-on-surface">...</span>
+        {:else}
+          <Button 
+            variant={(pagination?.currentPage ?? 1) === item ? 'primary' : 'secondary'}
+            className="!w-auto !py-1.5 !px-3 {(pagination?.currentPage ?? 1) === item ? '!bg-primary-container text-white' : ''}"
+            onclick={() => goToPage(item)}
+          >
+            {item}
+          </Button>
+        {/if}
       {/each}
 
       <Button 

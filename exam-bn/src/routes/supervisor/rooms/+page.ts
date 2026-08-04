@@ -7,10 +7,10 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 	const userId = user?.id;
 
 	const [supervisors, examRooms, exams, rooms] = await Promise.all([
-		api.safeGet<ExamSupervisor[]>(fetch, '/exam-supervisors', [], { userId, limit: 100 }),
-		api.safeGet<ExamRoom[]>(fetch, '/exam-rooms', [], { limit: 100 }),
-		api.safeGet<Exam[]>(fetch, '/exams', [], { limit: 100 }),
-		api.safeGet<Room[]>(fetch, '/rooms', [], { limit: 100 })
+		api.safeGet<ExamSupervisor[]>(fetch, '/exam/exam-supervisors', [], { userId, limit: 100 }),
+		api.safeGet<ExamRoom[]>(fetch, '/exam/exam-rooms', [], { limit: 100 }),
+		api.safeGet<Exam[]>(fetch, '/exam/exams', [], { limit: 100 }),
+		api.safeGet<Room[]>(fetch, '/exam/rooms', [], { limit: 100 })
 	]);
 
 	const examRoomMap = new Map(examRooms.map((er) => [er.id, er]));

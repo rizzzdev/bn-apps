@@ -103,6 +103,7 @@ export class MasterTeacherRepository implements IMasterTeacherRepository {
   async findById(id: string): Promise<MasterTeacher | null> {
     const teacher = await prisma.teacher.findFirst({
       where: { id, deletedAt: null },
+      include: { picture: true },
     });
     if (!teacher) return null;
     return this.toDomain(teacher);
@@ -111,6 +112,7 @@ export class MasterTeacherRepository implements IMasterTeacherRepository {
   async findByUserId(userId: string): Promise<MasterTeacher | null> {
     const teacher = await prisma.teacher.findFirst({
       where: { userId, deletedAt: null },
+      include: { picture: true },
     });
     if (!teacher) return null;
     return this.toDomain(teacher);
@@ -119,6 +121,7 @@ export class MasterTeacherRepository implements IMasterTeacherRepository {
   async findByEmail(email: string): Promise<MasterTeacher | null> {
     const teacher = await prisma.teacher.findFirst({
       where: { email, deletedAt: null },
+      include: { picture: true },
     });
     if (!teacher) return null;
     return this.toDomain(teacher);
@@ -127,6 +130,7 @@ export class MasterTeacherRepository implements IMasterTeacherRepository {
   async findByIds(ids: string[]): Promise<MasterTeacher[]> {
     const teachers = await prisma.teacher.findMany({
       where: { id: { in: ids }, deletedAt: null },
+      include: { picture: true },
     });
     return teachers.map((t) => this.toDomain(t));
   }
@@ -135,11 +139,21 @@ export class MasterTeacherRepository implements IMasterTeacherRepository {
     const teachers = await prisma.teacher.findMany({
       where: { deletedAt: null },
       orderBy: { createdAt: 'desc' },
+      include: { picture: true },
     });
     return teachers.map((t) => this.toDomain(t));
   }
 
-  private toDomain(teacher: PrismaTeacher): MasterTeacher {
+  async findAllActive(): Promise<MasterTeacher[]> {
+    const teachers = await prisma.teacher.findMany({
+      where: { deletedAt: null, status: 'Aktif' },
+      orderBy: { createdAt: 'desc' },
+      include: { picture: true },
+    });
+    return teachers.map((t) => this.toDomain(t));
+  }
+
+  private toDomain(teacher: PrismaTeacher & { picture?: { url: string } | null }): MasterTeacher {
     return {
       id: teacher.id,
       fullname: teacher.fullname,
@@ -150,6 +164,7 @@ export class MasterTeacherRepository implements IMasterTeacherRepository {
       email: teacher.email,
       userId: teacher.userId,
       status: teacher.status ?? null,
+      pictureUrl: teacher.picture?.url ?? null,
     };
   }
 }
@@ -208,6 +223,7 @@ export class MasterStudentRepository implements IMasterStudentRepository {
   async findById(id: string): Promise<MasterStudent | null> {
     const student = await prisma.student.findFirst({
       where: { id, deletedAt: null },
+      include: { picture: true },
     });
     if (!student) return null;
     return this.toDomain(student);
@@ -216,6 +232,7 @@ export class MasterStudentRepository implements IMasterStudentRepository {
   async findByUserId(userId: string): Promise<MasterStudent | null> {
     const student = await prisma.student.findFirst({
       where: { userId, deletedAt: null },
+      include: { picture: true },
     });
     if (!student) return null;
     return this.toDomain(student);
@@ -224,6 +241,7 @@ export class MasterStudentRepository implements IMasterStudentRepository {
   async findByEmail(email: string): Promise<MasterStudent | null> {
     const student = await prisma.student.findFirst({
       where: { email, deletedAt: null },
+      include: { picture: true },
     });
     if (!student) return null;
     return this.toDomain(student);
@@ -232,6 +250,7 @@ export class MasterStudentRepository implements IMasterStudentRepository {
   async findByIds(ids: string[]): Promise<MasterStudent[]> {
     const students = await prisma.student.findMany({
       where: { id: { in: ids }, deletedAt: null },
+      include: { picture: true },
     });
     return students.map((s) => this.toDomain(s));
   }
@@ -240,6 +259,16 @@ export class MasterStudentRepository implements IMasterStudentRepository {
     const students = await prisma.student.findMany({
       where: { deletedAt: null },
       orderBy: { createdAt: 'desc' },
+      include: { picture: true },
+    });
+    return students.map((s) => this.toDomain(s));
+  }
+
+  async findAllActive(): Promise<MasterStudent[]> {
+    const students = await prisma.student.findMany({
+      where: { deletedAt: null, status: 'Aktif' },
+      orderBy: { createdAt: 'desc' },
+      include: { picture: true },
     });
     return students.map((s) => this.toDomain(s));
   }
@@ -259,7 +288,7 @@ export class MasterStudentRepository implements IMasterStudentRepository {
     await studentService.updateStatus(studentId, status as any);
   }
 
-  private toDomain(student: PrismaStudent): MasterStudent {
+  private toDomain(student: PrismaStudent & { picture?: { url: string } | null }): MasterStudent {
     return {
       id: student.id,
       fullname: student.fullname,
@@ -269,9 +298,11 @@ export class MasterStudentRepository implements IMasterStudentRepository {
       email: student.email,
       userId: student.userId,
       status: student.status ?? null,
+      pictureUrl: student.picture?.url ?? null,
     };
   }
 }
+
 
 import { authDataService } from '#auth/services/auth-data.service.js';
 

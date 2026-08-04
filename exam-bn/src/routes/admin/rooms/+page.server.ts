@@ -14,7 +14,7 @@ export const actions: Actions = {
 		const body: { name: string; capacity?: number } = { name };
 		if (capacityStr) body.capacity = Number(capacityStr);
 		try {
-			await serverApi.post(token, '/rooms', body);
+			await serverApi.post(token, '/exam/rooms', body);
 			return { action: 'create', success: true, message: 'Ruangan berhasil ditambahkan.' };
 		} catch (e: unknown) {
 			return fail(400, { action: 'create', error: (e as Error).message });
@@ -30,7 +30,7 @@ export const actions: Actions = {
 		if (name) body.name = name;
 		if (capacityStr) body.capacity = Number(capacityStr);
 		try {
-			await serverApi.patch(token, `/rooms/${id}`, body);
+			await serverApi.patch(token, `/exam/rooms/${id}`, body);
 			return { action: 'update', success: true, message: 'Ruangan berhasil diperbarui.' };
 		} catch (e: unknown) {
 			return fail(400, { action: 'update', error: (e as Error).message });
@@ -41,7 +41,7 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const id = data.get('id') as string;
 		try {
-			await serverApi.delete(token, `/rooms/${id}`);
+			await serverApi.delete(token, `/exam/rooms/${id}`);
 			return { action: 'delete', success: true, message: 'Ruangan berhasil dihapus.' };
 		} catch (e: unknown) {
 			return fail(400, { action: 'delete', error: (e as Error).message });

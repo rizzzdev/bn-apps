@@ -4,8 +4,8 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev --host",
-		"build": "vite build",
+		"dev": "vite dev --port 3007",
+		"build": "vite build ",
 		"start": "env PORT=5173 node build/index.js",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",

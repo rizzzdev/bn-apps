@@ -23,7 +23,7 @@ export const actions: Actions = {
 			await Promise.all(
 				questionIds.map((qId, idx) => {
 					const pts = parseInt(pointsArr[idx] || '0', 10);
-					return serverApi.post(token, '/essay-grades', {
+					return serverApi.post(token, '/exam/essay-grades', {
 						examRoomId,
 						userId,
 						questionId: qId,
@@ -32,7 +32,7 @@ export const actions: Actions = {
 				})
 			);
 
-			const res = (await serverApi.post(token, `/exam-rooms/${examRoomId}/grade/${userId}`, {
+			const res = (await serverApi.post(token, `/exam/exam-rooms/${examRoomId}/grade/${userId}`, {
 				mcWeight,
 				essayWeight
 			})) as any;

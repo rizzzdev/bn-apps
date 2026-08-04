@@ -21,7 +21,7 @@
 		data.availableParticipants.filter(
 			(u: any) =>
 				u.fullname.toLowerCase().includes(participantSearch.toLowerCase()) ||
-				u.username.toLowerCase().includes(participantSearch.toLowerCase())
+				u.email.toLowerCase().includes(participantSearch.toLowerCase())
 		)
 	);
 
@@ -35,7 +35,7 @@
 		data.availableSupervisors.filter(
 			(u: any) =>
 				u.fullname.toLowerCase().includes(monitorSearch.toLowerCase()) ||
-				u.username.toLowerCase().includes(monitorSearch.toLowerCase())
+				u.email.toLowerCase().includes(monitorSearch.toLowerCase())
 		)
 	);
 
@@ -113,6 +113,20 @@
 				>{data.examRoom.room?.name ?? data.examRoom.roomId}</strong
 			>
 		</p>
+		<div class="mt-2 flex items-center gap-1.5 flex-wrap">
+			<span class="text-xs font-bold text-(--text-secondary)">Alokasi Kelas:</span>
+			{#if (data.examRoom.classes ?? []).length > 0}
+				{#each data.examRoom.classes as c}
+					<span
+						class="text-xs font-bold px-2 py-0.5 rounded border border-(--nb-border) bg-primary-100 text-primary-800 dark:bg-primary-950 dark:text-primary-200"
+					>
+						{c.name}
+					</span>
+				{/each}
+			{:else}
+				<span class="text-xs font-bold text-red-600">⚠️ Belum ada kelas yang dipilih (0 murid)</span>
+			{/if}
+		</div>
 	</div>
 
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -133,12 +147,13 @@
 				{#if form?.action === 'addParticipants' && form?.error}
 					<p class="text-xs text-red-600 mb-2">{form.error}</p>
 				{/if}
+				{#if (data.examRoom.classes ?? []).length === 0}
+					<div class="p-3 mb-3 bg-amber-50 dark:bg-amber-950 border border-amber-300 rounded text-xs font-medium text-amber-800 dark:text-amber-200">
+						⚠️ Ruangan ini belum dikelompokkan dengan kelas. Silakan atur kelas untuk ruangan ini di <a href="/admin/exams/{data.examId}/rooms" class="underline font-bold">Detail Ujian & Ruangan</a> agar siswa aktif dapat dipilih.
+					</div>
+				{/if}
 				{#if data.availableParticipants.length > 0}
-					<form
-						method="POST"
-						action="?/addParticipants"
-						use:enhance={makeEnhance('participants')}
-					>
+					<form method="POST" action="?/addParticipants" use:enhance={makeEnhance('participants')}>
 						<input type="hidden" name="examRoomId" value={data.examRoomId} />
 						<div class="mb-2">
 							<input
@@ -184,13 +199,20 @@
 										onchange={() => toggleParticipant(u.id)}
 									/>
 									<div class="flex-1 min-w-0">
-										<p class="text-sm text-(--text-primary) font-medium truncate">{u.fullname}</p>
-										<p class="text-xs text-(--text-secondary) truncate">{u.username}</p>
+										<div class="flex items-center gap-1.5 flex-wrap">
+											<span class="text-sm text-(--text-primary) font-medium truncate">{u.fullname}</span>
+											{#if u.className}
+												<span class="text-[10px] font-bold px-1.5 py-0.2 rounded border border-(--nb-border) bg-primary-100 text-primary-800 dark:bg-primary-950 dark:text-primary-200">
+													{u.className}
+												</span>
+											{/if}
+										</div>
+										<p class="text-xs text-(--text-secondary) truncate">{u.email}</p>
 									</div>
 								</label>
 							{:else}
 								<p class="text-xs text-(--text-secondary) p-3">
-									{participantSearch ? 'Tidak ada hasil.' : 'Semua peserta sudah terdaftar.'}
+									{participantSearch ? 'Tidak ada hasil.' : 'Semua peserta dari kelas ini sudah terdaftar.'}
 								</p>
 							{/each}
 						</div>
@@ -210,51 +232,63 @@
 					<p class="text-xs text-(--text-secondary) mb-4">Semua peserta sudah ditambahkan.</p>
 				{/if}
 				{#if data.participants.length > 0}
+					{@const groupedMap = (() => {
+						const map = new Map<string, any[]>();
+						for (const p of data.participants) {
+							const cls = p.user?.className ?? 'Tanpa Kelas';
+							if (!map.has(cls)) map.set(cls, []);
+							map.get(cls)!.push(p);
+						}
+						return [...map.entries()].map(([className, participants]) => ({ className, participants })).sort((a, b) => a.className.localeCompare(b.className));
+					})()}
 					<div class="mt-4 border-t-2 border-(--nb-border) pt-4">
-						<p class="text-xs font-black text-(--text-secondary) uppercase tracking-wide mb-2">
-							Terdaftar
-						</p>
-						<ul class="space-y-1 max-h-48 overflow-y-auto">
-							{#each data.participants as p (p.id)}
-								<li
-									class="flex items-center justify-between text-sm py-1 px-2 rounded bg-(--bg-secondary)"
-								>
-									<span class="text-(--text-primary) font-medium truncate"
-										>{p.user?.fullname ?? p.userId}</span
-									>
-									<form
-										method="POST"
-										action="?/removeParticipant"
-										use:enhance={makeEnhance()}
-									>
-										<input type="hidden" name="id" value={p.id} />
-										<IconButton
-											variant="danger-outline"
-											title="Hapus Peserta"
-											type="button"
-											onclick={(e) => {
-												e.preventDefault();
-												participantToRemove = p.id;
-											}}
-										>
-											<svg
-												class="w-3.5 h-3.5"
-												fill="none"
-												viewBox="0 0 24 24"
-												stroke="currentColor"
-											>
-												<path
-													stroke-linecap="round"
-													stroke-linejoin="round"
-													stroke-width="2"
-													d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-												/>
-											</svg>
-										</IconButton>
-									</form>
-								</li>
+						<div class="flex items-center justify-between mb-2">
+							<p class="text-xs font-black text-(--text-secondary) uppercase tracking-wide">
+								Terdaftar ({data.participants.length})
+							</p>
+						</div>
+						<div class="space-y-3 max-h-64 overflow-y-auto pr-1">
+							{#each groupedMap as group (group.className)}
+								<div class="border-2 border-(--nb-border) rounded-lg overflow-hidden">
+									<div class="bg-(--bg-secondary) px-3 py-1.5 flex items-center justify-between border-b-2 border-(--nb-border)">
+										<span class="text-xs font-black text-(--text-primary)">
+											Kelas {group.className}
+										</span>
+										<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary-100 text-primary-800 dark:bg-primary-950 dark:text-primary-200 border border-(--nb-border)">
+											{group.participants.length} Siswa
+										</span>
+									</div>
+									<ul class="divide-y divide-(--nb-border)">
+										{#each group.participants as p (p.id)}
+											<li class="flex items-center justify-between text-sm py-1.5 px-3 hover:bg-(--bg-secondary)">
+												<div class="min-w-0 flex-1">
+													<p class="text-sm font-medium text-(--text-primary) truncate">{p.user?.fullname ?? p.userId}</p>
+													{#if p.user?.email}
+														<p class="text-xs text-(--text-secondary) truncate">{p.user.email}</p>
+													{/if}
+												</div>
+												<form method="POST" action="?/removeParticipant" use:enhance={makeEnhance()}>
+													<input type="hidden" name="id" value={p.id} />
+													<IconButton
+														variant="danger-outline"
+														title="Hapus Peserta"
+														type="button"
+														onclick={(e) => {
+															e.preventDefault();
+															participantToRemove = p.id;
+														}}
+													>
+														<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+															<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+														</svg>
+													</IconButton>
+												</form>
+											</li>
+										{/each}
+									</ul>
+								</div>
 							{/each}
-						</ul>
+						</div>
 					</div>
 				{/if}
 			</div>
@@ -271,11 +305,7 @@
 					<p class="text-xs text-red-600 mb-2">{form.error}</p>
 				{/if}
 				{#if data.availableSupervisors.length > 0}
-					<form
-						method="POST"
-						action="?/addRoomMonitors"
-						use:enhance={makeEnhance('monitors')}
-					>
+					<form method="POST" action="?/addRoomMonitors" use:enhance={makeEnhance('monitors')}>
 						<input type="hidden" name="examRoomId" value={data.examRoomId} />
 						<div class="mb-2">
 							<input
@@ -313,7 +343,7 @@
 									/>
 									<div class="flex-1 min-w-0">
 										<p class="text-sm text-(--text-primary) font-medium truncate">{u.fullname}</p>
-										<p class="text-xs text-(--text-secondary) truncate">{u.username}</p>
+										<p class="text-xs text-(--text-secondary) truncate">{u.email}</p>
 									</div>
 								</label>
 							{:else}
@@ -348,11 +378,7 @@
 									<span class="text-(--text-primary) font-medium truncate"
 										>{s.user?.fullname ?? s.userId}</span
 									>
-									<form
-										method="POST"
-										action="?/removeRoomMonitor"
-										use:enhance={makeEnhance()}
-									>
+									<form method="POST" action="?/removeRoomMonitor" use:enhance={makeEnhance()}>
 										<input type="hidden" name="id" value={s.id} />
 										<IconButton
 											variant="danger-outline"
@@ -392,11 +418,21 @@
 	</div>
 {/if}
 
-<form bind:this={removeParticipantForm} method="POST" action="?/removeParticipant" use:enhance={makeEnhance()}>
+<form
+	bind:this={removeParticipantForm}
+	method="POST"
+	action="?/removeParticipant"
+	use:enhance={makeEnhance()}
+>
 	<input type="hidden" name="id" value={participantToRemove} />
 </form>
 
-<form bind:this={removeMonitorForm} method="POST" action="?/removeRoomMonitor" use:enhance={makeEnhance()}>
+<form
+	bind:this={removeMonitorForm}
+	method="POST"
+	action="?/removeRoomMonitor"
+	use:enhance={makeEnhance()}
+>
 	<input type="hidden" name="id" value={monitorToRemove} />
 </form>
 

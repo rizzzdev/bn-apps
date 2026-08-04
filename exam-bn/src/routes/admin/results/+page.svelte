@@ -36,7 +36,7 @@
 		return exam.participants.map((p, i) => ({
 			no: i + 1,
 			fullname: p.fullname,
-			username: p.username,
+			email: p.email,
 			score:
 				p.submitted && p.score !== null ? p.score : p.submitted ? 'Belum dinilai' : 'Tidak hadir',
 			status:
@@ -57,7 +57,7 @@
 	const EXAM_HEADERS = [
 		'No',
 		'Nama Lengkap',
-		'Username',
+		'Email',
 		'Nilai',
 		'Status',
 		'Nama Ujian',
@@ -68,7 +68,7 @@
 	const EXAM_KEYS = [
 		'no',
 		'fullname',
-		'username',
+		'email',
 		'score',
 		'status',
 		'examName',
@@ -191,7 +191,7 @@
 					<tr>
 						<th class="w-8">#</th>
 						<th>Nama</th>
-						<th>Username</th>
+						<th>Email</th>
 						<th class="text-right">Nilai</th>
 						<th class="text-center">Status</th>
 						<th class="text-right">Aksi</th>
@@ -213,7 +213,7 @@
 							>{(pPage - 1) * PARTICIPANT_PAGE_SIZE + idx + 1}</td
 						>
 						<td class="font-black text-(--text-primary) whitespace-nowrap">{p.fullname}</td>
-						<td class="font-medium text-(--text-secondary) whitespace-nowrap">{p.username}</td>
+						<td class="font-medium text-(--text-secondary) whitespace-nowrap">{p.email}</td>
 						<td class="text-right whitespace-nowrap">
 							{#if hasScore}
 								<span

@@ -27,6 +27,7 @@ export interface MasterTeacher {
   email: string | null;
   userId: string;
   status: string | null;
+  pictureUrl?: string | null;
 }
 
 export interface MasterStudent {
@@ -38,7 +39,9 @@ export interface MasterStudent {
   email: string | null;
   userId: string;
   status: string | null;
+  pictureUrl?: string | null;
 }
+
 
 export interface MasterSubject {
   id: string;
@@ -71,6 +74,7 @@ export interface IMasterTeacherRepository {
   findByUserId(userId: string): Promise<MasterTeacher | null>;
   findByEmail(email: string): Promise<MasterTeacher | null>;
   findAll(): Promise<MasterTeacher[]>;
+  findAllActive(): Promise<MasterTeacher[]>;
 }
 
 export interface IMasterSubjectRepository {
@@ -91,6 +95,7 @@ export interface IMasterStudentRepository {
   findByUserId(userId: string): Promise<MasterStudent | null>;
   findByEmail(email: string): Promise<MasterStudent | null>;
   findAll(): Promise<MasterStudent[]>;
+  findAllActive(): Promise<MasterStudent[]>;
   updateCurrentClass(studentId: string, currentClassId: string | null, autoMajorId?: string | null): Promise<void>;
   updateCurrentMajor(studentId: string, currentMajorId: string | null): Promise<void>;
   updateStatus(studentId: string, status: 'Aktif' | 'Tidak_Aktif' | 'Lulus'): Promise<void>;

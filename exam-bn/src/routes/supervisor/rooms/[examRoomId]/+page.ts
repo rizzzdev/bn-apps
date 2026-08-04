@@ -11,17 +11,20 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 	type ExamLog = { id: string; type: string; message: string; createdAt: string };
 	const [examRoom, supervisors, exams, rooms, examStatus, examLogs, initialStatuses] =
 		await Promise.all([
-			api.safeGet<ExamRoom>(fetch, `/exam-rooms/${examRoomId}`, null as unknown as ExamRoom),
-			api.safeGet<ExamSupervisor[]>(fetch, '/exam-supervisors', [], { examRoomId, limit: 100 }),
-			api.safeGet<Exam[]>(fetch, '/exams', [], { limit: 100 }),
-			api.safeGet<Room[]>(fetch, '/rooms', [], { limit: 100 }),
+			api.safeGet<ExamRoom>(fetch, `/exam/exam-rooms/${examRoomId}`, null as unknown as ExamRoom),
+			api.safeGet<ExamSupervisor[]>(fetch, '/exam/exam-supervisors', [], {
+				examRoomId,
+				limit: 100
+			}),
+			api.safeGet<Exam[]>(fetch, '/exam/exams', [], { limit: 100 }),
+			api.safeGet<Room[]>(fetch, '/exam/rooms', [], { limit: 100 }),
 			api.safeGet<{ started: boolean; startedAt: string | null; status: string }>(
 				fetch,
-				`/exam-rooms/${examRoomId}/status`,
+				`/exam/exam-rooms/${examRoomId}/status`,
 				{ started: false, startedAt: null, status: 'PENDING' }
 			),
-			api.safeGet<ExamLog[]>(fetch, '/exam-logs', [], { examRoomId, limit: 200 }),
-			api.safeGet<any[]>(fetch, `/exam-rooms/${examRoomId}/participants-status`, [])
+			api.safeGet<ExamLog[]>(fetch, '/exam/exam-logs', [], { examRoomId, limit: 200 }),
+			api.safeGet<any[]>(fetch, `/exam/exam-rooms/${examRoomId}/participants-status`, [])
 		]);
 
 	if (!examRoom) {

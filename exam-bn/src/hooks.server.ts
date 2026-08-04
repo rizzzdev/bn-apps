@@ -1,149 +1,173 @@
-import { redirect, type Handle } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { isSecureRequest } from '$lib/server/cookie-options';
+import { redirect, type Handle, type HandleFetch } from '@sveltejs/kit';
+import { env as publicEnv } from '$env/dynamic/public';
+import { env as privateEnv } from '$env/dynamic/private';
+import type { UserProfile } from './app';
 
-const API = (env.BACKEND_URL ?? 'http://127.0.0.1:3000') + '/api/v1';
-const FETCH_TIMEOUT_MS = 5000;
-const USER_CACHE_MAX_AGE = 60 * 15; // same as access_token TTL
+const getCookieDomain = (): string => {
+	const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || '';
+	if (!raw) return '';
+	return raw.startsWith('.') ? raw : `.${raw}`;
+};
 
-function fetchWithTimeout(url: string, init: RequestInit = {}): Promise<Response> {
-	const controller = new AbortController();
-	const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-	return fetch(url, { ...init, signal: controller.signal }).finally(() => clearTimeout(timer));
-}
+const getApiUrl = (): string => {
+	const raw = (
+		(publicEnv as Record<string, string | undefined>).PUBLIC_API_URL || 'http://localhost:3000'
+	).replace(/\/+$/, '');
+	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
+};
 
-function dashboardForRole(role: string): string {
-	if (role === 'ADMIN') return '/admin';
-	if (role === 'SUPERVISOR') return '/supervisor';
-	return '/participant';
-}
+const getPortalLoginUrl = (): string => {
+	const raw = (
+		(publicEnv as Record<string, string | undefined>).PUBLIC_PORTAL_URL || 'http://localhost:5173'
+	).replace(/\/+$/, '');
+	return raw.endsWith('/login') ? raw : `${raw}/login`;
+};
 
-async function getUser(accessToken: string): Promise<UserProfile | null> {
-	try {
-		const res = await fetchWithTimeout(`${API}/auth/me`, {
-			headers: { Authorization: `Bearer ${accessToken}` }
-		});
-		if (!res.ok) return null;
-		const json = await res.json();
-		return json.data as UserProfile;
-	} catch {
-		return null;
+const dashboardForRole = (role?: string): string | null => {
+	if (role === 'super_admin') return '/admin';
+	if (role === 'teacher') return '/supervisor';
+	if (role === 'student') return '/participant';
+	return null;
+};
+
+const resolveRole = (rawUser: Record<string, unknown>): string => {
+	if (Array.isArray(rawUser.roles) && rawUser.roles.length > 0) {
+		if (rawUser.roles.includes('super_admin')) return 'super_admin';
+		if (rawUser.roles.includes('teacher')) return 'teacher';
+		if (rawUser.roles.includes('student')) return 'student';
+		return String(rawUser.roles[0]);
 	}
-}
-
-async function tryRefresh(refreshToken: string): Promise<string | null> {
-	try {
-		const res = await fetchWithTimeout(`${API}/auth/access-token`, {
-			method: 'POST',
-			headers: { Cookie: `refresh_token=${refreshToken}` }
-		});
-		if (!res.ok) return null;
-		const json = await res.json();
-		return (json.data?.accessToken as string) ?? null;
-	} catch {
-		return null;
+	if (typeof rawUser.role === 'string' && rawUser.role) {
+		return rawUser.role;
 	}
-}
+	return '';
+};
 
-function setAccessToken(event: Parameters<Handle>[0]['event'], token: string) {
-	event.cookies.set('access_token', token, {
-		path: '/',
-		httpOnly: true,
-		sameSite: 'lax',
-		secure: isSecureRequest(event.url),
-		maxAge: USER_CACHE_MAX_AGE
-	});
-}
-
-function setCachedUser(event: Parameters<Handle>[0]['event'], user: UserProfile) {
-	event.cookies.set('user_data', JSON.stringify(user), {
-		path: '/',
-		httpOnly: true,
-		sameSite: 'lax',
-		secure: isSecureRequest(event.url),
-		maxAge: USER_CACHE_MAX_AGE
-	});
-}
-
-function clearUserCache(event: Parameters<Handle>[0]['event']) {
-	event.cookies.delete('user_data', { path: '/' });
+function clearAuthCookies(event: Parameters<Handle>[0]['event']) {
+	const domain = getCookieDomain();
+	const opts = { path: '/', ...(domain ? { domain } : {}) };
+	event.cookies.delete('access_token', opts);
+	event.cookies.delete('refresh_token', opts);
+	event.cookies.delete('user_data', opts);
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const path = event.url.pathname;
-	const accessToken = event.cookies.get('access_token');
+	const token = event.cookies.get('access_token');
 	const refreshToken = event.cookies.get('refresh_token');
-	const cachedUserData = event.cookies.get('user_data');
 
-	// ── Login page ──────────────────────────────────────────────────────────
-	if (path === '/login') {
-		if (accessToken && cachedUserData) {
-			let cachedUser: UserProfile | null = null;
-			try {
-				cachedUser = JSON.parse(cachedUserData) as UserProfile;
-			} catch {
-				/* invalid cache */
+	let apiSetCookies: string[] = [];
+
+	try {
+		let effectiveToken = token;
+
+		if (!effectiveToken && refreshToken) {
+			const refRes = await fetch(`${getApiUrl()}/auth/refresh-token`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ refreshToken })
+			});
+			if (refRes.ok) {
+				const refData = await refRes.json();
+				effectiveToken = refData.data?.accessToken;
+				const sc = refRes.headers.getSetCookie();
+				if (sc && sc.length > 0) apiSetCookies = sc;
 			}
-			if (cachedUser) throw redirect(302, dashboardForRole(cachedUser.role));
-		}
-		if (accessToken) {
-			const user = await getUser(accessToken);
-			if (user) throw redirect(302, dashboardForRole(user.role));
-		}
-		return resolve(event);
-	}
-
-	// ── All other protected pages ────────────────────────────────────────────
-	if (!accessToken && !refreshToken) throw redirect(302, '/login');
-
-	let currentToken = accessToken;
-	let user: UserProfile | null = null;
-
-	// Fast path: use cached user_data if access_token is still valid (saves /auth/me round-trip)
-	if (currentToken && cachedUserData) {
-		try {
-			user = JSON.parse(cachedUserData) as UserProfile;
-		} catch {
-			/* fall through */
-		}
-	}
-
-	// Silently refresh when access token is missing but refresh token exists
-	if (!currentToken && refreshToken) {
-		const newToken = await tryRefresh(refreshToken);
-		if (!newToken) throw redirect(302, '/login');
-		currentToken = newToken;
-		setAccessToken(event, currentToken);
-		user = null; // force re-fetch after token refresh
-	}
-
-	// Fetch user from API if not served from cache
-	if (!user && currentToken) {
-		user = await getUser(currentToken);
-
-		// Access token rejected — try refreshing once
-		if (!user && refreshToken) {
-			const newToken = await tryRefresh(refreshToken);
-			if (!newToken) throw redirect(302, '/login');
-			user = await getUser(newToken);
-			if (!user) throw redirect(302, '/login');
-			currentToken = newToken;
-			setAccessToken(event, currentToken);
 		}
 
-		if (user) setCachedUser(event, user);
-		else clearUserCache(event);
+		if (effectiveToken) {
+			const meRes = await fetch(`${getApiUrl()}/exam/me`, {
+				headers: { Authorization: `Bearer ${effectiveToken}` }
+			});
+
+			if (meRes.ok) {
+				const meData = await meRes.json();
+				const rawUser = meData.data || meData;
+				const role = resolveRole(rawUser);
+				const rawRoles: string[] = Array.isArray(rawUser.roles)
+					? rawUser.roles.map(String)
+					: typeof rawUser.role === 'string' && rawUser.role
+						? [rawUser.role]
+						: role
+							? [role]
+							: [];
+
+				const user: UserProfile = {
+					id: rawUser.id || rawUser.userId,
+					fullname: rawUser.fullname || rawUser.name || '',
+					email: rawUser.email ?? null,
+					role,
+					roles: rawRoles,
+					...rawUser
+				};
+
+				event.locals.user = user;
+
+				const allowedRolesStr =
+					(publicEnv as Record<string, string | undefined>).PUBLIC_ALLOWED_ROLES ||
+					'super_admin,teacher,student';
+				const allowedRoles = allowedRolesStr
+					.split(',')
+					.map((r) => r.trim())
+					.filter(Boolean);
+
+				const userRoles: string[] =
+					user.roles && user.roles.length > 0 ? user.roles : user.role ? [user.role] : [];
+				const hasAllowedRole = userRoles.some((r) => allowedRoles.includes(r));
+
+				if (!hasAllowedRole) {
+					event.locals.accessDenied = true;
+				} else {
+					// Role-based route guards
+					if (path === '/' || path === '') {
+						const targetDashboard = dashboardForRole(user.role);
+						if (targetDashboard) {
+							throw redirect(303, targetDashboard);
+						} else {
+							event.locals.accessDenied = true;
+						}
+					} else if (path.startsWith('/admin') && !userRoles.includes('super_admin')) {
+						event.locals.accessDenied = true;
+					} else if (path.startsWith('/supervisor') && !userRoles.includes('teacher')) {
+						event.locals.accessDenied = true;
+					} else if (path.startsWith('/participant') && !userRoles.includes('student')) {
+						event.locals.accessDenied = true;
+					} else {
+						event.locals.accessDenied = false;
+					}
+				}
+
+
+			} else {
+				clearAuthCookies(event);
+				throw redirect(303, getPortalLoginUrl());
+			}
+		} else {
+			clearAuthCookies(event);
+			throw redirect(303, getPortalLoginUrl());
+		}
+	} catch (error) {
+		if (error && typeof error === 'object' && 'status' in error && 'location' in error) {
+			throw error;
+		}
+		clearAuthCookies(event);
+		throw redirect(303, getPortalLoginUrl());
 	}
 
-	if (!user) throw redirect(302, '/login');
-
-	event.locals.user = user;
-
-	// Role-based guards
-	if (path === '/' || path === '') throw redirect(302, dashboardForRole(user.role));
-	if (path.startsWith('/admin') && user.role !== 'ADMIN') throw redirect(302, '/login');
-	if (path.startsWith('/supervisor') && user.role !== 'SUPERVISOR') throw redirect(302, '/login');
-	if (path.startsWith('/participant') && user.role !== 'PARTICIPANT') throw redirect(302, '/login');
-
-	return resolve(event);
+	const response = await resolve(event);
+	for (const header of apiSetCookies) {
+		response.headers.append('set-cookie', header);
+	}
+	return response;
 };
+
+export const handleFetch: HandleFetch = async ({ request, fetch }) => {
+	if (privateEnv.INTERNAL_API_BASE && request.url.startsWith('http://localhost:9091')) {
+		request = new Request(
+			request.url.replace('http://localhost:9091', privateEnv.INTERNAL_API_BASE),
+			request
+		);
+	}
+	return fetch(request);
+};
+

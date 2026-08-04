@@ -17,7 +17,7 @@ RUN npm run db:generate
 # =============================================================================
 FROM base AS migrate
 
-CMD ["sh", "-c", "for cfg in auth master academic internship learn; do echo \"==> migrate deploy: $cfg\"; npx prisma migrate deploy --config=src/$cfg/prisma.config.ts || exit 1; done"]
+CMD ["sh", "-c", "for cfg in auth master academic internship learn exam; do echo \"==> migrate deploy: $cfg\"; npx prisma migrate deploy --config=src/$cfg/prisma.config.ts || exit 1; done"]
 
 # =============================================================================
 # Stage 3: runner - minimal production image

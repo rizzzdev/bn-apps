@@ -43,7 +43,7 @@
 		}
 
 		// Fetch participant detail
-		fetch(`${API_BASE}/users/${participantId}`, {
+		fetch(`${API_BASE}/exam/users/${participantId}`, {
 			headers: { Authorization: `Bearer ${token}` }
 		})
 			.then((res) => res.json())

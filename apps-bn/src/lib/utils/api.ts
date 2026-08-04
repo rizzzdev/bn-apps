@@ -75,7 +75,7 @@ export async function apiClient(endpoint: string, options: RequestInit = {}): Pr
 				const refreshData = await refreshRes.json().catch(() => ({}));
 				const newAccessToken = refreshData.accessToken || refreshData.access_token;
 				if (newAccessToken) {
-					setCookie('access_token', newAccessToken, 900);
+					// Token baru tersedia (browser telah menyimpan Set-Cookie dari api-bn via credentials: 'include')
 					headers.set('Authorization', `Bearer ${newAccessToken}`);
 				}
 

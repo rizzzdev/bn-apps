@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  exam-bn:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PUBLIC_API_URL=${PUBLIC_API_URL}
+        - PUBLIC_PORTAL_URL=${PUBLIC_PORTAL_URL}
+        - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME}
+        - PUBLIC_ALLOWED_ROLES=${PUBLIC_ALLOWED_ROLES}
+    container_name: exam-bn-app
+    restart: unless-stopped
+    environment:
+      - PUBLIC_API_URL=${PUBLIC_API_URL}
+      - PUBLIC_PORTAL_URL=${PUBLIC_PORTAL_URL}
+      - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME}
+      - PUBLIC_ALLOWED_ROLES=${PUBLIC_ALLOWED_ROLES}
+    networks:
+      - proxy
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.exam-bn.rule=Host(`exam-bn.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.exam-bn.entrypoints=websecure"
+      - "traefik.http.routers.exam-bn.tls.certresolver=myresolver"
+      - "traefik.http.services.exam-bn.loadbalancer.server.port=3007"
+
+networks:
+  proxy:
+    external: true
+  backend:
+    external: true

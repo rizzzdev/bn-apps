@@ -6,9 +6,9 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 	const { token } = await parent();
 
 	const [users, exams, rooms] = await Promise.all([
-		api.safeGet<User[]>(fetch, '/users', [], { limit: 1000 }),
-		api.safeGet<Exam[]>(fetch, '/exams', [], { limit: 1000 }),
-		api.safeGet<Room[]>(fetch, '/rooms', [], { limit: 1000 })
+		api.safeGet<User[]>(fetch, '/exam/users', [], { limit: 1000 }),
+		api.safeGet<Exam[]>(fetch, '/exam/exams', [], { limit: 1000 }),
+		api.safeGet<Room[]>(fetch, '/exam/rooms', [], { limit: 1000 })
 	]);
 
 	const now = new Date();
@@ -25,9 +25,9 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 	return {
 		stats: {
 			totalUsers: users.length,
-			adminCount: users.filter((u) => u.role === 'ADMIN').length,
-			supervisorCount: users.filter((u) => u.role === 'SUPERVISOR').length,
-			participantCount: users.filter((u) => u.role === 'PARTICIPANT').length,
+			adminCount: users.filter((u) => u.role === 'super_admin').length,
+			supervisorCount: users.filter((u) => u.role === 'teacher').length,
+			participantCount: users.filter((u) => u.role === 'student').length,
 			totalExams: exams.length,
 			activeExams: activeExams.length,
 			upcomingExams: upcomingExams.length,

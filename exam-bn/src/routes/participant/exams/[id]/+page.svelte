@@ -100,7 +100,7 @@
 		const existing = savedAnswers[questionId];
 		try {
 			if (existing?.id) {
-				const res = await fetch(`${API_BASE}/exam-answers/${existing.id}`, {
+				const res = await fetch(`${API_BASE}/exam/exam-answers/${existing.id}`, {
 					method: 'PATCH',
 					headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${d.token}` },
 					body: JSON.stringify({ optionId })
@@ -108,7 +108,7 @@
 				if (!res.ok) throw new Error('Failed to save');
 				savedAnswers[questionId] = { ...existing, optionId };
 			} else {
-				const res = await fetch(`${API_BASE}/exam-answers`, {
+				const res = await fetch(`${API_BASE}/exam/exam-answers`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${d.token}` },
 					body: JSON.stringify({ examRoomId: d.examRoomId, userId: d.userId, questionId, optionId })
@@ -120,7 +120,10 @@
 			offlineQueue = new Set([...offlineQueue].filter((id) => id !== questionId));
 		} catch {
 			if (!offlineQueue.has(questionId)) {
-				addToast('Koneksi tidak stabil, jawaban disimpan secara lokal dan akan diulang otomatis.', 'error');
+				addToast(
+					'Koneksi tidak stabil, jawaban disimpan secara lokal dan akan diulang otomatis.',
+					'error'
+				);
 			}
 			offlineQueue = new Set([...offlineQueue, questionId]);
 			setTimeout(() => {
@@ -143,7 +146,7 @@
 		const existing = savedAnswers[questionId];
 		try {
 			if (existing?.id) {
-				const res = await fetch(`${API_BASE}/exam-answers/${existing.id}`, {
+				const res = await fetch(`${API_BASE}/exam/exam-answers/${existing.id}`, {
 					method: 'PATCH',
 					headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${d.token}` },
 					body: JSON.stringify({ text })
@@ -151,7 +154,7 @@
 				if (!res.ok) throw new Error('Failed to save');
 				savedAnswers[questionId] = { ...existing, text };
 			} else {
-				const res = await fetch(`${API_BASE}/exam-answers`, {
+				const res = await fetch(`${API_BASE}/exam/exam-answers`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${d.token}` },
 					body: JSON.stringify({ examRoomId: d.examRoomId, userId: d.userId, questionId, text })
@@ -179,7 +182,7 @@
 		submitting = true;
 		showSubmitModal = false;
 		try {
-			const res = await fetch(`${API_BASE}/exam-rooms/${d.examRoomId}/submit`, {
+			const res = await fetch(`${API_BASE}/exam/exam-rooms/${d.examRoomId}/submit`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${d.token}` },
 				body: JSON.stringify({ userId: d.userId })
@@ -781,7 +784,11 @@
 								>
 									{idx + 1}
 									{#if dirty || offlineQueue.has(qId)}<span
-											class="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full {offlineQueue.has(qId) ? 'bg-red-500' : 'bg-amber-400'}"
+											class="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full {offlineQueue.has(
+												qId
+											)
+												? 'bg-red-500'
+												: 'bg-amber-400'}"
 										></span>{/if}
 								</button>
 							{/each}
@@ -810,7 +817,9 @@
 						>
 							{idx + 1}
 							{#if dirty || offlineQueue.has(qId)}<span
-									class="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full {offlineQueue.has(qId) ? 'bg-red-500' : 'bg-amber-400'}"
+									class="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full {offlineQueue.has(qId)
+										? 'bg-red-500'
+										: 'bg-amber-400'}"
 								></span>{/if}
 						</button>
 					{/each}

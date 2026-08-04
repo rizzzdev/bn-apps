@@ -9,9 +9,9 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 	const examId = params.examId;
 
 	const [exam, examRooms, allQuestions] = await Promise.all([
-		api.safeGet<Exam>(fetch, `/exams/${examId}`, null as unknown as Exam),
-		api.safeGet<ExamRoom[]>(fetch, '/exam-rooms', [], { examId, limit: 100 }),
-		api.safeGet<Question[]>(fetch, '/questions', [], {
+		api.safeGet<Exam>(fetch, `/exam/exams/${examId}`, null as unknown as Exam),
+		api.safeGet<ExamRoom[]>(fetch, '/exam/exam-rooms', [], { examId, limit: 100 }),
+		api.safeGet<Question[]>(fetch, '/exam/questions', [], {
 			options: 'true',
 			correctAnswer: 'true',
 			limit: 1000
@@ -26,7 +26,7 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 	const allExamQuestions = primaryRoomId
 		? await Promise.all(
 				examRooms.map((er) =>
-					api.safeGet<ExamQuestion[]>(fetch, '/exam-questions', [], {
+					api.safeGet<ExamQuestion[]>(fetch, '/exam/exam-questions', [], {
 						examRoomId: er.id,
 						limit: 200
 					})

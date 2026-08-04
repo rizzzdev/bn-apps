@@ -20,9 +20,9 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 	const examRoomId = params.examRoomId;
 
 	const [examRoom, exams, rooms] = await Promise.all([
-		api.safeGet<ExamRoom>(fetch, `/exam-rooms/${examRoomId}`, null as unknown as ExamRoom),
-		api.safeGet<Exam[]>(fetch, '/exams', [], { limit: 100 }),
-		api.safeGet<Room[]>(fetch, '/rooms', [], { limit: 100 })
+		api.safeGet<ExamRoom>(fetch, `/exam/exam-rooms/${examRoomId}`, null as unknown as ExamRoom),
+		api.safeGet<Exam[]>(fetch, '/exam/exams', [], { limit: 100 }),
+		api.safeGet<Room[]>(fetch, '/exam/rooms', [], { limit: 100 })
 	]);
 
 	if (!examRoom) throw redirect(302, '/supervisor/grading');
@@ -32,11 +32,14 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 	const room = rooms.find((r) => r.id === examRoom.roomId);
 
 	const [participants, allQuestions, examQuestions, scores, allUsers] = await Promise.all([
-		api.safeGet<ExamParticipant[]>(fetch, '/exam-participants', [], { examRoomId, limit: 500 }),
-		api.safeGet<Question[]>(fetch, '/questions', [], { limit: 1000 }),
-		api.safeGet<ExamQuestion[]>(fetch, '/exam-questions', [], { examRoomId, limit: 200 }),
-		api.safeGet<ExamScore[]>(fetch, '/exam-scores', [], { examRoomId, limit: 500 }),
-		api.safeGet<User[]>(fetch, '/users', [], { limit: 1000 })
+		api.safeGet<ExamParticipant[]>(fetch, '/exam/exam-participants', [], {
+			examRoomId,
+			limit: 500
+		}),
+		api.safeGet<Question[]>(fetch, '/exam/questions', [], { limit: 1000 }),
+		api.safeGet<ExamQuestion[]>(fetch, '/exam/exam-questions', [], { examRoomId, limit: 200 }),
+		api.safeGet<ExamScore[]>(fetch, '/exam/exam-scores', [], { examRoomId, limit: 500 }),
+		api.safeGet<User[]>(fetch, '/exam/users', [], { limit: 1000 })
 	]);
 
 	const questionMap = new Map(allQuestions.map((q) => [q.id, q]));
@@ -53,12 +56,12 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 		await Promise.all(
 			submittedParticipants.map(async (p) => {
 				const [answers, grades] = await Promise.all([
-					api.safeGet<ExamAnswer[]>(fetch, '/exam-answers', [], {
+					api.safeGet<ExamAnswer[]>(fetch, '/exam/exam-answers', [], {
 						examRoomId,
 						userId: p.userId,
 						limit: 200
 					}),
-					api.safeGet<EssayGrade[]>(fetch, '/essay-grades', [], {
+					api.safeGet<EssayGrade[]>(fetch, '/exam/essay-grades', [], {
 						examRoomId,
 						userId: p.userId,
 						limit: 200
@@ -67,7 +70,7 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 				return {
 					userId: p.userId,
 					fullname: userMap.get(p.userId)?.fullname ?? p.userId,
-					username: userMap.get(p.userId)?.username ?? p.userId,
+					email: userMap.get(p.userId)?.email ?? p.userId,
 					score: scoreMap.get(p.userId)?.score ?? null,
 					answers: answers as ExamAnswer[],
 					grades: Object.fromEntries((grades as EssayGrade[]).map((g) => [g.questionId, g]))

@@ -127,6 +127,28 @@ export class AuthDataService implements IAuthDataRepository {
       value: i.value,
     }));
   }
+
+  async findAllByRoles(roles: Role[]): Promise<Array<{ id: string; email: string | null }>> {
+    const users = await prisma.sentri_users.findMany();
+    const wanted = new Set(roles);
+    const results: Array<{ id: string; email: string | null }> = [];
+    for (const user of users) {
+      let userRoles: Role[] = [];
+      try {
+        userRoles = typeof user.roles === 'string' ? JSON.parse(user.roles) : user.roles;
+      } catch {
+        userRoles = [];
+      }
+      if (Array.isArray(userRoles) && userRoles.some((r) => wanted.has(r))) {
+        const email = await prisma.sentri_identifiers.findFirst({
+          where: { user_id: user.id, type: 'email' },
+          select: { value: true },
+        });
+        results.push({ id: user.id, email: email?.value ?? null });
+      }
+    }
+    return results;
+  }
 }
 
 export const authDataService = new AuthDataService();
