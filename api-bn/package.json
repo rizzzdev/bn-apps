@@ -13,8 +13,7 @@
     "#academic": "./src/academic/index.ts",
     "#academic/*": "./src/academic/src/*",
     "#learn": "./src/learn/index.ts",
-    "#learn/*": "./src/learn/*",
-    "#/*": "./src/learn/*",
+    "#learn/*": "./src/learn/src/*",
     "#internship": "./src/internship/index.ts",
     "#internship/*": "./src/internship/src/*"
   },

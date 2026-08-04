@@ -1,1 +1,1 @@
-export { learnRouter } from './routes/index.js';
+export { learnRouter } from './src/routes/index.js';
