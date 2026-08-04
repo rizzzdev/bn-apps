@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button, Icon, Title } from '$lib/components/atoms';
-	import { PUBLIC_API_URL, PUBLIC_PORTAL_URL } from '$env/static/public';
+	import { PUBLIC_PORTAL_URL } from '$env/static/public';
+	import { getApiBaseUrl } from '$lib/utils/api';
 	import { toast } from '$lib/stores/toast.svelte';
 
 	let isLoggingOut = $state(false);
@@ -11,7 +12,7 @@
 	const handleLogout = async () => {
 		isLoggingOut = true;
 		try {
-			await fetch(`${PUBLIC_API_URL}/auth/logout`, {
+			await fetch(`${getApiBaseUrl()}/auth/logout`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'

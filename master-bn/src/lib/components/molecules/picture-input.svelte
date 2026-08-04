@@ -36,7 +36,7 @@
 
 	function getCurrentSrc(): string | null {
 		if (previewUrl) return previewUrl;
-		if (currentImageUrl) return `${PUBLIC_API_URL}/master/attachments/file/${currentImageUrl}`;
+		if (currentImageUrl) return `${getApiBaseUrl()}/master/attachments/file/${currentImageUrl}`;
 		return null;
 	}
 

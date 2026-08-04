@@ -18,7 +18,7 @@
 		ActionButton,
 		Checkbox,
 	} from "$lib/components/atoms";
-	import { apiClient, getAccessToken } from "$lib/utils/api";
+	import { apiClient, getAccessToken, getApiBaseUrl } from "$lib/utils/api";
 	import { toast } from "$lib/stores/toast.svelte";
 	import { PUBLIC_API_URL } from "$env/static/public";
 	import { read, utils } from "xlsx";
@@ -249,7 +249,7 @@
 			// apiClient memakai path relatif /absolut sesuai buildApiUrl.
 			// Untuk download file, kita butuh URL eksplisit agar blob dapat di-fetch.
 			const res = await fetch(
-				`${PUBLIC_API_URL}/api/v1/internship/companies/template`,
+				`${getApiBaseUrl()}/internship/companies/template`,
 				{
 					headers: accessToken
 						? { Authorization: `Bearer ${accessToken}` }

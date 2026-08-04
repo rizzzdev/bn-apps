@@ -35,8 +35,14 @@ export function deleteCookie(name: string) {
 	}
 }
 
+export function getApiBaseUrl(): string {
+	const raw = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
+}
+
 export const apiClient = async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
 	const accessToken = getCookie('access_token');
+	const baseUrl = getApiBaseUrl();
 
 	let path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 	if (!path.startsWith('/master') && !path.startsWith('/auth')) {
@@ -59,13 +65,13 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}): Pr
 		credentials: 'include'
 	};
 
-	let response = await fetch(`${PUBLIC_API_URL}${path}`, config);
+	let response = await fetch(`${baseUrl}${path}`, config);
 
 	// Pengecekan token expired (biasanya 401 Unauthorized)
 	if (response.status === 401) {
 		try {
 			// Mencoba refresh token
-			const refreshRes = await fetch(`${PUBLIC_API_URL}/auth/refresh`, {
+			const refreshRes = await fetch(`${baseUrl}/auth/refresh`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -92,7 +98,7 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}): Pr
 				if (newAccessToken) {
 					// Retry request asli dengan token baru
 					headers['Authorization'] = `Bearer ${newAccessToken}`;
-					response = await fetch(`${PUBLIC_API_URL}${path}`, {
+					response = await fetch(`${baseUrl}${path}`, {
 						...config,
 						headers
 					});

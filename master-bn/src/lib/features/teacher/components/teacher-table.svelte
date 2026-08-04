@@ -22,7 +22,7 @@
 		TableCell
 	} from '$lib/components/organisms/table';
 	import { toast } from '$lib/stores/toast.svelte';
-	import { apiClient } from '$lib/utils/api';
+	import { apiClient, getApiBaseUrl } from '$lib/utils/api';
 	import * as XLSX from 'xlsx';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { Tabs } from '$lib/components/molecules';
@@ -228,7 +228,7 @@
 			const detailRes = await apiClient(`/teachers/${teacher.id}?includePicture=true`);
 			const detailResult = await detailRes.json();
 			if (!detailResult.error && detailResult.data?.picture?.url) {
-				existingImageUrl = `${PUBLIC_API_URL}/master/attachments/file/${detailResult.data.picture.url}`;
+				existingImageUrl = `${getApiBaseUrl()}/master/attachments/file/${detailResult.data.picture.url}`;
 			}
 		} catch {
 			void 0;

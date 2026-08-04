@@ -20,9 +20,11 @@ export async function fetchApi<T>(
 ): Promise<{ data?: T; error?: string; pagination?: ApiResponse<T>['pagination'] }> {
 	const { params, ...fetchOptions } = options;
 
+	const raw = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+	const baseUrl = raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
 	let url = path.startsWith("/api/v1/")
-		? `${PUBLIC_API_URL}${path}`
-		: `${PUBLIC_API_URL}/api/v1/internship${path}`;
+		? `${raw.endsWith('/api/v1') ? raw.slice(0, -7) : raw}${path}`
+		: `${baseUrl}/internship${path}`;
 	if (params) {
 		const searchParams = new URLSearchParams();
 		for (const [key, value] of Object.entries(params)) {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Card, DetailRow } from '$lib/components/molecules';
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import { getApiBaseUrl } from '$lib/utils/api';
 	import { Avatar } from '$lib/components/atoms';
 
 	let { teacher } = $props<{
@@ -35,7 +35,7 @@
 
 	const getPictureSrc = () => {
 		if (teacher.picture?.url) {
-			return `${PUBLIC_API_URL}/master/attachments/file/${teacher.picture.url}`;
+			return `${getApiBaseUrl()}/master/attachments/file/${teacher.picture.url}`;
 		}
 		return null;
 	};

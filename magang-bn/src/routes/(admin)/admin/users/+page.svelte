@@ -12,7 +12,7 @@
     Select,
   } from "$lib/components/molecules";
   import { Icon, Button, ActionButton, Checkbox } from "$lib/components/atoms";
-  import { apiClient, getAccessToken } from "$lib/utils/api";
+  import { apiClient, getAccessToken, getApiBaseUrl } from "$lib/utils/api";
   import { toast } from "$lib/stores/toast.svelte";
   import { PUBLIC_API_URL } from "$env/static/public";
   import { read, utils } from "xlsx";
@@ -347,7 +347,7 @@
       const accessToken = getAccessToken() ?? "";
 
       const res = await fetch(
-        `${PUBLIC_API_URL}/api/v1/internship/industry-mentors/template`,
+        `${getApiBaseUrl()}/internship/industry-mentors/template`,
         {
           headers: accessToken
             ? { Authorization: `Bearer ${accessToken}` }

@@ -11,7 +11,9 @@ export function getAttachmentUrl(url: string | undefined | null): string {
 	if (!cleanPath.startsWith('/')) {
 		cleanPath = '/' + cleanPath;
 	}
-	return `${PUBLIC_API_URL}/api/v1/internship${cleanPath}`;
+	const raw = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+	const baseUrl = raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
+	return `${baseUrl}/internship${cleanPath}`;
 }
 
 

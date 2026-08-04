@@ -29,7 +29,7 @@
 
 	const getImageSrc = () => {
 		if (previewUrl) return previewUrl;
-		if (pictureUrl) return `${PUBLIC_API_URL}/master/attachments/file/${pictureUrl}`;
+		if (pictureUrl) return `${getApiBaseUrl()}/master/attachments/file/${pictureUrl}`;
 		return null;
 	};
 

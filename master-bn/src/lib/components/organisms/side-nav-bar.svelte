@@ -3,8 +3,8 @@
 	import { Avatar, Button, Icon, Title } from '$lib/components/atoms';
 	import { NavItem } from '$lib/components/molecules';
 	import { toast } from '$lib/stores/toast.svelte';
-	import { PUBLIC_API_URL, PUBLIC_PORTAL_URL } from '$env/static/public';
-	import { apiClient } from '$lib/utils/api';
+	import { PUBLIC_PORTAL_URL } from '$env/static/public';
+	import { apiClient, getApiBaseUrl } from '$lib/utils/api';
 
 	import { onMount } from 'svelte';
 	let { isOpen = $bindable(false) } = $props<{ isOpen?: boolean }>();
@@ -59,7 +59,7 @@
 	const handleLogout = async () => {
 		isLoggingOut = true;
 		try {
-			const res = await fetch(`${PUBLIC_API_URL}/auth/logout`, {
+			const res = await fetch(`${getApiBaseUrl()}/auth/logout`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'

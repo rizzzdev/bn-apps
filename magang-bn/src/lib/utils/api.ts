@@ -30,11 +30,19 @@ export function clearAuthCookies() {
   deleteCookie("refresh_token");
 }
 
+export function getApiBaseUrl(): string {
+  const raw = (PUBLIC_API_URL || "http://localhost:3000").replace(/\/+$/, "");
+  return raw.endsWith("/api/v1") ? raw : `${raw}/api/v1`;
+}
+
 function buildApiUrl(endpoint: string): string {
+  const baseUrl = getApiBaseUrl();
   if (endpoint.startsWith("/api/v1/")) {
-    return `${PUBLIC_API_URL}${endpoint}`;
+    const raw = (PUBLIC_API_URL || "http://localhost:3000").replace(/\/+$/, "");
+    const host = raw.endsWith("/api/v1") ? raw.slice(0, -7) : raw;
+    return `${host}${endpoint}`;
   }
-  return `${PUBLIC_API_URL}/api/v1/internship${endpoint}`;
+  return `${baseUrl}/internship${endpoint}`;
 }
 
 /**
@@ -51,7 +59,7 @@ export function getAccessToken(): string | null {
 export async function logout() {
   try {
     const token = getAccessToken();
-    await fetch(`${PUBLIC_API_URL}/api/v1/auth/logout`, {
+    await fetch(`${getApiBaseUrl()}/auth/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -110,7 +118,7 @@ export const apiClient = async (
   try {
     // Mencoba refresh token
     const refreshRes = await fetch(
-      `${PUBLIC_API_URL}/api/v1/auth/refresh`,
+      `${getApiBaseUrl()}/auth/refresh`,
       {
         method: "POST",
         headers: {
