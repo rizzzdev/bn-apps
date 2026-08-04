@@ -5,16 +5,16 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      NODE_ENV: production
-      PORT: 3001
-      DB_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432
-      CLIENT_URLS: ${CLIENT_URLS:-http://localhost:5173,http://localhost:9082}
-      API_KEY: ${API_KEY:-change-me-to-a-random-secret}
-      SALT_ROUNDS: ${SALT_ROUNDS:-12}
-      ACCESS_TOKEN_EXPIRES: ${ACCESS_TOKEN_EXPIRES:-15m}
-      REFRESH_TOKEN_EXPIRES: ${REFRESH_TOKEN_EXPIRES:-7d}
-      REDIS_URL: redis://redis:6379
-      COOKIE_DOMAIN: ${DOMAIN_NAME:-}
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      DB_URL: ${DB_URL}
+      CLIENT_URLS: ${CLIENT_URLS}
+      API_KEY: ${API_KEY}
+      SALT_ROUNDS: ${SALT_ROUNDS}
+      ACCESS_TOKEN_EXPIRES: ${ACCESS_TOKEN_EXPIRES}
+      REFRESH_TOKEN_EXPIRES: ${REFRESH_TOKEN_EXPIRES}
+      REDIS_URL: ${REDIS_URL}
+      COOKIE_DOMAIN: ${DOMAIN_NAME}
     volumes:
       - uploads:/app/public
     networks:

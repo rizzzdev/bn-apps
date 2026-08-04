@@ -17,21 +17,16 @@ services:
       dockerfile: Dockerfile
       args:
         # build-arg -> di-bake ke bundle ($env/static/public) saat `npm run build`
-        PUBLIC_API_URL: https://api-bn.${DOMAIN_NAME}/api/v1
-        PUBLIC_PORTAL_URL: https://apps-bn.${DOMAIN_NAME}
+        PUBLIC_API_URL: ${PUBLIC_API_URL}
+        PUBLIC_PORTAL_URL: ${PUBLIC_PORTAL_URL}
     image: master-bn:latest
     container_name: master-bn-app
     restart: unless-stopped
     environment:
-      - NODE_ENV=production
-      - HOST=0.0.0.0
-      - PORT=3000
-      # runtime env -> dibaca $env/dynamic/public di hooks.server.ts
-      - PUBLIC_API_URL=https://api-bn.${DOMAIN_NAME}/api/v1
-      - PUBLIC_PORTAL_URL=https://apps-bn.${DOMAIN_NAME}
-      - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME:-}
-      # Comma-separated roles allowed to access this app (default: super_admin)
-      - PUBLIC_ALLOWED_ROLES=${PUBLIC_ALLOWED_ROLES:-super_admin}
+      - PUBLIC_API_URL=${PUBLIC_API_URL}
+      - PUBLIC_PORTAL_URL=${PUBLIC_PORTAL_URL}
+      - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME}
+      - PUBLIC_ALLOWED_ROLES=${PUBLIC_ALLOWED_ROLES}
     networks:
       - proxy
       - backend
@@ -40,7 +35,7 @@ services:
       - 'traefik.http.routers.master-bn.rule=Host(`master-bn.${DOMAIN_NAME}`)'
       - 'traefik.http.routers.master-bn.entrypoints=websecure'
       - 'traefik.http.routers.master-bn.tls.certresolver=myresolver'
-      - 'traefik.http.services.master-bn.loadbalancer.server.port=3000'
+      - 'traefik.http.services.master-bn.loadbalancer.server.port=3002'
 
 networks:
   proxy:

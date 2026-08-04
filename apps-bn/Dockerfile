@@ -33,7 +33,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
-ENV PORT=5173
+ENV PORT=3001
 
 # Create unprivileged non-root user for security
 RUN addgroup -S sveltekit && adduser -S sveltekit -G sveltekit
@@ -51,11 +51,11 @@ RUN chown -R sveltekit:sveltekit /app
 # Switch to non-root user
 USER sveltekit
 
-EXPOSE 5173
+EXPOSE 3001
 
 # Health check to ensure container is healthy on VPS
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:5173/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3001/health || exit 1
 
 # Start the SvelteKit Node server
 CMD ["node", "build"]

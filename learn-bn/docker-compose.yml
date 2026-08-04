@@ -1,24 +1,18 @@
-version: '3.8'
-
 services:
   learn-bn:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        - PUBLIC_API_URL=https://api-bn.${DOMAIN_NAME}
-        - PUBLIC_PORTAL_URL=https://apps-bn.${DOMAIN_NAME}
-        - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME:-}
+        - PUBLIC_API_URL=${PUBLIC_API_URL}
+        - PUBLIC_PORTAL_URL=${PUBLIC_PORTAL_URL}
+        - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME}
     container_name: learn-bn-app
     restart: unless-stopped
     environment:
-      - NODE_ENV=production
-      - HOST=0.0.0.0
-      - PORT=9062
-      # Pass dynamic API URL or other environment variables below
-      - PUBLIC_API_URL=https://api-bn.${DOMAIN_NAME}
-      - PUBLIC_PORTAL_URL=https://apps-bn.${DOMAIN_NAME}
-      - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME:-}
+      - PUBLIC_API_URL=${PUBLIC_API_URL}
+      - PUBLIC_PORTAL_URL=${PUBLIC_PORTAL_URL}
+      - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME}
     networks:
       - proxy
       - backend
@@ -27,7 +21,7 @@ services:
       - "traefik.http.routers.learn-bn.rule=Host(`learn-bn.${DOMAIN_NAME}`)"
       - "traefik.http.routers.learn-bn.entrypoints=websecure"
       - "traefik.http.routers.learn-bn.tls.certresolver=myresolver"
-      - "traefik.http.services.learn-bn.loadbalancer.server.port=9062"
+      - "traefik.http.services.learn-bn.loadbalancer.server.port=3006"
 
 networks:
   proxy:

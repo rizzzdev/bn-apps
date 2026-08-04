@@ -37,7 +37,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
-    PORT=3000
+    PORT=3002
 
 # User non-root untuk keamanan
 RUN addgroup -S app && adduser -S app -G app
@@ -53,9 +53,9 @@ RUN chown -R app:app /app
 
 USER app
 
-EXPOSE 3000
+EXPOSE 3002
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3002/health || exit 1
 
 CMD ["node", "build"]

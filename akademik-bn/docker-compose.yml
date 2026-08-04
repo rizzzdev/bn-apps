@@ -6,20 +6,16 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - PUBLIC_API_URL=https://api-bn.${DOMAIN_NAME}
-        - PUBLIC_PORTAL_URL=https://apps-bn.${DOMAIN_NAME}
-        - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME:-}
+        - PUBLIC_API_URL=${PUBLIC_API_URL}
+        - PUBLIC_PORTAL_URL=${PUBLIC_PORTAL_URL}
+        - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME}
     container_name: akademik-bn-app
     restart: unless-stopped
     environment:
-      - NODE_ENV=production
-      - HOST=0.0.0.0
-      - PORT=5173
-      # Pass dynamic API URL or other environment variables below
-      - PUBLIC_API_URL=https://api-bn.${DOMAIN_NAME}
-      - PUBLIC_PORTAL_URL=https://apps-bn.${DOMAIN_NAME}
-      - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME:-}
-      - PUBLIC_ALLOWED_ROLES=${PUBLIC_ALLOWED_ROLES:-super_admin,teacher}
+      - PUBLIC_API_URL=${PUBLIC_API_URL}
+      - PUBLIC_PORTAL_URL=${PUBLIC_PORTAL_URL}
+      - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME}
+      - PUBLIC_ALLOWED_ROLES=${PUBLIC_ALLOWED_ROLES}
     networks:
       - proxy
       - backend
@@ -28,7 +24,7 @@ services:
       - "traefik.http.routers.akademik-bn.rule=Host(`akademik-bn.${DOMAIN_NAME}`)"
       - "traefik.http.routers.akademik-bn.entrypoints=websecure"
       - "traefik.http.routers.akademik-bn.tls.certresolver=myresolver"
-      - "traefik.http.services.akademik-bn.loadbalancer.server.port=5173"
+      - "traefik.http.services.akademik-bn.loadbalancer.server.port=3005"
 
 networks:
   proxy:
