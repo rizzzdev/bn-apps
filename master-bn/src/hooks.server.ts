@@ -11,7 +11,7 @@ const getCookieDomain = (): string => {
 
 const getApiUrl = (): string => {
 	const raw = (
-		(env as Record<string, string | undefined>).PUBLIC_API_URL || 'http://localhost:3000/api/v1'
+		(env as Record<string, string | undefined>).PUBLIC_API_URL || 'http://localhost:3000'
 	).replace(/\/+$/, '');
 	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
 };
