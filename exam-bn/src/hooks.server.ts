@@ -2,6 +2,7 @@ import { redirect, type Handle, type HandleFetch } from '@sveltejs/kit';
 import { env as publicEnv } from '$env/dynamic/public';
 import { env as privateEnv } from '$env/dynamic/private';
 import type { UserProfile } from './app';
+import { parseJwtPayload } from '$lib/utils/jwt';
 
 const getCookieDomain = (): string => {
 	const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || '';
@@ -76,13 +77,21 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 
 		if (effectiveToken) {
-			const meRes = await fetch(`${getApiUrl()}/exam/me`, {
-				headers: { Authorization: `Bearer ${effectiveToken}` }
-			});
+			const jwtPayload = parseJwtPayload(effectiveToken);
+			let rawUser: Record<string, unknown> | null = (jwtPayload as Record<string, unknown>) ?? null;
 
-			if (meRes.ok) {
-				const meData = await meRes.json();
-				const rawUser = meData.data || meData;
+			if (!rawUser) {
+				const userDataCookie = event.cookies.get('user_data');
+				if (userDataCookie) {
+					try {
+						rawUser = JSON.parse(userDataCookie);
+					} catch {
+						rawUser = null;
+					}
+				}
+			}
+
+			if (rawUser) {
 				const role = resolveRole(rawUser);
 				const rawRoles: string[] = Array.isArray(rawUser.roles)
 					? rawUser.roles.map(String)
@@ -93,10 +102,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 							: [];
 
 				const user: UserProfile = {
-					id: rawUser.id || rawUser.userId,
-					fullname: rawUser.fullname || rawUser.name || '',
-					email: rawUser.email ?? null,
-					role,
+					id: String(rawUser.id || rawUser.userId || rawUser.sub || ''),
+					fullname: String(rawUser.fullname || rawUser.name || ''),
+					email: rawUser.email ? String(rawUser.email) : null,
+					role: role as 'super_admin' | 'teacher' | 'student',
 					roles: rawRoles,
 					...rawUser
 				};
@@ -136,8 +145,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 						event.locals.accessDenied = false;
 					}
 				}
-
-
 			} else {
 				clearAuthCookies(event);
 				throw redirect(303, getPortalLoginUrl());
