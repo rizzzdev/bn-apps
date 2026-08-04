@@ -4,7 +4,7 @@ import type {
   updateMajorStudentSchema,
   transferSchema,
   graduateSchema,
-} from '@academic/modules/major-students/domain/schemas';
+} from '#academic/modules/major-students/domain/schemas';
 
 export type CreateMajorStudentDto = z.infer<typeof createMajorStudentSchema>;
 export type UpdateMajorStudentDto = z.infer<typeof updateMajorStudentSchema>;

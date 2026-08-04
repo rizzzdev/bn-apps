@@ -25,9 +25,7 @@ services:
       - "traefik.http.routers.api-bn.rule=Host(`api-bn.${DOMAIN_NAME}`)"
       - "traefik.http.routers.api-bn.entrypoints=websecure"
       - "traefik.http.routers.api-bn.tls.certresolver=myresolver"
-
-      # Port internal default dari DbGate adalah 3001
-      - "traefik.http.services.api-bn.loadbalancer.server.port=3001"
+      - "traefik.http.services.api-bn.loadbalancer.server.port=${PORT}"
 
 volumes:
   uploads:

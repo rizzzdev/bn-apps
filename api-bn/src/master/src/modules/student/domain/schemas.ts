@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { StudentStatus, Gender, Religion } from '@master/database/index.js';
+import { StudentStatus, Gender, Religion } from '#master/database/index.js';
 
 export const createStudentSchema = z.object({
   fullname: z.string().trim().min(1),
@@ -49,4 +49,12 @@ export const batchGetStudentSchema = z.object({
 export const bulkUpdateStudentStatusSchema = z.object({
   ids: z.array(z.string().min(1)).min(1),
   status: z.nativeEnum(StudentStatus),
+});
+
+export const updateStudentClassSchema = z.object({
+  currentClassId: z.string().uuid("ID Kelas harus berupa UUID valid").nullable(),
+});
+
+export const updateStudentMajorSchema = z.object({
+  currentMajorId: z.string().uuid("ID Jurusan harus berupa UUID valid").nullable(),
 });

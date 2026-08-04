@@ -1,11 +1,11 @@
-import { AssessmentScoreRepository, assessmentScoreRepository } from '@internship/modules/assessment-score/repository/index.js';
-import { CreateAssessmentScoreDto, BulkSubmitScoreDto } from '@internship/modules/assessment-score/domain/index.js';
-import { AssessmentIndicatorRepository, assessmentIndicatorRepository } from '@internship/modules/assessment-indicator/repository/index.js';
-import { NotFoundError, BadRequestError } from '@app/index.js';
-import { withCache, clearCachePattern, putOptionalToNull } from '@app/index.js';
-import { prisma } from '@internship/database/index.js';
-import { activityService } from '@internship/modules/activity/service/index.js';
-import { getReviewerName } from '@internship/utils/activity-helper.js';
+import { AssessmentScoreRepository, assessmentScoreRepository } from '#internship/modules/assessment-score/repository/index.js';
+import { CreateAssessmentScoreDto, BulkSubmitScoreDto } from '#internship/modules/assessment-score/domain/index.js';
+import { AssessmentIndicatorRepository, assessmentIndicatorRepository } from '#internship/modules/assessment-indicator/repository/index.js';
+import { NotFoundError, BadRequestError } from '#app';
+import { withCache, clearCachePattern, putOptionalToNull } from '#app';
+import { prisma } from '#internship/database/index.js';
+import { activityService } from '#internship/modules/activity/service/index.js';
+import { getReviewerName } from '#internship/utils/activity-helper.js';
 
 const ASSESSMENT_SCORE_NULLABLE_UPDATE_FIELDS = ['notes'] as const;
 

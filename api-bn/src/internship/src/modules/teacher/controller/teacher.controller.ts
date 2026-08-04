@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { TeacherService, teacherService } from '@internship/modules/teacher/service/index.js';
-import { sendResponse } from '@app/index.js';
+import { TeacherService, teacherService } from '#internship/modules/teacher/service/index.js';
+import { sendResponse } from '#app';
 
 export class TeacherController {
   constructor(private service: TeacherService) {}

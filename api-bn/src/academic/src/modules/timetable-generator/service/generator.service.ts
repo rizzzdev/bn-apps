@@ -1,8 +1,8 @@
-import { prisma } from '@academic/database/index.js';
+import { prisma } from '#academic/database/index.js';
 import { backtrackingEngine } from './backtracking-engine';
 import type { GenerateScheduleOptionsDto, CommitScheduleDto, GeneratorPreviewResult } from '../domain';
-import { ValidationError } from '@app/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { ValidationError } from '#app';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 export class GeneratorService {
   async generatePreview(options: GenerateScheduleOptionsDto): Promise<GeneratorPreviewResult> {

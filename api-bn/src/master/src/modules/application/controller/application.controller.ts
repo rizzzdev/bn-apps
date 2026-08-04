@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApplicationService, applicationService } from '@master/modules/application/service';
+import { ApplicationService, applicationService } from '#master/modules/application/service';
 import {
   sendResponse,
   createDownloadTemplateHandler,
   createUploadExcelHandler,
-} from '@app/index.js';
+} from '#app';
 
 export class ApplicationController {
   constructor(private service: ApplicationService) {}

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { DashboardService } from '../service/dashboard.service.js';
-import { sendResponse } from '@app/index.js';
+import { sendResponse } from '#app';
 
 const dashboardService = new DashboardService();
 

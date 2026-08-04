@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ClassStudentStatus } from '@academic/database/index.js';
+import { ClassStudentStatus } from '#academic/database/index.js';
 
 export const createClassStudentSchema = z.object({
   classId: z.string().uuid(),

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SemesterType, AcademicStatus } from '@master/database/index.js';
+import { SemesterType, AcademicStatus } from '#master/database/index.js';
 
 export const createSemesterSchema = z.object({
   type: z.nativeEnum(SemesterType),

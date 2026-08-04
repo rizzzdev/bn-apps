@@ -1,5 +1,5 @@
-import { prisma } from '@academic/database/index.js';
-import type { SubjectTeacherType } from '@academic/modules/subject-teachers/domain';
+import { prisma } from '#academic/database/index.js';
+import type { SubjectTeacherType } from '#academic/modules/subject-teachers/domain';
 
 export class SubjectTeacherRepository {
   async findAll(skip: number, take: number, subjectId?: string, status?: string) {

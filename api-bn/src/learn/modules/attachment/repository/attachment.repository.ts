@@ -1,4 +1,4 @@
-import { prisma } from '@/database';
+import { prisma } from '#/database';
 
 export class AttachmentRepository {
   async create(data: { filename: string; format: string; size: number; url: string }) {

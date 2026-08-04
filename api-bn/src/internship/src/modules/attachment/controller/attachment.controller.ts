@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { AttachmentService, attachmentService } from '@internship/modules/attachment/service/index.js';
-import { CreateAttachmentDto } from '@internship/modules/attachment/domain/index.js';
+import { AttachmentService, attachmentService } from '#internship/modules/attachment/service/index.js';
+import { CreateAttachmentDto } from '#internship/modules/attachment/domain/index.js';
 import path from 'path';
 import fs from 'fs';
-import { sendResponse } from '@app/index.js';
+import { sendResponse } from '#app';
 
 export class AttachmentController {
   constructor(private service: AttachmentService) {}

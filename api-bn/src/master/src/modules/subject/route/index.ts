@@ -1,1 +1,1 @@
-export * from '@master/modules/subject/route/subject.route';
+export * from '#master/modules/subject/route/subject.route';

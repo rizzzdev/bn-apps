@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { teacherPicketScheduleController } from '@academic/modules/teacher-picket-schedules/controller';
+import { teacherPicketScheduleController } from '#academic/modules/teacher-picket-schedules/controller';
 
 export const teacherPicketSchedulesRoute = Router();
 

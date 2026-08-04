@@ -1,4 +1,4 @@
-import { Semester } from '@master/database/index.js';
+import { Semester } from '#master/database/index.js';
 
 export type SemesterType = Semester;
 

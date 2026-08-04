@@ -1,13 +1,13 @@
-import { prisma } from '@internship/database/index.js';
-import { Prisma } from '@internship/database/index.js';
-import { parseExcel, generateExcelTemplate, putOptionalToNull } from '@app/index.js';
-import { IndustryMentorRepository, industryMentorRepository } from '@internship/modules/industry-mentor/repository/index.js';
-import { CreateIndustryMentorDto, UpdateIndustryMentorDto } from '@internship/modules/industry-mentor/domain/index.js';
-import { NotFoundError, BadRequestError } from '@app/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
-import { activityService } from '@internship/modules/activity/service/index.js';
-import { getAdminName } from '@internship/utils/activity-helper.js';
+import { prisma } from '#internship/database/index.js';
+import { Prisma } from '#internship/database/index.js';
+import { parseExcel, generateExcelTemplate, putOptionalToNull } from '#app';
+import { IndustryMentorRepository, industryMentorRepository } from '#internship/modules/industry-mentor/repository/index.js';
+import { CreateIndustryMentorDto, UpdateIndustryMentorDto } from '#internship/modules/industry-mentor/domain/index.js';
+import { NotFoundError, BadRequestError } from '#app';
+import { withCache, clearCachePattern, setCache } from '#app';
+import { getOrchestrator } from '#app/orchestrator.js';
+import { activityService } from '#internship/modules/activity/service/index.js';
+import { getAdminName } from '#internship/utils/activity-helper.js';
 
 const INDUSTRY_MENTOR_NULLABLE_UPDATE_FIELDS = [
   'prefixTitle', 'suffixTitle', 'position', 'phone',

@@ -6,7 +6,7 @@ import type {
   holdSchema,
   transferSchema,
   graduateSchema,
-} from '@academic/modules/class-students/domain/schemas';
+} from '#academic/modules/class-students/domain/schemas';
 
 export type CreateClassStudentDto = z.infer<typeof createClassStudentSchema>;
 export type UpdateClassStudentDto = z.infer<typeof updateClassStudentSchema>;

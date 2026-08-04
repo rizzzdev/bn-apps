@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { TeacherStatus, Gender, Religion } from '@master/database/index.js';
+import { TeacherStatus, Gender, Religion } from '#master/database/index.js';
 
 export const createTeacherSchema = z.object({
   fullname: z.string().trim().min(1),

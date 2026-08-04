@@ -15,12 +15,6 @@ services:
       - PUBLIC_API_URL=https://api-bn.${DOMAIN_NAME}/api/v1
       - PUBLIC_PORTAL_URL=https://apps-bn.${DOMAIN_NAME}
       - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME:-}
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://apps-bn.${DOMAIN_NAME}"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
     networks:
       - proxy
       - backend
@@ -29,12 +23,10 @@ services:
       - "traefik.http.routers.apps-bn.rule=Host(`apps-bn.${DOMAIN_NAME}`)"
       - "traefik.http.routers.apps-bn.entrypoints=websecure"
       - "traefik.http.routers.apps-bn.tls.certresolver=myresolver"
-      - "traefik.http.services.apps-bn.loadbalancer.server.port=5173"
+      - "traefik.http.services.apps-bn.loadbalancer.server.port=${PORT:-5173}"
 
 networks:
   proxy:
     external: true
   backend:
     external: true
-    
-

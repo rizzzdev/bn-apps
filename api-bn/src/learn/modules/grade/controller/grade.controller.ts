@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { GradeService } from '../service/grade.service';
-import { sendResponse } from '@app/index.js';
+import { sendResponse } from '#app';
 import { SentriError } from 'sentri/core';
 
 export class GradeController {

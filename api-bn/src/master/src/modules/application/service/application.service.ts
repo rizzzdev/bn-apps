@@ -1,8 +1,8 @@
-import { ApplicationRepository, applicationRepository } from '@master/modules/application/repository';
-import { CreateApplicationDto, UpdateApplicationDto } from '@master/modules/application/domain';
-import { BadRequestError, NotFoundError, generateExcelTemplate, parseExcel, buildHeaderLabelMap, type HeaderSpec } from '@app/index.js';
-import { prisma } from '@master/database/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
+import { ApplicationRepository, applicationRepository } from '#master/modules/application/repository';
+import { CreateApplicationDto, UpdateApplicationDto } from '#master/modules/application/domain';
+import { BadRequestError, NotFoundError, generateExcelTemplate, parseExcel, buildHeaderLabelMap, type HeaderSpec } from '#app';
+import { prisma } from '#master/database/index.js';
+import { withCache, clearCachePattern, setCache } from '#app';
 
 const APPLICATION_EXCEL_HEADERS: HeaderSpec[] = [
   { label: 'Urutan', key: 'order' },

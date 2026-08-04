@@ -1,21 +1,54 @@
-import { prisma } from '@master/database/index.js';
-import { CreateClassDto, UpdateClassDto } from '@master/modules/class/domain';
+import { prisma } from '#master/database/index.js';
+import { CreateClassDto, UpdateClassDto } from '#master/modules/class/domain';
 
 export class ClassRepository {
-  async findAll(skip: number, take: number, includeMajor: boolean = false, includeCurrentStudent: boolean = false) {
-    const include: import('@master/database/index.js').Prisma.ClassInclude = {
+  async findAll(
+    skip: number,
+    take: number,
+    search?: string,
+    majorId?: string | string[],
+    includeMajor: boolean = false,
+    includeCurrentStudent: boolean = false,
+  ) {
+    const where: import('#master/database/index.js').Prisma.ClassWhereInput = { deletedAt: null };
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    if (majorId) {
+      if (Array.isArray(majorId)) {
+        if (majorId.length > 0) where.majorId = { in: majorId };
+      } else {
+        where.majorId = majorId;
+      }
+    }
+    const include: import('#master/database/index.js').Prisma.ClassInclude = {
       ...(includeMajor ? { major: true } : {}),
       ...(includeCurrentStudent ? { _count: { select: { currentStudents: true } } } : {})
     };
-    return prisma.class.findMany({ where: { deletedAt: null }, skip, take, include: Object.keys(include).length > 0 ? include : undefined });
+    return prisma.class.findMany({ where, skip, take, include: Object.keys(include).length > 0 ? include : undefined });
   }
 
-  async count() {
-    return prisma.class.count({ where: { deletedAt: null } });
+  async count(search?: string, majorId?: string | string[]) {
+    const where: import('#master/database/index.js').Prisma.ClassWhereInput = { deletedAt: null };
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    if (majorId) {
+      if (Array.isArray(majorId)) {
+        if (majorId.length > 0) where.majorId = { in: majorId };
+      } else {
+        where.majorId = majorId;
+      }
+    }
+    return prisma.class.count({ where });
   }
 
   async findById(id: string, includeMajor: boolean = false, includeCurrentStudent: boolean = false) {
-    const include: import('@master/database/index.js').Prisma.ClassInclude = {
+    const include: import('#master/database/index.js').Prisma.ClassInclude = {
       ...(includeMajor ? { major: true } : {}),
       ...(includeCurrentStudent ? { _count: { select: { currentStudents: true } } } : {})
     };
@@ -29,7 +62,7 @@ export class ClassRepository {
   }
 
   async checkUnique(field: string, value: string, excludeId?: string) {
-    const where: import('@master/database/index.js').Prisma.ClassWhereInput = { [field]: value, deletedAt: null };
+    const where: import('#master/database/index.js').Prisma.ClassWhereInput = { [field]: value, deletedAt: null };
     if (excludeId) where.id = { not: excludeId };
     return prisma.class.findFirst({ where });
   }

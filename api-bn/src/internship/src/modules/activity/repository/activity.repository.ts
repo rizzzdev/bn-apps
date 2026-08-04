@@ -1,6 +1,6 @@
-import { prisma } from '@internship/database/index.js';
-import { CreateActivityDto, UpdateActivityDto } from '@internship/modules/activity/domain/index.js';
-import { Prisma } from '@internship/database/index.js';
+import { prisma } from '#internship/database/index.js';
+import { CreateActivityDto, UpdateActivityDto } from '#internship/modules/activity/domain/index.js';
+import { Prisma } from '#internship/database/index.js';
 
 export class ActivityRepository {
   async findAll(skip: number, take: number, whereClause?: Prisma.ActivityWhereInput) {

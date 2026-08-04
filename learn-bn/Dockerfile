@@ -63,7 +63,7 @@ EXPOSE 9062
 
 # Health check to ensure container is healthy on VPS
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:9062/_app/version.json || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:9062/health || exit 1
 
 # Start the SvelteKit Node server
 CMD ["node", "build"]

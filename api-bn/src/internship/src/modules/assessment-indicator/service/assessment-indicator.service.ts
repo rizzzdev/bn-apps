@@ -1,10 +1,10 @@
-import { AssessmentIndicatorRepository, assessmentIndicatorRepository } from '@internship/modules/assessment-indicator/repository/index.js';
-import { CreateAssessmentIndicatorDto, UpdateAssessmentIndicatorDto, BulkCreateAssessmentIndicatorDto } from '@internship/modules/assessment-indicator/domain/index.js';
-import { NotFoundError, BadRequestError } from '@app/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
-import { prisma } from '@internship/database/index.js';
-import { activityService } from '@internship/modules/activity/service/index.js';
-import { getAdminName } from '@internship/utils/activity-helper.js';
+import { AssessmentIndicatorRepository, assessmentIndicatorRepository } from '#internship/modules/assessment-indicator/repository/index.js';
+import { CreateAssessmentIndicatorDto, UpdateAssessmentIndicatorDto, BulkCreateAssessmentIndicatorDto } from '#internship/modules/assessment-indicator/domain/index.js';
+import { NotFoundError, BadRequestError } from '#app';
+import { withCache, clearCachePattern, setCache } from '#app';
+import { prisma } from '#internship/database/index.js';
+import { activityService } from '#internship/modules/activity/service/index.js';
+import { getAdminName } from '#internship/utils/activity-helper.js';
 
 export class AssessmentIndicatorService {
   constructor(private repository: AssessmentIndicatorRepository) {}

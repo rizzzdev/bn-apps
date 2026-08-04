@@ -1,5 +1,5 @@
 import multer, { memoryStorage } from 'multer';
-import { BadRequestError } from '@app/index.js';
+import { BadRequestError } from '#app';
 import { Request } from 'express';
 import path from 'path';
 import fs from 'fs';

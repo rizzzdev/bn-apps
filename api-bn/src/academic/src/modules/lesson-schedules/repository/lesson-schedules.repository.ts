@@ -1,7 +1,7 @@
-import { prisma } from '@academic/database/index.js';
-import type { Prisma } from '@academic/database/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
-import { putOptionalToNull } from '@app/index.js';
+import { prisma } from '#academic/database/index.js';
+import type { Prisma } from '#academic/database/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
+import { putOptionalToNull } from '#app';
 
 export type LessonScheduleFilters = {
   day?: string;

@@ -1,10 +1,10 @@
-import { MajorStudentRepository, majorStudentRepository } from '@academic/modules/major-students/repository';
-import { ClassStudentRepository, classStudentRepository } from '@academic/modules/class-students/repository';
-import { NotFoundError, BadRequestError } from '@app/index.js';
-import { BaseService } from '@academic/utils/index.js';
-import type { CreateMajorStudentDto, UpdateMajorStudentDto } from '@academic/modules/major-students/domain';
-
-import { prisma } from '@academic/database/index.js';
+import { MajorStudentRepository, majorStudentRepository } from '#academic/modules/major-students/repository';
+import { ClassStudentRepository, classStudentRepository } from '#academic/modules/class-students/repository';
+import { NotFoundError, BadRequestError } from '#app';
+import { BaseService } from '#academic/utils/index.js';
+import type { CreateMajorStudentDto, UpdateMajorStudentDto } from '#academic/modules/major-students/domain';
+import { getOrchestrator } from '#app/orchestrator.js';
+import { prisma } from '#academic/database/index.js';
 
 export class MajorStudentService extends BaseService<any, CreateMajorStudentDto, UpdateMajorStudentDto> {
   constructor(
@@ -29,8 +29,30 @@ export class MajorStudentService extends BaseService<any, CreateMajorStudentDto,
     }
 
     const resultRecord = await this.repository.create(data as any);
+    const recordStatus = (data as any).status ?? 'Aktif';
+    if (recordStatus === 'Aktif') {
+      await getOrchestrator().masterStudent.updateCurrentMajor(data.studentId, data.majorId);
+      await getOrchestrator().masterStudent.updateStatus(data.studentId, 'Aktif');
+    }
 
     return resultRecord;
+  }
+
+  override async update(id: string, data: UpdateMajorStudentDto) {
+    const updated = await this.repository.update(id, data as any);
+    if (updated) {
+      if (updated.status === 'Aktif') {
+        await getOrchestrator().masterStudent.updateCurrentMajor(updated.studentId, updated.majorId);
+        await getOrchestrator().masterStudent.updateStatus(updated.studentId, 'Aktif');
+      } else if (updated.status === 'Lulus') {
+        await getOrchestrator().masterStudent.updateCurrentMajor(updated.studentId, null);
+        await getOrchestrator().masterStudent.updateStatus(updated.studentId, 'Lulus');
+      } else {
+        await getOrchestrator().masterStudent.updateCurrentMajor(updated.studentId, null);
+        await getOrchestrator().masterStudent.updateStatus(updated.studentId, 'Tidak_Aktif');
+      }
+    }
+    return updated;
   }
 
   override async createBulk(items: CreateMajorStudentDto[]) {
@@ -45,8 +67,6 @@ export class MajorStudentService extends BaseService<any, CreateMajorStudentDto,
     }
     return { created: count };
   }
-
-
 
   async transfer(studentIds: string[]) {
     const result: { success: { studentId: string; message: string }[]; failed: { studentId: string; message: string }[] } = {
@@ -74,6 +94,8 @@ export class MajorStudentService extends BaseService<any, CreateMajorStudentDto,
           where: { id: target.id },
           data: { status: 'Pindah' as const },
         });
+        await getOrchestrator().masterStudent.updateCurrentMajor(studentId, null);
+        await getOrchestrator().masterStudent.updateStatus(studentId, 'Tidak_Aktif');
 
         await prisma.classStudent.updateMany({
           where: {
@@ -119,6 +141,8 @@ export class MajorStudentService extends BaseService<any, CreateMajorStudentDto,
           where: { id: target.id },
           data: { status: 'Lulus' as const },
         });
+        await getOrchestrator().masterStudent.updateCurrentMajor(studentId, null);
+        await getOrchestrator().masterStudent.updateStatus(studentId, 'Lulus');
 
         await prisma.classStudent.updateMany({
           where: {
@@ -136,6 +160,27 @@ export class MajorStudentService extends BaseService<any, CreateMajorStudentDto,
     }
 
     return result;
+  }
+
+  override async delete(id: string) {
+    const item = await this.getById(id);
+    await this.repository.softDelete(id);
+    if (item && item.studentId) {
+      await getOrchestrator().masterStudent.updateCurrentMajor(item.studentId, null);
+      await getOrchestrator().masterStudent.updateStatus(item.studentId, 'Tidak_Aktif');
+    }
+  }
+
+  override async deleteBulk(ids: string[]) {
+    const items = await prisma.majorStudent.findMany({ where: { id: { in: ids } } });
+    const { count } = await this.repository.softDeleteMany(ids);
+    for (const item of items) {
+      if (item && item.studentId) {
+        await getOrchestrator().masterStudent.updateCurrentMajor(item.studentId, null);
+        await getOrchestrator().masterStudent.updateStatus(item.studentId, 'Tidak_Aktif');
+      }
+    }
+    return { deleted: count };
   }
 }
 

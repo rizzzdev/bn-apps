@@ -1,6 +1,6 @@
-import { prisma } from '@internship/database/index.js';
-import { CreateAttachmentDto, UpdateAttachmentDto } from '@internship/modules/attachment/domain/index.js';
-import { Prisma } from '@internship/database/index.js';
+import { prisma } from '#internship/database/index.js';
+import { CreateAttachmentDto, UpdateAttachmentDto } from '#internship/modules/attachment/domain/index.js';
+import { Prisma } from '#internship/database/index.js';
 
 export class AttachmentRepository {
   async findAll(skip: number, take: number, whereClause?: Prisma.AttachmentWhereInput) {

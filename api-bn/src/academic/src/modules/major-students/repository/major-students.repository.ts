@@ -1,5 +1,5 @@
-import { prisma } from '@academic/database/index.js';
-import type { MajorStudentType } from '@academic/modules/major-students/domain';
+import { prisma } from '#academic/database/index.js';
+import type { MajorStudentType } from '#academic/modules/major-students/domain';
 
 export class MajorStudentRepository {
   async findAll(skip: number, take: number) {

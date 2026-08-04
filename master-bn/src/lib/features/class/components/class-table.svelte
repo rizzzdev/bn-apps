@@ -268,11 +268,18 @@
 	let totalPages = $state(1);
 	let totalItems = $state(0);
 
-	const fetchClasses = async (page: number, limitPerPage: number) => {
+	const fetchClasses = async (
+		page: number,
+		limitPerPage: number,
+		search: string = '',
+		majorsFilter: string[] = []
+	) => {
 		isLoading = true;
 		try {
+			const majorParam =
+				majorsFilter.length > 0 ? `&majorId=${encodeURIComponent(majorsFilter.join(','))}` : '';
 			const res = await apiClient(
-				`/classes?page=${page}&limit=${limitPerPage}&includeMajor=true&includeCurrentStudent=true`
+				`/classes?page=${page}&limit=${limitPerPage}&includeMajor=true&includeCurrentStudent=true${search ? `&search=${encodeURIComponent(search)}` : ''}${majorParam}`
 			);
 			const result = await res.json();
 			if (!result.error && result.data) {
@@ -301,8 +308,18 @@
 		}
 	};
 
+	let previousSearch = $state('');
+	let previousMajorFilter = $state<string[]>([]);
+
 	$effect(() => {
-		fetchClasses(currentPage, limit);
+		const majorFilterChanged =
+			JSON.stringify(majorFilter) !== JSON.stringify(previousMajorFilter);
+		if (searchQuery !== previousSearch || majorFilterChanged) {
+			previousSearch = searchQuery;
+			previousMajorFilter = [...majorFilter];
+			currentPage = 1;
+		}
+		fetchClasses(currentPage, limit, searchQuery, majorFilter);
 		fetchMajors();
 	});
 
@@ -311,14 +328,7 @@
 
 	let majorOptions = $derived(majors.map((m) => ({ label: m.name, value: m.id })));
 
-	let filteredClasses = $derived(
-		classes.filter((c) => {
-			const matchesSearch = (c.name || '').toLowerCase().includes(searchQuery.toLowerCase());
-			const matchesMajor =
-				majorFilter.length > 0 ? majorFilter.includes(c.majorId as string) : true;
-			return matchesSearch && matchesMajor;
-		})
-	);
+	let filteredClasses = $derived(classes);
 </script>
 
 <div class="mb-md flex flex-col md:flex-row gap-sm items-center justify-between">

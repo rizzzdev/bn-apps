@@ -1,6 +1,6 @@
-import { prisma } from '@academic/database/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
-import { clearCachePattern } from '@app/index.js';
+import { prisma } from '#academic/database/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
+import { clearCachePattern } from '#app';
 
 // Format gelar (prefix/suffix title) langsung ke fullname pada data shadow.
 function buildTeacherFullname(teacher: {

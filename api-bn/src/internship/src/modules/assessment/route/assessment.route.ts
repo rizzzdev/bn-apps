@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { validate } from '@internship/middlewares/index.js';
-import { assessmentController } from '@internship/modules/assessment/controller/index.js';
-import { createAssessmentSchema, updateAssessmentSchema, bulkDeleteSchema } from '@internship/modules/assessment/domain/index.js';
+import { validate } from '#internship/middlewares/index.js';
+import { assessmentController } from '#internship/modules/assessment/controller/index.js';
+import { createAssessmentSchema, updateAssessmentSchema, bulkDeleteSchema } from '#internship/modules/assessment/domain/index.js';
 
 export const assessmentRoute = Router();
 

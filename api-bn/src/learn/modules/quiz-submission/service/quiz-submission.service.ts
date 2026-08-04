@@ -1,7 +1,7 @@
 import { SentriError } from 'sentri/core';
 import { QuizSubmissionRepository } from '../repository/quiz-submission.repository';
 import { FinishQuizDto, finishQuizSchema } from '../domain/schemas';
-import { quizRepository } from '@/modules/quiz/repository/quiz.repository';
+import { quizRepository } from '#/modules/quiz/repository/quiz.repository';
 
 export class QuizSubmissionService {
   constructor(private repository: QuizSubmissionRepository) {}

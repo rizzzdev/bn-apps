@@ -1,1 +1,1 @@
-export * from '@master/modules/student/repository/student.repository';
+export * from '#master/modules/student/repository/student.repository';

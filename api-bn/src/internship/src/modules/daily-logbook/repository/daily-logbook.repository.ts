@@ -1,6 +1,6 @@
-import { prisma } from '@internship/database/index.js';
-import { CreateDailyLogbookDto, UpdateDailyLogbookDto } from '@internship/modules/daily-logbook/domain/index.js';
-import { Prisma } from '@internship/database/index.js';
+import { prisma } from '#internship/database/index.js';
+import { CreateDailyLogbookDto, UpdateDailyLogbookDto } from '#internship/modules/daily-logbook/domain/index.js';
+import { Prisma } from '#internship/database/index.js';
 
 export class DailyLogbookRepository {
   async findAll(skip: number, take: number, whereClause?: Prisma.DailyLogbookWhereInput) {

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AcademicStatus } from '@master/database/index.js';
+import { AcademicStatus } from '#master/database/index.js';
 
 export const createAcademicYearSchema = z.object({
   code: z.string().min(1).optional(),

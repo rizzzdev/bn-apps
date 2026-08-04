@@ -1,9 +1,9 @@
-import { prisma } from '@academic/database/index.js';
-import { lessonScheduleRepository } from '@academic/modules/lesson-schedules/repository';
-import type { LessonScheduleRepository } from '@academic/modules/lesson-schedules/repository/lesson-schedules.repository';
-import { NotFoundError, ValidationError } from '@app/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
-import type { CreateLessonScheduleDto, UpdateLessonScheduleDto } from '@academic/modules/lesson-schedules/domain';
+import { prisma } from '#academic/database/index.js';
+import { lessonScheduleRepository } from '#academic/modules/lesson-schedules/repository';
+import type { LessonScheduleRepository } from '#academic/modules/lesson-schedules/repository/lesson-schedules.repository';
+import { NotFoundError, ValidationError } from '#app';
+import { getOrchestrator } from '#app/orchestrator.js';
+import type { CreateLessonScheduleDto, UpdateLessonScheduleDto } from '#academic/modules/lesson-schedules/domain';
 
 export class LessonScheduleService {
   constructor(private repository: LessonScheduleRepository) {}

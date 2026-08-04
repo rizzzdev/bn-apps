@@ -1,8 +1,8 @@
-import { prisma, ClassStudentStatus } from '@academic/database/index.js';
+import { prisma, ClassStudentStatus } from '#academic/database/index.js';
 import type {
   AcademicClassStudent,
   IAcademicClassStudentRepository,
-} from '@app/ports/academic-data.port.js';
+} from '#app/ports/academic-data.port.js';
 
 export class AcademicClassStudentRepository implements IAcademicClassStudentRepository {
   async findFirst(where: { classId: string; studentId: string; status?: string }): Promise<AcademicClassStudent | null> {

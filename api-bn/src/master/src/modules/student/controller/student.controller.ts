@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { StudentService, studentService } from '@master/modules/student/service';
+import { StudentService, studentService } from '#master/modules/student/service';
 import {
   sendResponse,
   createDownloadTemplateHandler,
   createUploadExcelHandler,
-} from '@app/index.js';
+} from '#app';
 
 export class StudentController {
   constructor(private service: StudentService) {}
@@ -134,6 +134,20 @@ export class StudentController {
     try {
       const result = await this.service.changePassword(req.params.id as string, req.body);
       sendResponse(res, 200, result.message, null);
+    } catch (error) { next(error instanceof Error ? error : new Error(String(error))); }
+  };
+
+  updateCurrentClass = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await this.service.updateCurrentClass(req.params.id as string, req.body);
+      sendResponse(res, 200, 'Berhasil memperbarui kelas murid', data);
+    } catch (error) { next(error instanceof Error ? error : new Error(String(error))); }
+  };
+
+  updateCurrentMajor = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await this.service.updateCurrentMajor(req.params.id as string, req.body);
+      sendResponse(res, 200, 'Berhasil memperbarui jurusan murid', data);
     } catch (error) { next(error instanceof Error ? error : new Error(String(error))); }
   };
 }

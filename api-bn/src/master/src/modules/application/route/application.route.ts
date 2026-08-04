@@ -1,7 +1,7 @@
-import { validate, uploadExcel } from '@master/middlewares';
+import { validate, uploadExcel } from '#master/middlewares';
 import { Router } from 'express';
-import { applicationController } from '@master/modules/application/controller';
-import { batchGetApplicationSchema, createApplicationSchema, updateApplicationSchema } from '@master/modules/application/domain';
+import { applicationController } from '#master/modules/application/controller';
+import { batchGetApplicationSchema, createApplicationSchema, updateApplicationSchema } from '#master/modules/application/domain';
 import { z } from 'zod';
 
 export const applicationRoute = Router();

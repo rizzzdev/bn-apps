@@ -1,1 +1,1 @@
-export * from '@academic/modules/class-students/controller/class-students.controller';
+export * from '#academic/modules/class-students/controller/class-students.controller';

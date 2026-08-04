@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
-import { lessonSchedulesService } from '@academic/modules/lesson-schedules/service';
-import type { LessonScheduleService } from '@academic/modules/lesson-schedules/service/lesson-schedules.service';
-import { sendResponse } from '@app/index.js';
+import { lessonSchedulesService } from '#academic/modules/lesson-schedules/service';
+import type { LessonScheduleService } from '#academic/modules/lesson-schedules/service/lesson-schedules.service';
+import { sendResponse } from '#app';
 
 export class LessonScheduleController {
   constructor(private service: LessonScheduleService) {}

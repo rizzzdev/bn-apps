@@ -1,6 +1,6 @@
-import { prisma } from '@auth/database/index.js';
-import { sentriAuth } from '@auth/index.js';
-import type { IAuthDataRepository, Role, AuthUser, AuthUserIdentifier } from '@app/ports/auth-data.port.js';
+import { prisma } from '#auth/database/index.js';
+import { sentriAuth } from '#auth';
+import type { IAuthDataRepository, Role, AuthUser, AuthUserIdentifier } from '#app/ports/auth-data.port.js';
 
 export class AuthDataService implements IAuthDataRepository {
   async register(data: {

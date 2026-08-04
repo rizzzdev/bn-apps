@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { ActivityService, activityService } from '@internship/modules/activity/service/index.js';
-import { sendResponse } from '@app/index.js';
-import { prisma } from '@internship/database/index.js';
-import { Prisma } from '@internship/database/index.js';
+import { ActivityService, activityService } from '#internship/modules/activity/service/index.js';
+import { sendResponse } from '#app';
+import { prisma } from '#internship/database/index.js';
+import { Prisma } from '#internship/database/index.js';
 
 export class ActivityController {
   constructor(private service: ActivityService) {}

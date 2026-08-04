@@ -1,10 +1,10 @@
-import { MajorHeadRepository, majorHeadRepository } from '@academic/modules/major-heads/repository';
-import { NotFoundError } from '@app/index.js';
-import { BaseService } from '@academic/utils/index.js';
-import type { CreateMajorHeadDto, UpdateMajorHeadDto } from '@academic/modules/major-heads/domain';
+import { MajorHeadRepository, majorHeadRepository } from '#academic/modules/major-heads/repository';
+import { NotFoundError } from '#app';
+import { BaseService } from '#academic/utils/index.js';
+import type { CreateMajorHeadDto, UpdateMajorHeadDto } from '#academic/modules/major-heads/domain';
 
-import { getOrchestrator } from '@app/orchestrator.js';
-import { prisma } from '@academic/database/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
+import { prisma } from '#academic/database/index.js';
 
 export class MajorHeadService extends BaseService<any, CreateMajorHeadDto, UpdateMajorHeadDto> {
   constructor(protected repository: MajorHeadRepository) {

@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { HomeroomTeacherService, homeroomTeachersService } from '@academic/modules/homeroom-teachers/service';
-import { sendResponse } from '@app/index.js';
+import { HomeroomTeacherService, homeroomTeachersService } from '#academic/modules/homeroom-teachers/service';
+import { sendResponse } from '#app';
 
 export class HomeroomTeacherController {
   constructor(private service: HomeroomTeacherService) {}

@@ -1,6 +1,6 @@
-import { validate } from '@internship/middlewares/index.js';
+import { validate } from '#internship/middlewares/index.js';
 import { Router } from 'express';
-import { industryMentorController } from '@internship/modules/industry-mentor/controller/index.js';
+import { industryMentorController } from '#internship/modules/industry-mentor/controller/index.js';
 import {
   createIndustryMentorSchema,
   updateIndustryMentorSchema,
@@ -8,8 +8,8 @@ import {
   bulkEditCompanySchema,
   changePasswordSchema,
   bulkCreateIndustryMentorSchema,
-} from '@internship/modules/industry-mentor/domain/index.js';
-import { sentriAuth } from '@auth/index.js';
+} from '#internship/modules/industry-mentor/domain/index.js';
+import { sentriAuth } from '#auth';
 
 export const industryMentorRoute = Router();
 

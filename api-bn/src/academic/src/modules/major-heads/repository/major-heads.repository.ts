@@ -1,5 +1,5 @@
-import { prisma } from '@academic/database/index.js';
-import type { MajorHeadType } from '@academic/modules/major-heads/domain';
+import { prisma } from '#academic/database/index.js';
+import type { MajorHeadType } from '#academic/modules/major-heads/domain';
 
 export class MajorHeadRepository {
   async findAll(skip: number, take: number, filters?: { majorId?: string | undefined; academicYearId?: string | undefined; status?: string | undefined }) {

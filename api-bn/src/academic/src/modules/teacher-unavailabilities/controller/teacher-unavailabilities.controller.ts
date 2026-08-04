@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { teacherUnavailabilityService } from '../service';
-import { sendResponse } from '@app/index.js';
+import { sendResponse } from '#app';
 
 export class TeacherUnavailabilityController {
   async getAll(req: Request, res: Response, next: NextFunction) {

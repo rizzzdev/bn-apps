@@ -1,18 +1,18 @@
-import { AcademicYearRepository, academicyearRepository } from '@master/modules/academic-year/repository';
-import { CreateAcademicYearDto, UpdateAcademicYearDto } from '@master/modules/academic-year/domain';
-import { BadRequestError, NotFoundError } from '@app/index.js';
-import { prisma } from '@master/database/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
+import { AcademicYearRepository, academicyearRepository } from '#master/modules/academic-year/repository';
+import { CreateAcademicYearDto, UpdateAcademicYearDto } from '#master/modules/academic-year/domain';
+import { BadRequestError, NotFoundError } from '#app';
+import { prisma } from '#master/database/index.js';
+import { withCache, clearCachePattern, setCache } from '#app';
 
 export class AcademicYearService {
   constructor(private repository: AcademicYearRepository) {}
 
-  async getAll(page: number, limit: number, includeSemesters: boolean = false) {
-    return withCache(`academic-year:all:page:${page}:limit:${limit}:semesters:${includeSemesters}`, 600, async () => {
+  async getAll(page: number, limit: number, search?: string, includeSemesters: boolean = false) {
+    return withCache(`academic-year:all:page:${page}:limit:${limit}:search:${search || ''}:semesters:${includeSemesters}`, 600, async () => {
       const skip = (page - 1) * limit;
       const [data, total] = await Promise.all([
-        this.repository.findAll(skip, limit, includeSemesters),
-        this.repository.count()
+        this.repository.findAll(skip, limit, search, includeSemesters),
+        this.repository.count(search)
       ]);
       return { data, total };
     });

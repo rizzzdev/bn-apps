@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { TeacherService, teacherService } from '@master/modules/teacher/service';
+import { TeacherService, teacherService } from '#master/modules/teacher/service';
 import {
   sendResponse,
   createDownloadTemplateHandler,
   createUploadExcelHandler,
-} from '@app/index.js';
+} from '#app';
 
 export class TeacherController {
   constructor(private service: TeacherService) {}

@@ -1,6 +1,6 @@
-import { prisma } from '@learn/database/index.js';
+import { prisma } from '#learn/database/index.js';
 import { shadowSyncService } from '../../services/shadow-sync.service.js';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 export { getOrchestrator };
 

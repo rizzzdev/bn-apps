@@ -1,8 +1,8 @@
-import { prisma } from '@academic/database/index.js';
+import { prisma } from '#academic/database/index.js';
 import type { CreateTeacherUnavailabilityDto, BulkSetTeacherUnavailabilityDto } from '../domain';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { getOrchestrator } from '#app/orchestrator.js';
 
-type Base = import('@academic/database/index.js').Prisma.TeacherUnavailabilityGetPayload<{
+type Base = import('#academic/database/index.js').Prisma.TeacherUnavailabilityGetPayload<{
   include: { lessonHour: true };
 }>;
 

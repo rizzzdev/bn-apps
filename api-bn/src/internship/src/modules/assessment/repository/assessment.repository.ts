@@ -1,6 +1,6 @@
-import { prisma } from '@internship/database/index.js';
-import { CreateAssessmentDto, UpdateAssessmentDto } from '@internship/modules/assessment/domain/index.js';
-import { Prisma } from '@internship/database/index.js';
+import { prisma } from '#internship/database/index.js';
+import { CreateAssessmentDto, UpdateAssessmentDto } from '#internship/modules/assessment/domain/index.js';
+import { Prisma } from '#internship/database/index.js';
 
 export class AssessmentRepository {
   async findAll(skip: number, take: number, whereClause?: Prisma.AssessmentWhereInput) {

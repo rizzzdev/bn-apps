@@ -1,5 +1,5 @@
 import { SentriError } from 'sentri/core';
-import { putOptionalToNull } from '@app/index.js';
+import { putOptionalToNull } from '#app';
 import { QuizRepository } from '../repository/quiz.repository';
 import { CreateQuizDto, UpdateQuizDto, createQuizSchema, updateQuizSchema } from '../domain/schemas';
 

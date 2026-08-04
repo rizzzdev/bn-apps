@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { sentriAuth } from '@auth/index.js';
+import { sentriAuth } from '#auth';
 import { academicyearRoute } from "../modules/academic-year/index.js";
 import { semesterRoute } from "../modules/semester/index.js";
 import { classRoute } from "../modules/class/index.js";

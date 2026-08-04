@@ -1,11 +1,11 @@
-import { prisma } from '@master/database/index.js';
-import { CreateTeacherDto, UpdateTeacherDto } from '@master/modules/teacher/domain';
-import { TeacherStatus } from '@master/database/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { prisma } from '#master/database/index.js';
+import { CreateTeacherDto, UpdateTeacherDto } from '#master/modules/teacher/domain';
+import { TeacherStatus } from '#master/database/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 export class TeacherRepository {
   async findAll(skip: number, take: number | "all", search?: string, userId?: string, includeUser = false, includePicture = false) {
-    const where: import('@master/database/index.js').Prisma.TeacherWhereInput = { deletedAt: null };
+    const where: import('#master/database/index.js').Prisma.TeacherWhereInput = { deletedAt: null };
     if (userId) where.userId = userId;
     if (search) {
       where.OR = [
@@ -35,7 +35,7 @@ export class TeacherRepository {
   }
 
   async count(search?: string, userId?: string) {
-    const where: import('@master/database/index.js').Prisma.TeacherWhereInput = { deletedAt: null };
+    const where: import('#master/database/index.js').Prisma.TeacherWhereInput = { deletedAt: null };
     if (userId) where.userId = userId;
     if (search) {
       where.OR = [
@@ -73,7 +73,7 @@ export class TeacherRepository {
   }
 
   async checkUnique(field: string, value: string, excludeId?: string) {
-    const where: import('@master/database/index.js').Prisma.TeacherWhereInput = { [field]: value, deletedAt: null };
+    const where: import('#master/database/index.js').Prisma.TeacherWhereInput = { [field]: value, deletedAt: null };
     if (excludeId) where.id = { not: excludeId };
     return prisma.teacher.findFirst({ where });
   }

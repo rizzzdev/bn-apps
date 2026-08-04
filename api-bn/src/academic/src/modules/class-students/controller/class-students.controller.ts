@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
-import { ClassStudentService, classStudentsService } from '@academic/modules/class-students/service';
-import { sendResponse } from '@app/index.js';
-import { BaseController } from '@academic/utils/index.js';
+import { ClassStudentService, classStudentsService } from '#academic/modules/class-students/service';
+import { sendResponse } from '#app';
+import { BaseController } from '#academic/utils/index.js';
 
 export class ClassStudentController extends BaseController<any, any, any> {
   constructor(protected service: ClassStudentService) {

@@ -1,4 +1,4 @@
-import { prisma } from '@academic/database/index.js';
+import { prisma } from '#academic/database/index.js';
 
 export class LessonHourRepository {
   async findAll(skip: number, take: number) {

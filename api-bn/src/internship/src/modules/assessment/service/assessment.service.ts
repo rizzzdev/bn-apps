@@ -1,10 +1,10 @@
-import { AssessmentRepository, assessmentRepository } from '@internship/modules/assessment/repository/index.js';
-import { CreateAssessmentDto, UpdateAssessmentDto } from '@internship/modules/assessment/domain/index.js';
-import { NotFoundError, BadRequestError } from '@app/index.js';
-import { withCache, clearCachePattern, setCache, putOptionalToNull } from '@app/index.js';
-import { prisma } from '@internship/database/index.js';
-import { activityService } from '@internship/modules/activity/service/index.js';
-import { getReviewerName } from '@internship/utils/activity-helper.js';
+import { AssessmentRepository, assessmentRepository } from '#internship/modules/assessment/repository/index.js';
+import { CreateAssessmentDto, UpdateAssessmentDto } from '#internship/modules/assessment/domain/index.js';
+import { NotFoundError, BadRequestError } from '#app';
+import { withCache, clearCachePattern, setCache, putOptionalToNull } from '#app';
+import { prisma } from '#internship/database/index.js';
+import { activityService } from '#internship/modules/activity/service/index.js';
+import { getReviewerName } from '#internship/utils/activity-helper.js';
 
 const ASSESSMENT_NULLABLE_UPDATE_FIELDS = [
   'technicalScore', 'nonTechnicalScore', 'finalScore', 'notes',

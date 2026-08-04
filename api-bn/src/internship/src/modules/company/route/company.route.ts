@@ -1,7 +1,7 @@
-import { validate } from '@internship/middlewares/index.js';
+import { validate } from '#internship/middlewares/index.js';
 import { Router } from 'express';
-import { companyController } from '@internship/modules/company/controller/index.js';
-import { createCompanySchema, updateCompanySchema, bulkDeleteSchema, bulkCreateCompanySchema } from '@internship/modules/company/domain/index.js';
+import { companyController } from '#internship/modules/company/controller/index.js';
+import { createCompanySchema, updateCompanySchema, bulkDeleteSchema, bulkCreateCompanySchema } from '#internship/modules/company/domain/index.js';
 
 export const companyRoute = Router();
 

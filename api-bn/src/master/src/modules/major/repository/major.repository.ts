@@ -1,26 +1,40 @@
-import { prisma } from '@master/database/index.js';
-import { CreateMajorDto, UpdateMajorDto } from '@master/modules/major/domain';
+import { prisma } from '#master/database/index.js';
+import { CreateMajorDto, UpdateMajorDto } from '#master/modules/major/domain';
 
 export class MajorRepository {
-  async findAll(skip: number, take: number, includeClasses: boolean = false, includeCurrentStudent: boolean = false) {
-    const include: import('@master/database/index.js').Prisma.MajorInclude = {
+  async findAll(skip: number, take: number, search?: string, includeClasses: boolean = false, includeCurrentStudent: boolean = false) {
+    const where: import('#master/database/index.js').Prisma.MajorWhereInput = { deletedAt: null };
+    if (search) {
+      where.OR = [
+        { code: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    const include: import('#master/database/index.js').Prisma.MajorInclude = {
       ...(includeClasses ? { classes: { where: { deletedAt: null } } } : {}),
       ...(includeCurrentStudent ? { _count: { select: { currentStudents: true } } } : {})
     };
     return prisma.major.findMany({ 
-      where: { deletedAt: null }, 
+      where, 
       skip, 
       take,
       include: Object.keys(include).length > 0 ? include : undefined
     });
   }
 
-  async count() {
-    return prisma.major.count({ where: { deletedAt: null } });
+  async count(search?: string) {
+    const where: import('#master/database/index.js').Prisma.MajorWhereInput = { deletedAt: null };
+    if (search) {
+      where.OR = [
+        { code: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    return prisma.major.count({ where });
   }
 
   async findById(id: string, includeClasses: boolean = false, includeCurrentStudent: boolean = false) {
-    const include: import('@master/database/index.js').Prisma.MajorInclude = {
+    const include: import('#master/database/index.js').Prisma.MajorInclude = {
       ...(includeClasses ? { classes: { where: { deletedAt: null } } } : {}),
       ...(includeCurrentStudent ? { _count: { select: { currentStudents: true } } } : {})
     };
@@ -37,7 +51,7 @@ export class MajorRepository {
   }
 
   async checkUnique(field: string, value: string, excludeId?: string) {
-    const where: import('@master/database/index.js').Prisma.MajorWhereInput = { [field]: value, deletedAt: null };
+    const where: import('#master/database/index.js').Prisma.MajorWhereInput = { [field]: value, deletedAt: null };
     if (excludeId) where.id = { not: excludeId };
     return prisma.major.findFirst({ where });
   }

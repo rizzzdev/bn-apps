@@ -1,8 +1,8 @@
-import { SubjectTeacherRepository, subjectTeacherRepository } from '@academic/modules/subject-teachers/repository';
-import { NotFoundError } from '@app/index.js';
-import type { CreateSubjectTeacherDto, UpdateSubjectTeacherDto } from '@academic/modules/subject-teachers/domain';
+import { SubjectTeacherRepository, subjectTeacherRepository } from '#academic/modules/subject-teachers/repository';
+import { NotFoundError } from '#app';
+import type { CreateSubjectTeacherDto, UpdateSubjectTeacherDto } from '#academic/modules/subject-teachers/domain';
 
-import { prisma } from '@academic/database/index.js';
+import { prisma } from '#academic/database/index.js';
 
 export class SubjectTeacherService {
   constructor(private repository: SubjectTeacherRepository) {}

@@ -1,1 +1,1 @@
-export * from '@master/modules/dashboard/controller/dashboard.controller';
+export * from '#master/modules/dashboard/controller/dashboard.controller';

@@ -1,1 +1,1 @@
-export { subjectRoute } from '@master/modules/subject/route';
+export { subjectRoute } from '#master/modules/subject/route';

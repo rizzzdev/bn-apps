@@ -1,7 +1,7 @@
-import { AttachmentRepository, attachmentRepository } from '@internship/modules/attachment/repository/index.js';
-import { CreateAttachmentDto, UpdateAttachmentDto } from '@internship/modules/attachment/domain/index.js';
-import { NotFoundError } from '@app/index.js';
-import { withCache, clearCachePattern, setCache, putOptionalToNull } from '@app/index.js';
+import { AttachmentRepository, attachmentRepository } from '#internship/modules/attachment/repository/index.js';
+import { CreateAttachmentDto, UpdateAttachmentDto } from '#internship/modules/attachment/domain/index.js';
+import { NotFoundError } from '#app';
+import { withCache, clearCachePattern, setCache, putOptionalToNull } from '#app';
 import path from 'path';
 import fs from 'fs';
 

@@ -1,1 +1,1 @@
-export { academicyearRoute } from '@master/modules/academic-year/route';
+export { academicyearRoute } from '#master/modules/academic-year/route';

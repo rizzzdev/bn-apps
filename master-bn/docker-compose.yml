@@ -32,15 +32,6 @@ services:
       - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME:-}
       # Comma-separated roles allowed to access this app (default: super_admin)
       - PUBLIC_ALLOWED_ROLES=${PUBLIC_ALLOWED_ROLES:-super_admin}
-      # Opsional: rewrite URL server-side (http://localhost:9091 -> internal)
-      # - INTERNAL_API_BASE=http://api-bn:3000
-    healthcheck:
-      test:
-        ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://127.0.0.1:3000/robots.txt']
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
     networks:
       - proxy
       - backend

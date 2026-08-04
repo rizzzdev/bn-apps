@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AttachmentService, attachmentService } from '@master/modules/attachment/service';
-import { sendResponse, getStorage } from '@app/index.js';
+import { AttachmentService, attachmentService } from '#master/modules/attachment/service';
+import { sendResponse, getStorage } from '#app';
 
 export class AttachmentController {
   constructor(private service: AttachmentService) {}

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { prisma } from '@academic/database/index.js';
+import { prisma } from '#academic/database/index.js';
 import { shadowSyncService } from '../services/shadow-sync.service.js';
-import { withCache, sendResponse } from '@app/index.js';
+import { withCache, sendResponse } from '#app';
 
 export const shadowRoute = Router();
 

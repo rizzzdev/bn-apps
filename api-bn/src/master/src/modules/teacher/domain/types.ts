@@ -1,4 +1,4 @@
-import { Teacher } from '@master/database/index.js';
+import { Teacher } from '#master/database/index.js';
 
 export type TeacherType = Teacher;
 

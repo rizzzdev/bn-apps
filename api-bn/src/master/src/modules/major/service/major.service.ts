@@ -1,8 +1,8 @@
-import { MajorRepository, majorRepository } from '@master/modules/major/repository';
-import { CreateMajorDto, UpdateMajorDto } from '@master/modules/major/domain';
-import { BadRequestError, NotFoundError, generateExcelTemplate, parseExcel, buildHeaderLabelMap, type HeaderSpec } from '@app/index.js';
-import { prisma } from '@master/database/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
+import { MajorRepository, majorRepository } from '#master/modules/major/repository';
+import { CreateMajorDto, UpdateMajorDto } from '#master/modules/major/domain';
+import { BadRequestError, NotFoundError, generateExcelTemplate, parseExcel, buildHeaderLabelMap, type HeaderSpec } from '#app';
+import { prisma } from '#master/database/index.js';
+import { withCache, clearCachePattern, setCache } from '#app';
 
 const MAJOR_EXCEL_HEADERS: HeaderSpec[] = [
   { label: 'Kode Jurusan', key: 'code' },
@@ -12,12 +12,12 @@ const MAJOR_EXCEL_HEADERS: HeaderSpec[] = [
 export class MajorService {
   constructor(private repository: MajorRepository) {}
 
-  async getAll(page: number, limit: number, includeClasses: boolean = false, includeCurrentStudent: boolean = false) {
-    return withCache(`major:all:page:${page}:limit:${limit}:classes:${includeClasses}:includeCurrentStudent:${includeCurrentStudent}`, 600, async () => {
+  async getAll(page: number, limit: number, search?: string, includeClasses: boolean = false, includeCurrentStudent: boolean = false) {
+    return withCache(`major:all:page:${page}:limit:${limit}:search:${search || ''}:classes:${includeClasses}:includeCurrentStudent:${includeCurrentStudent}`, 600, async () => {
       const skip = (page - 1) * limit;
       const [data, total] = await Promise.all([
-        this.repository.findAll(skip, limit, includeClasses, includeCurrentStudent),
-        this.repository.count()
+        this.repository.findAll(skip, limit, search, includeClasses, includeCurrentStudent),
+        this.repository.count(search)
       ]);
       return { data, total };
     });

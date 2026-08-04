@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { classSubjectRequirementController } from '../controller';
-import { validate } from '@academic/middlewares/validate';
+import { validate } from '#academic/middlewares/validate';
 import {
   createClassSubjectRequirementSchema,
   updateClassSubjectRequirementSchema,

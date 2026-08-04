@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { homeroomTeacherController } from '@academic/modules/homeroom-teachers/controller';
+import { homeroomTeacherController } from '#academic/modules/homeroom-teachers/controller';
 
 export const homeroomTeachersRoute = Router();
 

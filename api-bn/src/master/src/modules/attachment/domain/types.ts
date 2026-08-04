@@ -1,4 +1,4 @@
-import { Attachment } from '@master/database/index.js';
+import { Attachment } from '#master/database/index.js';
 
 export type AttachmentType = Attachment;
 

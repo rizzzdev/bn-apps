@@ -1,4 +1,4 @@
-import { NotFoundError } from '@app/index.js';
+import { NotFoundError } from '#app';
 
 export interface BaseRepository<T, CreateDto, UpdateDto> {
   findAll(skip: number, limit: number): Promise<T[]>;

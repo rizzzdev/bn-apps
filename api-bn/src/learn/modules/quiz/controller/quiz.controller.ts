@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { QuizService } from '../service/quiz.service';
-import { sendResponse } from '@app/index.js';
+import { sendResponse } from '#app';
 import { SentriError } from 'sentri/core';
 
 const ensureTeacherOrAdmin = (req: Request) => {

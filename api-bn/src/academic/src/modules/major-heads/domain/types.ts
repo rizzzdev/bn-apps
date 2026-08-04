@@ -1,3 +1,3 @@
-import type { MajorHead } from '@academic/database/index.js';
+import type { MajorHead } from '#academic/database/index.js';
 
 export type MajorHeadType = MajorHead;

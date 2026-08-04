@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { StudentService } from '@internship/modules/student/service/index.js';
-import { sendResponse } from '@app/index.js';
+import { StudentService } from '#internship/modules/student/service/index.js';
+import { sendResponse } from '#app';
 
 export class StudentController {
   constructor(private service: StudentService) {}
@@ -36,5 +36,5 @@ export class StudentController {
 
 }
 
-import { studentService } from '@internship/modules/student/service/index.js';
+import { studentService } from '#internship/modules/student/service/index.js';
 export const studentController = new StudentController(studentService);

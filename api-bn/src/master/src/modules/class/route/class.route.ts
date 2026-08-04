@@ -1,7 +1,7 @@
-import { validate, uploadExcel } from '@master/middlewares';
+import { validate, uploadExcel } from '#master/middlewares';
 import { Router } from 'express';
-import { classController } from '@master/modules/class/controller';
-import { batchGetClassSchema, createClassSchema, updateClassSchema } from '@master/modules/class/domain';
+import { classController } from '#master/modules/class/controller';
+import { batchGetClassSchema, createClassSchema, updateClassSchema } from '#master/modules/class/domain';
 import { z } from 'zod';
 
 export const classRoute = Router();

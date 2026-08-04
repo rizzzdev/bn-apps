@@ -20,12 +20,6 @@ services:
       - PUBLIC_PORTAL_URL=https://apps-bn.${DOMAIN_NAME}
       - PUBLIC_COOKIE_DOMAIN=${DOMAIN_NAME:-}
       - PUBLIC_ALLOWED_ROLES=${PUBLIC_ALLOWED_ROLES:-super_admin,teacher}
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:5173/_app/version.json"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
     networks:
       - proxy
       - backend

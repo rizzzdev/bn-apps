@@ -173,11 +173,11 @@
 	let totalPages = $state(1);
 	let totalItems = $state(0);
 
-	const fetchAcademicYears = async (page: number, limitPerPage: number) => {
+	const fetchAcademicYears = async (page: number, limitPerPage: number, search: string = '') => {
 		isLoading = true;
 		try {
 			const res = await apiClient(
-				`/academic-years?page=${page}&limit=${limitPerPage}&includeSemesters=true`
+				`/academic-years?page=${page}&limit=${limitPerPage}&includeSemesters=true${search ? `&search=${encodeURIComponent(search)}` : ''}`
 			);
 			const result = await res.json();
 			if (!result.error && result.data) {
@@ -199,21 +199,19 @@
 		}
 	};
 
+	let previousSearch = $state('');
+
 	$effect(() => {
-		fetchAcademicYears(currentPage, limit);
+		if (searchQuery !== previousSearch) {
+			previousSearch = searchQuery;
+			currentPage = 1;
+		}
+		fetchAcademicYears(currentPage, limit, searchQuery);
 	});
 
 	let searchQuery = $state('');
 
-	let filteredAcademicYears = $derived(
-		academicYears.filter((y) => {
-			return (
-				(y.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-				(y.startYear || '').includes(searchQuery) ||
-				(y.endYear || '').includes(searchQuery)
-			);
-		})
-	);
+	let filteredAcademicYears = $derived(academicYears);
 </script>
 
 <div class="mb-md flex flex-col md:flex-row gap-sm items-center justify-between">

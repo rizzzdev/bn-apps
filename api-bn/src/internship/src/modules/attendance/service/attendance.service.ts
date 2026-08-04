@@ -1,11 +1,11 @@
 import { AttendanceRepository } from '../repository/index.js';
 import { CreateAttendanceDto } from '../domain/dtos.js';
-import { calculateDistance } from '@internship/utils/geo.js';
-import { prisma } from '@internship/database/index.js';
-import { NotFoundError, BadRequestError } from '@app/index.js';
-import { activityService } from '@internship/modules/activity/service/index.js';
-import { getAdminName } from '@internship/utils/activity-helper.js';
-import { Prisma } from '@internship/database/index.js';
+import { calculateDistance } from '#internship/utils/geo.js';
+import { prisma } from '#internship/database/index.js';
+import { NotFoundError, BadRequestError } from '#app';
+import { activityService } from '#internship/modules/activity/service/index.js';
+import { getAdminName } from '#internship/utils/activity-helper.js';
+import { Prisma } from '#internship/database/index.js';
 
 export class AttendanceService {
   constructor(private repository: AttendanceRepository) {}

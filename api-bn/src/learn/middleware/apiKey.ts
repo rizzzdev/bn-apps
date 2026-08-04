@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { sendResponse, sendError, env } from '@app/index.js';
+import { sendResponse, sendError, env } from '#app';
 
 export const requireApiKey = (req: Request, res: Response, next: NextFunction) => {
   const apiKey = req.headers['x-api-key'];

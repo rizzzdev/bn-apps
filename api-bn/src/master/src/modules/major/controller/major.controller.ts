@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { MajorService, majorService } from '@master/modules/major/service';
+import { MajorService, majorService } from '#master/modules/major/service';
 import {
   sendResponse,
   createDownloadTemplateHandler,
   createUploadExcelHandler,
-} from '@app/index.js';
+} from '#app';
 
 export class MajorController {
   constructor(private service: MajorService) {}
@@ -13,9 +13,10 @@ export class MajorController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string | undefined;
       const includeClasses = req.query.includeClasses === 'true';
       const includeCurrentStudent = req.query.includeCurrentStudent === 'true';
-      const { data, total } = await this.service.getAll(page, limit, includeClasses, includeCurrentStudent);
+      const { data, total } = await this.service.getAll(page, limit, search, includeClasses, includeCurrentStudent);
       const pagination = { currentPage: page, totalPage: Math.ceil(total / limit), totalData: total, dataPerPage: limit };
       sendResponse(res, 200, 'Berhasil mengambil data jurusan', data, pagination);
     } catch (error) { next(error instanceof Error ? error : new Error(String(error))); }

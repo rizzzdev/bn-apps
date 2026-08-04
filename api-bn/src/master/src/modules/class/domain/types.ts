@@ -1,4 +1,4 @@
-import { Class } from '@master/database/index.js';
+import { Class } from '#master/database/index.js';
 
 export type ClassType = Class;
 

@@ -1,5 +1,5 @@
-import { prisma } from '@academic/database/index.js';
-import type { TeacherPicketScheduleType } from '@academic/modules/teacher-picket-schedules/domain';
+import { prisma } from '#academic/database/index.js';
+import type { TeacherPicketScheduleType } from '#academic/modules/teacher-picket-schedules/domain';
 
 export class TeacherPicketScheduleRepository {
   async findAll(skip: number, take: number) {

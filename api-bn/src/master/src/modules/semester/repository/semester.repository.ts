@@ -1,5 +1,5 @@
-import { prisma } from '@master/database/index.js';
-import { CreateSemesterDto, UpdateSemesterDto } from '@master/modules/semester/domain';
+import { prisma } from '#master/database/index.js';
+import { CreateSemesterDto, UpdateSemesterDto } from '#master/modules/semester/domain';
 
 export class SemesterRepository {
   async findAll(skip: number, take: number, includeAcademicYear: boolean = false) {
@@ -28,21 +28,21 @@ export class SemesterRepository {
     });
   }
 
-  async checkUniqueType(type: import('@master/database/index.js').SemesterType, academicYearId: string, excludeId?: string) {
-    const where: import('@master/database/index.js').Prisma.SemesterWhereInput = { type, academicYearId, deletedAt: null };
+  async checkUniqueType(type: import('#master/database/index.js').SemesterType, academicYearId: string, excludeId?: string) {
+    const where: import('#master/database/index.js').Prisma.SemesterWhereInput = { type, academicYearId, deletedAt: null };
     if (excludeId) where.id = { not: excludeId };
     return prisma.semester.findFirst({ where });
   }
 
   async checkActiveStatus(excludeId?: string) {
-    const where: import('@master/database/index.js').Prisma.SemesterWhereInput = { status: 'Aktif', deletedAt: null };
+    const where: import('#master/database/index.js').Prisma.SemesterWhereInput = { status: 'Aktif', deletedAt: null };
     if (excludeId) where.id = { not: excludeId };
     return prisma.semester.findFirst({ where });
   }
 
   async create(data: CreateSemesterDto) {
     return prisma.semester.create({
-      data: data as import('@master/database/index.js').Prisma.SemesterUncheckedCreateInput,
+      data: data as import('#master/database/index.js').Prisma.SemesterUncheckedCreateInput,
       include: { academicYear: true }
     });
   }
@@ -50,7 +50,7 @@ export class SemesterRepository {
   async update(id: string, data: UpdateSemesterDto) {
     return prisma.semester.update({
       where: { id },
-      data: data as import('@master/database/index.js').Prisma.SemesterUncheckedCreateInput,
+      data: data as import('#master/database/index.js').Prisma.SemesterUncheckedCreateInput,
       include: { academicYear: true }
     });
   }

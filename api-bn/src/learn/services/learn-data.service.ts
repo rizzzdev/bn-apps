@@ -2,7 +2,7 @@
 //  learn-data.service.ts  —  concrete impls of learn-data port (type-safe)
 //  Lokasi: src/learn/services/  (sesuai path alias @learn/* → ./src/learn/*)
 // =============================================================================
-import { prisma } from '@learn/database/index.js';
+import { prisma } from '#learn/database/index.js';
 import {
   LearnMaterial,
   LearnAssignment,
@@ -14,7 +14,7 @@ import {
   ILearnQuizRepository,
   ILearnSubmissionRepository,
   ILearnAttachmentRepository,
-} from '@app/ports/learn-data.port.js';
+} from '#app/ports/learn-data.port.js';
 
 // Helper: robust read of optional number / string fields, tolerating schema drift
 // across learn_* migrations without forcing `as any`.

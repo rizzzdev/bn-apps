@@ -1,5 +1,5 @@
-import { prisma } from '@internship/database/index.js';
-import { Prisma } from '@internship/database/index.js';
+import { prisma } from '#internship/database/index.js';
+import { Prisma } from '#internship/database/index.js';
 
 export class AttendanceRepository {
   async create(data: Prisma.AttendanceUncheckedCreateInput) {

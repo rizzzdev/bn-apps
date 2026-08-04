@@ -1,6 +1,6 @@
-import { prisma } from '@internship/database/index.js';
-import { Prisma } from '@internship/database/index.js';
-import { CreateAssessmentScoreDto } from '@internship/modules/assessment-score/domain/index.js';
+import { prisma } from '#internship/database/index.js';
+import { Prisma } from '#internship/database/index.js';
+import { CreateAssessmentScoreDto } from '#internship/modules/assessment-score/domain/index.js';
 
 export class AssessmentScoreRepository {
   async findByPlacementId(placementId: string) {

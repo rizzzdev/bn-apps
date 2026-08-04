@@ -1,1 +1,1 @@
-export { studentRoute } from '@master/modules/student/route';
+export { studentRoute } from '#master/modules/student/route';

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { validate } from '@internship/middlewares/index.js';
+import { validate } from '#internship/middlewares/index.js';
 
 import multer from 'multer';
 import fs from 'fs';
@@ -20,8 +20,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-import { attachmentController } from '@internship/modules/attachment/controller/index.js';
-import { createAttachmentSchema, updateAttachmentSchema } from '@internship/modules/attachment/domain/index.js';
+import { attachmentController } from '#internship/modules/attachment/controller/index.js';
+import { createAttachmentSchema, updateAttachmentSchema } from '#internship/modules/attachment/domain/index.js';
 
 export const attachmentRoute = Router();
 

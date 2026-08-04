@@ -1,11 +1,11 @@
-import { ClassStudentRepository, classStudentRepository } from '@academic/modules/class-students/repository';
-import { MajorStudentRepository, majorStudentRepository } from '@academic/modules/major-students/repository';
-import { NotFoundError, BadRequestError } from '@app/index.js';
-import { BaseService } from '@academic/utils/index.js';
-import type { CreateClassStudentDto, UpdateClassStudentDto } from '@academic/modules/class-students/domain';
+import { ClassStudentRepository, classStudentRepository } from '#academic/modules/class-students/repository';
+import { MajorStudentRepository, majorStudentRepository } from '#academic/modules/major-students/repository';
+import { NotFoundError, BadRequestError } from '#app';
+import { BaseService } from '#academic/utils/index.js';
+import type { CreateClassStudentDto, UpdateClassStudentDto } from '#academic/modules/class-students/domain';
 
-import { getOrchestrator } from '@app/orchestrator.js';
-import { prisma } from '@academic/database/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
+import { prisma } from '#academic/database/index.js';
 
 export class ClassStudentService extends BaseService<any, CreateClassStudentDto, UpdateClassStudentDto> {
   constructor(
@@ -60,8 +60,31 @@ export class ClassStudentService extends BaseService<any, CreateClassStudentDto,
     }
 
     const resultRecord = await this.repository.create(data as any);
+    const recordStatus = (data as any).status ?? 'Aktif';
+    if (recordStatus === 'Aktif') {
+      await getOrchestrator().masterStudent.updateCurrentClass(data.studentId, data.classId, classRecord.majorId);
+      await getOrchestrator().masterStudent.updateStatus(data.studentId, 'Aktif');
+    }
 
     return resultRecord;
+  }
+
+  override async update(id: string, data: UpdateClassStudentDto) {
+    const updated = await this.repository.update(id, data as any);
+    if (updated) {
+      if (updated.status === 'Aktif') {
+        const classRecord = await getOrchestrator().masterClass.findById(updated.classId);
+        await getOrchestrator().masterStudent.updateCurrentClass(updated.studentId, updated.classId, classRecord?.majorId);
+        await getOrchestrator().masterStudent.updateStatus(updated.studentId, 'Aktif');
+      } else if (updated.status === 'Lulus') {
+        await getOrchestrator().masterStudent.updateCurrentClass(updated.studentId, null, null);
+        await getOrchestrator().masterStudent.updateStatus(updated.studentId, 'Lulus');
+      } else {
+        await getOrchestrator().masterStudent.updateCurrentClass(updated.studentId, null, null);
+        await getOrchestrator().masterStudent.updateStatus(updated.studentId, 'Tidak_Aktif');
+      }
+    }
+    return updated;
   }
 
   override async createBulk(items: CreateClassStudentDto[]) {
@@ -77,13 +100,13 @@ export class ClassStudentService extends BaseService<any, CreateClassStudentDto,
     return { created: count };
   }
 
-
-
   async promote(studentIds: string[], targetClassId: string) {
     const result: { success: { studentId: string; message: string }[]; failed: { studentId: string; message: string }[] } = {
       success: [],
       failed: [],
     };
+
+    const targetClass = await getOrchestrator().masterClass.findById(targetClassId);
 
     for (const studentId of studentIds) {
       try {
@@ -110,6 +133,9 @@ export class ClassStudentService extends BaseService<any, CreateClassStudentDto,
           status: 'Aktif' as const,
         });
 
+        await getOrchestrator().masterStudent.updateCurrentClass(studentId, targetClassId, targetClass?.majorId);
+        await getOrchestrator().masterStudent.updateStatus(studentId, 'Aktif');
+
         result.success.push({ studentId, message: 'Berhasil naik kelas' });
       } catch (error) {
         result.failed.push({ studentId, message: error instanceof Error ? error.message : 'Terjadi kesalahan' });
@@ -124,6 +150,8 @@ export class ClassStudentService extends BaseService<any, CreateClassStudentDto,
       success: [],
       failed: [],
     };
+
+    const targetClass = await getOrchestrator().masterClass.findById(targetClassId);
 
     for (const studentId of studentIds) {
       try {
@@ -149,6 +177,9 @@ export class ClassStudentService extends BaseService<any, CreateClassStudentDto,
           academicYearId: activeAcademicYear.id,
           status: 'Aktif' as const,
         });
+
+        await getOrchestrator().masterStudent.updateCurrentClass(studentId, targetClassId, targetClass?.majorId);
+        await getOrchestrator().masterStudent.updateStatus(studentId, 'Aktif');
 
         result.success.push({ studentId, message: 'Berhasil tinggal kelas' });
       } catch (error) {
@@ -192,7 +223,13 @@ export class ClassStudentService extends BaseService<any, CreateClassStudentDto,
               academicYearId: activeAcademicYear.id,
               status: 'Aktif' as const,
             });
+            const targetClass = await getOrchestrator().masterClass.findById(targetClassId);
+            await getOrchestrator().masterStudent.updateCurrentClass(studentId, targetClassId, targetClass?.majorId);
+            await getOrchestrator().masterStudent.updateStatus(studentId, 'Aktif');
           }
+        } else {
+          await getOrchestrator().masterStudent.updateCurrentClass(studentId, null, null);
+          await getOrchestrator().masterStudent.updateStatus(studentId, 'Tidak_Aktif');
         }
 
         result.success.push({ studentId, message: 'Berhasil pindah' });
@@ -228,6 +265,9 @@ export class ClassStudentService extends BaseService<any, CreateClassStudentDto,
           await this.majorStudentRepository.update(linkedMajor.id, { status: 'Lulus' as const });
         }
 
+        await getOrchestrator().masterStudent.updateCurrentClass(studentId, null, null);
+        await getOrchestrator().masterStudent.updateStatus(studentId, 'Lulus');
+
         result.success.push({ studentId, message: 'Berhasil lulus' });
       } catch (error) {
         result.failed.push({ studentId, message: error instanceof Error ? error.message : 'Terjadi kesalahan' });
@@ -235,6 +275,27 @@ export class ClassStudentService extends BaseService<any, CreateClassStudentDto,
     }
 
     return result;
+  }
+
+  override async delete(id: string) {
+    const item = await this.getById(id);
+    await this.repository.softDelete(id);
+    if (item && item.studentId) {
+      await getOrchestrator().masterStudent.updateCurrentClass(item.studentId, null, null);
+      await getOrchestrator().masterStudent.updateStatus(item.studentId, 'Tidak_Aktif');
+    }
+  }
+
+  override async deleteBulk(ids: string[]) {
+    const items = await prisma.classStudent.findMany({ where: { id: { in: ids } } });
+    const { count } = await this.repository.softDeleteMany(ids);
+    for (const item of items) {
+      if (item && item.studentId) {
+        await getOrchestrator().masterStudent.updateCurrentClass(item.studentId, null, null);
+        await getOrchestrator().masterStudent.updateStatus(item.studentId, 'Tidak_Aktif');
+      }
+    }
+    return { deleted: count };
   }
 }
 

@@ -1,1 +1,1 @@
-export * from '@master/modules/attachment/repository/attachment.repository';
+export * from '#master/modules/attachment/repository/attachment.repository';

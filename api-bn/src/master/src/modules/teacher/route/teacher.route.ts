@@ -1,10 +1,10 @@
-import { validate, uploadExcel } from '@master/middlewares';
+import { validate, uploadExcel } from '#master/middlewares';
 import { Router } from 'express';
-import { teacherController } from '@master/modules/teacher/controller';
-import { batchGetTeacherSchema, createTeacherSchema, updateTeacherSchema, bulkUpdateTeacherStatusSchema, changePasswordSchema } from '@master/modules/teacher/domain';
+import { teacherController } from '#master/modules/teacher/controller';
+import { batchGetTeacherSchema, createTeacherSchema, updateTeacherSchema, bulkUpdateTeacherStatusSchema, changePasswordSchema } from '#master/modules/teacher/domain';
 import { z } from 'zod';
-import { uploadAttachment } from '@master/middlewares/upload.middleware';
-import { sentriAuth } from '@auth/index.js';
+import { uploadAttachment } from '#master/middlewares/upload.middleware';
+import { sentriAuth } from '#auth';
 
 export const teacherRoute = Router();
 

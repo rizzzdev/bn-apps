@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { SubjectService, subjectService } from '@master/modules/subject/service';
+import { SubjectService, subjectService } from '#master/modules/subject/service';
 import {
   sendResponse,
   createDownloadTemplateHandler,
   createUploadExcelHandler,
-} from '@app/index.js';
+} from '#app';
 
 export class SubjectController {
   constructor(private service: SubjectService) {}
@@ -13,7 +13,8 @@ export class SubjectController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
-      const { data, total } = await this.service.getAll(page, limit);
+      const search = req.query.search as string | undefined;
+      const { data, total } = await this.service.getAll(page, limit, search);
       const pagination = { currentPage: page, totalPage: Math.ceil(total / limit), totalData: total, dataPerPage: limit };
       sendResponse(res, 200, 'Berhasil mengambil data mata pelajaran', data, pagination);
     } catch (error) { next(error instanceof Error ? error : new Error(String(error))); }

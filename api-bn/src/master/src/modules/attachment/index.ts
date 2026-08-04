@@ -1,1 +1,1 @@
-export { attachmentRoute } from '@master/modules/attachment/route';
+export { attachmentRoute } from '#master/modules/attachment/route';

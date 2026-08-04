@@ -1,1 +1,1 @@
-export * from '@academic/middlewares/validate';
+export * from '#academic/middlewares/validate';

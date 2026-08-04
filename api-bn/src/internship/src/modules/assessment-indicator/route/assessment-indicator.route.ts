@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { validate } from '@internship/middlewares/index.js';
-import { assessmentIndicatorController } from '@internship/modules/assessment-indicator/controller/index.js';
+import { validate } from '#internship/middlewares/index.js';
+import { assessmentIndicatorController } from '#internship/modules/assessment-indicator/controller/index.js';
 import {
   createAssessmentIndicatorSchema,
   updateAssessmentIndicatorSchema,
   bulkCreateAssessmentIndicatorSchema,
   bulkDeleteIndicatorSchema,
-} from '@internship/modules/assessment-indicator/domain/index.js';
+} from '#internship/modules/assessment-indicator/domain/index.js';
 
 export const assessmentIndicatorRoute = Router();
 

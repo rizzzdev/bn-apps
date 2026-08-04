@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { subjectTeacherController } from '@academic/modules/subject-teachers/controller';
+import { subjectTeacherController } from '#academic/modules/subject-teachers/controller';
 
 export const subjectTeachersRoute = Router();
 

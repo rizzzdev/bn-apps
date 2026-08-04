@@ -1,4 +1,4 @@
-import { Application } from '@master/database/index.js';
+import { Application } from '#master/database/index.js';
 
 export type ApplicationType = Application;
 

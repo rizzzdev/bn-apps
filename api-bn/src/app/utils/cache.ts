@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { env } from '@app/index.js';
+import { env } from '#app';
 import { Request, Response, NextFunction } from 'express';
 
 // 1. Initialize Redis Client

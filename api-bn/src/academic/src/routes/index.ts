@@ -1,16 +1,16 @@
 import { Router } from 'express';
-import { sentriAuth } from '@auth/index.js';
-import { majorStudentsRoute } from '@academic/modules/major-students';
-import { classStudentsRoute } from '@academic/modules/class-students';
-import { homeroomTeachersRoute } from '@academic/modules/homeroom-teachers';
-import { subjectTeachersRoute } from '@academic/modules/subject-teachers';
-import { teacherPicketSchedulesRoute } from '@academic/modules/teacher-picket-schedules';
-import { majorHeadsRoute } from '@academic/modules/major-heads';
-import { lessonSchedulesRoute } from '@academic/modules/lesson-schedules';
-import { lessonHoursRoute } from '@academic/modules/lesson-hours';
-import { classSubjectRequirementsRoute } from '@academic/modules/class-subject-requirements';
-import { teacherUnavailabilitiesRoute } from '@academic/modules/teacher-unavailabilities';
-import { generatorRoute } from '@academic/modules/timetable-generator';
+import { sentriAuth } from '#auth';
+import { majorStudentsRoute } from '#academic/modules/major-students';
+import { classStudentsRoute } from '#academic/modules/class-students';
+import { homeroomTeachersRoute } from '#academic/modules/homeroom-teachers';
+import { subjectTeachersRoute } from '#academic/modules/subject-teachers';
+import { teacherPicketSchedulesRoute } from '#academic/modules/teacher-picket-schedules';
+import { majorHeadsRoute } from '#academic/modules/major-heads';
+import { lessonSchedulesRoute } from '#academic/modules/lesson-schedules';
+import { lessonHoursRoute } from '#academic/modules/lesson-hours';
+import { classSubjectRequirementsRoute } from '#academic/modules/class-subject-requirements';
+import { teacherUnavailabilitiesRoute } from '#academic/modules/teacher-unavailabilities';
+import { generatorRoute } from '#academic/modules/timetable-generator';
 import { shadowRoute } from './shadow.route.js';
 
 export const academicRouter = Router();

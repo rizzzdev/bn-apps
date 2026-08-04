@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { SubjectTeacherService, subjectTeachersService } from '@academic/modules/subject-teachers/service';
-import { sendResponse } from '@app/index.js';
+import { SubjectTeacherService, subjectTeachersService } from '#academic/modules/subject-teachers/service';
+import { sendResponse } from '#app';
 
 export class SubjectTeacherController {
   constructor(private service: SubjectTeacherService) {}

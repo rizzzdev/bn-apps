@@ -1,19 +1,19 @@
 import {
   StudentRepository,
   studentRepository,
-} from '@master/modules/student/repository';
-import { CreateStudentDto, UpdateStudentDto, ChangePasswordDto } from '@master/modules/student/domain';
-import { BadRequestError, NotFoundError } from '@app/index.js';
-import { prisma } from '@master/database/index.js';
-import { sentriAuth } from '@auth/index.js';
-import { StudentStatus } from '@master/database/index.js';
-import { parseExcel, generateExcelTemplate, buildHeaderLabelMap, putOptionalToNull, type HeaderSpec } from '@app/index.js';
-import { createStudentSchema } from '@master/modules/student/domain/schemas';
+} from '#master/modules/student/repository';
+import { CreateStudentDto, UpdateStudentDto, ChangePasswordDto, UpdateStudentClassDto, UpdateStudentMajorDto } from '#master/modules/student/domain';
+import { BadRequestError, NotFoundError } from '#app';
+import { prisma } from '#master/database/index.js';
+import { sentriAuth } from '#auth';
+import { StudentStatus } from '#master/database/index.js';
+import { parseExcel, generateExcelTemplate, buildHeaderLabelMap, putOptionalToNull, type HeaderSpec } from '#app';
+import { createStudentSchema } from '#master/modules/student/domain/schemas';
 import { randomUUID } from "crypto";
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
-import { attachmentRepository } from '@master/modules/attachment/repository';
-import { attachmentService } from '@master/modules/attachment/service';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { withCache, clearCachePattern, setCache } from '#app';
+import { attachmentRepository } from '#master/modules/attachment/repository';
+import { attachmentService } from '#master/modules/attachment/service';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 const STUDENT_EXCEL_HEADERS: HeaderSpec[] = [
   { label: 'Nama Lengkap', key: 'fullname' },
@@ -455,7 +455,7 @@ export class StudentService {
     const failedRows: Array<Record<string, unknown> & { reason: string }> = [];
     const preparedRows: Array<{
       parsed: Omit<
-        import('@master/database/index.js').Prisma.StudentUncheckedCreateInput,
+        import('#master/database/index.js').Prisma.StudentUncheckedCreateInput,
         "userId"
       > & { password?: string };
     }> = [];
@@ -584,6 +584,52 @@ export class StudentService {
     }
     await getOrchestrator().masterAuth.changePassword(item.userId, dto.newPassword);
     return { success: true, message: 'Password berhasil diubah' };
+  }
+
+  async updateCurrentClass(id: string, data: UpdateStudentClassDto) {
+    await this.getById(id);
+    let autoMajorId: string | null | undefined = undefined;
+
+    if (data.currentClassId) {
+      const classRecord = await prisma.class.findFirst({
+        where: { id: data.currentClassId, deletedAt: null },
+      });
+      if (!classRecord) {
+        throw new BadRequestError('Kelas tidak ditemukan atau telah dihapus');
+      }
+      autoMajorId = classRecord.majorId;
+    }
+
+    const updated = await this.repository.updateCurrentClass(id, data.currentClassId, autoMajorId);
+    await clearCachePattern('student:all:*');
+    await clearCachePattern(`student:id:${id}`);
+    return updated;
+  }
+
+  async updateCurrentMajor(id: string, data: UpdateStudentMajorDto) {
+    await this.getById(id);
+
+    if (data.currentMajorId) {
+      const majorRecord = await prisma.major.findFirst({
+        where: { id: data.currentMajorId, deletedAt: null },
+      });
+      if (!majorRecord) {
+        throw new BadRequestError('Jurusan tidak ditemukan atau telah dihapus');
+      }
+    }
+
+    const updated = await this.repository.updateCurrentMajor(id, data.currentMajorId);
+    await clearCachePattern('student:all:*');
+    await clearCachePattern(`student:id:${id}`);
+    return updated;
+  }
+
+  async updateStatus(id: string, status: StudentStatus) {
+    await this.getById(id);
+    await this.repository.bulkUpdateStatus([id], status);
+    await clearCachePattern('student:all:*');
+    await clearCachePattern(`student:id:${id}`);
+    return { success: true };
   }
 }
 

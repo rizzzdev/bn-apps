@@ -1,7 +1,7 @@
-import { validate, uploadExcel } from '@master/middlewares';
+import { validate, uploadExcel } from '#master/middlewares';
 import { Router } from 'express';
-import { majorController } from '@master/modules/major/controller';
-import { batchGetMajorSchema, createMajorSchema, updateMajorSchema } from '@master/modules/major/domain';
+import { majorController } from '#master/modules/major/controller';
+import { batchGetMajorSchema, createMajorSchema, updateMajorSchema } from '#master/modules/major/domain';
 import { z } from 'zod';
 
 export const majorRoute = Router();

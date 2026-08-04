@@ -1,5 +1,5 @@
-import { prisma } from '@academic/database/index.js';
-import type { HomeroomTeacherType } from '@academic/modules/homeroom-teachers/domain';
+import { prisma } from '#academic/database/index.js';
+import type { HomeroomTeacherType } from '#academic/modules/homeroom-teachers/domain';
 
 export class HomeroomTeacherRepository {
   async findAll(skip: number, take: number, classId?: string, status?: string) {

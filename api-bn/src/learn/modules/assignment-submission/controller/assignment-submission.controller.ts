@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AssignmentSubmissionService } from '../service/assignment-submission.service';
-import { sendResponse } from '@app/index.js';
+import { sendResponse } from '#app';
 import { SentriError } from 'sentri/core';
 
 export class AssignmentSubmissionController {

@@ -1,8 +1,8 @@
-import { TeacherRepository, teacherRepository } from '@internship/modules/teacher/repository/index.js';
-import { Prisma, prisma } from '@internship/database/index.js';
-import { NotFoundError } from '@app/index.js';
-import { withCache, clearCachePattern } from '@app/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { TeacherRepository, teacherRepository } from '#internship/modules/teacher/repository/index.js';
+import { Prisma, prisma } from '#internship/database/index.js';
+import { NotFoundError } from '#app';
+import { withCache, clearCachePattern } from '#app';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 export class TeacherService {
   constructor(private repository: TeacherRepository) {}

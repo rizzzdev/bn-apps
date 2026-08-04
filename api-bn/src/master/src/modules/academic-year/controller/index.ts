@@ -1,1 +1,1 @@
-export * from '@master/modules/academic-year/controller/academic-year.controller';
+export * from '#master/modules/academic-year/controller/academic-year.controller';

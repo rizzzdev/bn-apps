@@ -1,1 +1,1 @@
-export * from '@master/modules/attachment/controller/attachment.controller';
+export * from '#master/modules/attachment/controller/attachment.controller';

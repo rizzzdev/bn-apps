@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { validate } from '@internship/middlewares/index.js';
-import { activityController } from '@internship/modules/activity/controller/index.js';
-import { createActivitySchema, updateActivitySchema } from '@internship/modules/activity/domain/index.js';
+import { validate } from '#internship/middlewares/index.js';
+import { activityController } from '#internship/modules/activity/controller/index.js';
+import { createActivitySchema, updateActivitySchema } from '#internship/modules/activity/domain/index.js';
 
 export const activityRoute = Router();
 

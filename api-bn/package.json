@@ -3,6 +3,21 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
+  "imports": {
+    "#app": "./src/app/index.ts",
+    "#app/*": "./src/app/*",
+    "#auth": "./src/auth/index.ts",
+    "#auth/*": "./src/auth/src/*",
+    "#master": "./src/master/index.ts",
+    "#master/*": "./src/master/src/*",
+    "#academic": "./src/academic/index.ts",
+    "#academic/*": "./src/academic/src/*",
+    "#learn": "./src/learn/index.ts",
+    "#learn/*": "./src/learn/*",
+    "#/*": "./src/learn/*",
+    "#internship": "./src/internship/index.ts",
+    "#internship/*": "./src/internship/src/*"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
@@ -32,7 +47,8 @@
     "db:pull:learn": "prisma db pull --config=src/learn/prisma.config.ts",
     "db:pull:auth": "prisma db pull --config=src/auth/prisma.config.ts",
     "db:seed:academic": "tsx src/scripts/seed-lesson-hours.ts",
-
+    "db:generate": "npm run db:generate:master && npm run db:generate:academic && npm run db:generate:internship && npm run db:generate:learn && npm run db:generate:auth",
+    "build": "npm run db:generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

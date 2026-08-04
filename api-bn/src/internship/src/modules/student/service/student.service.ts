@@ -1,8 +1,8 @@
-import { StudentRepository } from '@internship/modules/student/repository/index.js';
-import { Prisma, prisma } from '@internship/database/index.js';
-import { NotFoundError } from '@app/index.js';
-import { withCache, clearCachePattern } from '@app/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { StudentRepository } from '#internship/modules/student/repository/index.js';
+import { Prisma, prisma } from '#internship/database/index.js';
+import { NotFoundError } from '#app';
+import { withCache, clearCachePattern } from '#app';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 export class StudentService {
   constructor(private repository: StudentRepository) {}
@@ -84,5 +84,5 @@ export class StudentService {
   }
 }
 
-import { studentRepository } from '@internship/modules/student/repository/index.js';
+import { studentRepository } from '#internship/modules/student/repository/index.js';
 export const studentService = new StudentService(studentRepository);

@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
-import { MajorHeadService, majorHeadsService } from '@academic/modules/major-heads/service';
-import { sendResponse } from '@app/index.js';
-import { BaseController } from '@academic/utils/index.js';
+import { MajorHeadService, majorHeadsService } from '#academic/modules/major-heads/service';
+import { sendResponse } from '#app';
+import { BaseController } from '#academic/utils/index.js';
 
 export class MajorHeadController extends BaseController<any, any, any> {
   constructor(protected service: MajorHeadService) {

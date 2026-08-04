@@ -1,11 +1,11 @@
-import { validate, uploadExcel } from '@master/middlewares';
+import { validate, uploadExcel } from '#master/middlewares';
 import { Router } from 'express';
-import { studentController } from '@master/modules/student/controller';
-import { batchGetStudentSchema, createStudentSchema, updateStudentSchema, bulkUpdateStudentStatusSchema, changePasswordSchema } from '@master/modules/student/domain';
+import { studentController } from '#master/modules/student/controller';
+import { batchGetStudentSchema, createStudentSchema, updateStudentSchema, bulkUpdateStudentStatusSchema, changePasswordSchema, updateStudentClassSchema, updateStudentMajorSchema } from '#master/modules/student/domain';
 import { z } from 'zod';
-import { uploadAttachment } from '@master/middlewares/upload.middleware';
-import { batchCreateDataSchema } from '@app/utils/batch-schemas';
-import { sentriAuth } from '@auth/index.js';
+import { uploadAttachment } from '#master/middlewares/upload.middleware';
+import { batchCreateDataSchema } from '#app/utils/batch-schemas';
+import { sentriAuth } from '#auth';
 
 export const studentRoute = Router();
 
@@ -26,6 +26,10 @@ studentRoute.delete('/:id/picture', studentController.deletePicture);
 
 // Password route
 studentRoute.patch('/:id/password', sentriAuth.authorize("super_admin"), validate(changePasswordSchema), studentController.changePassword);
+
+// Class and Major placement routes
+studentRoute.patch('/:id/class', validate(updateStudentClassSchema), studentController.updateCurrentClass);
+studentRoute.patch('/:id/major', validate(updateStudentMajorSchema), studentController.updateCurrentMajor);
 
 // CRUD routes
 studentRoute.get('/', studentController.getAll);

@@ -1,7 +1,7 @@
-import { prisma } from '@master/database/index.js';
-import { CreateStudentDto, UpdateStudentDto } from '@master/modules/student/domain';
-import { StudentStatus } from '@master/database/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { prisma } from '#master/database/index.js';
+import { CreateStudentDto, UpdateStudentDto } from '#master/modules/student/domain';
+import { StudentStatus } from '#master/database/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 export class StudentRepository {
   async findAll(
@@ -13,7 +13,7 @@ export class StudentRepository {
     includeUser = false,
     includePicture = false,
   ) {
-    const where: import('@master/database/index.js').Prisma.StudentWhereInput =
+    const where: import('#master/database/index.js').Prisma.StudentWhereInput =
       { deletedAt: null };
     if (userId) where.userId = userId;
     if (search) {
@@ -27,7 +27,7 @@ export class StudentRepository {
       ];
     }
     const include:
-      | import('@master/database/index.js').Prisma.StudentInclude
+      | import('#master/database/index.js').Prisma.StudentInclude
       | undefined = {
       ...(includeCurrentClass ? { currentClass: true, currentMajor: true } : {}),
       ...(includePicture ? { picture: true } : {}),
@@ -54,7 +54,7 @@ export class StudentRepository {
   }
 
   async count(search?: string, userId?: string) {
-    const where: import('@master/database/index.js').Prisma.StudentWhereInput =
+    const where: import('#master/database/index.js').Prisma.StudentWhereInput =
       { deletedAt: null };
     if (userId) where.userId = userId;
     if (search) {
@@ -86,7 +86,7 @@ export class StudentRepository {
 
   async findById(id: string, includeCurrentClass = false, includePicture = false) {
     const include:
-      | import('@master/database/index.js').Prisma.StudentInclude
+      | import('#master/database/index.js').Prisma.StudentInclude
       | undefined = {
       ...(includeCurrentClass ? { currentClass: true, currentMajor: true } : {}),
       ...(includePicture ? { picture: true } : {}),
@@ -104,7 +104,7 @@ export class StudentRepository {
   }
 
   async checkUnique(field: string, value: string, excludeId?: string) {
-    const where: import('@master/database/index.js').Prisma.StudentWhereInput =
+    const where: import('#master/database/index.js').Prisma.StudentWhereInput =
       { [field]: value, deletedAt: null };
     if (excludeId) where.id = { not: excludeId };
     return prisma.student.findFirst({ where });
@@ -162,6 +162,32 @@ export class StudentRepository {
       where: { id: { in: ids }, deletedAt: null },
       data: { status },
     });
+  }
+
+  async updateCurrentClass(id: string, currentClassId: string | null, autoMajorId?: string | null) {
+    const dataToUpdate: Record<string, unknown> = { currentClassId };
+    if (autoMajorId !== undefined) {
+      dataToUpdate.currentMajorId = autoMajorId;
+    }
+    const updated = await prisma.student.update({
+      where: { id },
+      data: dataToUpdate as any,
+      include: { currentClass: true, currentMajor: true, picture: true },
+    });
+
+    const users = await getOrchestrator().authData.findUsersByIds([updated.userId]);
+    return { ...updated, user: users[0] || null };
+  }
+
+  async updateCurrentMajor(id: string, currentMajorId: string | null) {
+    const updated = await prisma.student.update({
+      where: { id },
+      data: { currentMajorId } as any,
+      include: { currentClass: true, currentMajor: true, picture: true },
+    });
+
+    const users = await getOrchestrator().authData.findUsersByIds([updated.userId]);
+    return { ...updated, user: users[0] || null };
   }
 }
 

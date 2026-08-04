@@ -1,8 +1,8 @@
-import { prisma } from '@academic/database/index.js';
-import type { Prisma } from '@academic/database/index.js';
+import { prisma } from '#academic/database/index.js';
+import type { Prisma } from '#academic/database/index.js';
 import type { CreateClassSubjectRequirementDto, UpdateClassSubjectRequirementDto } from '../domain';
-import { getOrchestrator } from '@app/orchestrator.js';
-import { putOptionalToNull } from '@app/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
+import { putOptionalToNull } from '#app';
 
 type HydratedRequirement = Prisma.ClassSubjectRequirementGetPayload<{}> & {
   class: { id: string; name: string; majorId: string } | null;

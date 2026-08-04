@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { DailyLogbookService, dailyLogbookService } from '@internship/modules/daily-logbook/service/index.js';
-import { sendResponse } from '@app/index.js';
+import { DailyLogbookService, dailyLogbookService } from '#internship/modules/daily-logbook/service/index.js';
+import { sendResponse } from '#app';
 
 export class DailyLogbookController {
   constructor(private service: DailyLogbookService) {}

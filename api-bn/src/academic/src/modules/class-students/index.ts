@@ -1,1 +1,1 @@
-export { classStudentsRoute } from '@academic/modules/class-students/route';
+export { classStudentsRoute } from '#academic/modules/class-students/route';

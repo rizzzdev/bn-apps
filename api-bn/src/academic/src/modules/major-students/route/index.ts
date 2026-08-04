@@ -1,1 +1,1 @@
-export * from '@academic/modules/major-students/route/major-students.route';
+export * from '#academic/modules/major-students/route/major-students.route';

@@ -1,1 +1,1 @@
-export { classRoute } from '@master/modules/class/route';
+export { classRoute } from '#master/modules/class/route';

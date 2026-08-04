@@ -1,11 +1,11 @@
-import { DailyLogbookRepository, dailyLogbookRepository } from '@internship/modules/daily-logbook/repository/index.js';
-import { CreateDailyLogbookDto, UpdateDailyLogbookDto } from '@internship/modules/daily-logbook/domain/index.js';
-import { NotFoundError } from '@app/index.js';
-import { withCache, clearCachePattern, setCache, putOptionalToNull } from '@app/index.js';
-import { prisma } from '@internship/database/index.js';
-import { activityService } from '@internship/modules/activity/service/index.js';
-import { getAdminName, getReviewerName } from '@internship/utils/activity-helper.js';
-import { Prisma, LogbookApprovalStatus } from '@internship/database/index.js';
+import { DailyLogbookRepository, dailyLogbookRepository } from '#internship/modules/daily-logbook/repository/index.js';
+import { CreateDailyLogbookDto, UpdateDailyLogbookDto } from '#internship/modules/daily-logbook/domain/index.js';
+import { NotFoundError } from '#app';
+import { withCache, clearCachePattern, setCache, putOptionalToNull } from '#app';
+import { prisma } from '#internship/database/index.js';
+import { activityService } from '#internship/modules/activity/service/index.js';
+import { getAdminName, getReviewerName } from '#internship/utils/activity-helper.js';
+import { Prisma, LogbookApprovalStatus } from '#internship/database/index.js';
 import path from 'path';
 import fs from 'fs';
 

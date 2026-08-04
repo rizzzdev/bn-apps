@@ -1,1 +1,1 @@
-export * from '@academic/modules/major-heads/controller/major-heads.controller';
+export * from '#academic/modules/major-heads/controller/major-heads.controller';

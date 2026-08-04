@@ -1,5 +1,5 @@
-import { prisma } from '@internship/database/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { prisma } from '#internship/database/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 export async function getAdminName(actorId?: string | null): Promise<string> {
   if (!actorId) return 'Super Admin';

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { teacherUnavailabilityController } from '../controller';
-import { validate } from '@academic/middlewares/validate';
+import { validate } from '#academic/middlewares/validate';
 import { createTeacherUnavailabilitySchema, bulkSetTeacherUnavailabilitySchema } from '../domain';
 import { z } from 'zod';
 

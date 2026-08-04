@@ -8,27 +8,27 @@ import {
   MasterSubjectRepository,
   MasterMajorRepository,
   MasterStudentRepository,
-} from '@master/services/master-data.service.js';
+} from '#master/services/master-data.service.js';
 import {
   AcademicClassStudentRepository,
-} from '@academic/services/academic-data.service.js';
+} from '#academic/services/academic-data.service.js';
 import {
   InternshipIndustryMentorRepository,
   InternshipStudentRepository,
   InternshipTeacherRepository,
   InternshipCompanyRepository,
   InternshipPlacementRepository,
-} from '@internship/services/internship-data.service.js';
+} from '#internship/services/internship-data.service.js';
 import {
   LearnMaterialRepository,
   LearnAssignmentRepository,
   LearnQuizRepository,
   LearnSubmissionRepository,
   LearnAttachmentRepository,
-} from '@learn/services/learn-data.service.js';  // @learn/* → ./src/learn/*
+} from '#learn/services/learn-data.service.js';  // @learn/* → ./src/learn/*
 import {
   authDataService,
-} from '@auth/services/auth-data.service.js';
+} from '#auth/services/auth-data.service.js';
 import type {
   IMasterAcademicYearRepository,
   IMasterClassRepository,
@@ -37,27 +37,27 @@ import type {
   IMasterMajorRepository,
   IMasterStudentRepository,
   IMasterAuthRepository,
-} from '@app/ports/master-data.port.js';
+} from '#app/ports/master-data.port.js';
 import type {
   IAcademicClassStudentRepository,
-} from '@app/ports/academic-data.port.js';
+} from '#app/ports/academic-data.port.js';
 import type {
   IAuthDataRepository,
-} from '@app/ports/auth-data.port.js';
+} from '#app/ports/auth-data.port.js';
 import type {
   IInternshipIndustryMentorRepository,
   IInternshipStudentRepository,
   IInternshipTeacherRepository,
   IInternshipCompanyRepository,
   IInternshipPlacementRepository,
-} from '@app/ports/internship-data.port.js';
+} from '#app/ports/internship-data.port.js';
 import type {
   ILearnMaterialRepository,
   ILearnAssignmentRepository,
   ILearnQuizRepository,
   ILearnSubmissionRepository,
   ILearnAttachmentRepository,
-} from '@app/ports/learn-data.port.js';
+} from '#app/ports/learn-data.port.js';
 
 export class Orchestrator {
   // -- Master data ------------------------------------------------------------

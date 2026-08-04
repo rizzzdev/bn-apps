@@ -1,7 +1,7 @@
-import { HomeroomTeacherRepository, homeroomTeacherRepository } from '@academic/modules/homeroom-teachers/repository';
-import { NotFoundError } from '@app/index.js';
-import { prisma } from '@academic/database/index.js';
-import type { CreateHomeroomTeacherDto, UpdateHomeroomTeacherDto } from '@academic/modules/homeroom-teachers/domain';
+import { HomeroomTeacherRepository, homeroomTeacherRepository } from '#academic/modules/homeroom-teachers/repository';
+import { NotFoundError } from '#app';
+import { prisma } from '#academic/database/index.js';
+import type { CreateHomeroomTeacherDto, UpdateHomeroomTeacherDto } from '#academic/modules/homeroom-teachers/domain';
 
 export class HomeroomTeacherService {
   constructor(private repository: HomeroomTeacherRepository) {}

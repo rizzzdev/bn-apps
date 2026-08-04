@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { sendResponse } from '@app/index.js';
-import type { BaseService } from '@academic/utils/base.service';
+import { sendResponse } from '#app';
+import type { BaseService } from '#academic/utils/base.service';
 
 export class BaseController<T, CreateDto, UpdateDto> {
   constructor(protected service: BaseService<T, CreateDto, UpdateDto>) {}

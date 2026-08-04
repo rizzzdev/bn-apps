@@ -1,6 +1,7 @@
-import { prisma } from '@master/database/index.js';
-import { sentriAuth } from '@auth/index.js';
-import type { Teacher as PrismaTeacher, Student as PrismaStudent, AcademicYear, Class, Subject, Major } from '@master/database/index.js';
+import { prisma } from '#master/database/index.js';
+import { sentriAuth } from '#auth';
+import { studentService } from '#master/modules/student/service';
+import type { Teacher as PrismaTeacher, Student as PrismaStudent, AcademicYear, Class, Subject, Major } from '#master/database/index.js';
 import type {
   MasterAcademicYear,
   MasterClass,
@@ -16,7 +17,7 @@ import type {
   IMasterStudentRepository,
   IMasterAuthRepository,
   Role,
-} from '@app/ports/master-data.port.js';
+} from '#app/ports/master-data.port.js';
 
 export class MasterAcademicYearRepository implements IMasterAcademicYearRepository {
   private async map(year: AcademicYear & { semesters?: Array<{ type: string }> } | null): Promise<MasterAcademicYear | null> {
@@ -243,6 +244,21 @@ export class MasterStudentRepository implements IMasterStudentRepository {
     return students.map((s) => this.toDomain(s));
   }
 
+  async updateCurrentClass(studentId: string, currentClassId: string | null, autoMajorId?: string | null): Promise<void> {
+    await studentService.updateCurrentClass(studentId, { currentClassId });
+    if (autoMajorId !== undefined) {
+      await studentService.updateCurrentMajor(studentId, { currentMajorId: autoMajorId });
+    }
+  }
+
+  async updateCurrentMajor(studentId: string, currentMajorId: string | null): Promise<void> {
+    await studentService.updateCurrentMajor(studentId, { currentMajorId });
+  }
+
+  async updateStatus(studentId: string, status: 'Aktif' | 'Tidak_Aktif' | 'Lulus'): Promise<void> {
+    await studentService.updateStatus(studentId, status as any);
+  }
+
   private toDomain(student: PrismaStudent): MasterStudent {
     return {
       id: student.id,
@@ -257,7 +273,7 @@ export class MasterStudentRepository implements IMasterStudentRepository {
   }
 }
 
-import { authDataService } from '@auth/services/auth-data.service.js';
+import { authDataService } from '#auth/services/auth-data.service.js';
 
 export class MasterAuthRepository implements IMasterAuthRepository {
   register(data: { identifiers: Array<{ type: string; value: string }>; password: string; roles: Role[] }) {

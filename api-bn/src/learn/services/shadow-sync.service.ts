@@ -1,5 +1,5 @@
-import { prisma } from '@learn/database/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { prisma } from '#learn/database/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 function buildTeacherFullname(teacher: {
   fullname?: string | null;

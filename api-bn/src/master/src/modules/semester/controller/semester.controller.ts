@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { SemesterService, semesterService } from '@master/modules/semester/service';
-import { sendResponse } from '@app/index.js';
-import { BadRequestError } from '@app/index.js';
+import { SemesterService, semesterService } from '#master/modules/semester/service';
+import { sendResponse } from '#app';
+import { BadRequestError } from '#app';
 
 export class SemesterController {
   constructor(private service: SemesterService) {}

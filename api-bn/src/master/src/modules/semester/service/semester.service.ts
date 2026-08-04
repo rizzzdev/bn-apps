@@ -1,8 +1,8 @@
-import { SemesterRepository, semesterRepository } from '@master/modules/semester/repository';
-import { CreateSemesterDto, UpdateSemesterDto } from '@master/modules/semester/domain';
-import { BadRequestError, NotFoundError } from '@app/index.js';
-import { prisma } from '@master/database/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
+import { SemesterRepository, semesterRepository } from '#master/modules/semester/repository';
+import { CreateSemesterDto, UpdateSemesterDto } from '#master/modules/semester/domain';
+import { BadRequestError, NotFoundError } from '#app';
+import { prisma } from '#master/database/index.js';
+import { withCache, clearCachePattern, setCache } from '#app';
 
 export class SemesterService {
   constructor(private repository: SemesterRepository) {}
@@ -26,7 +26,7 @@ export class SemesterService {
     });
   }
 
-  async validateUnique(data: Partial<CreateSemesterDto>, existingItem?: import('@master/database/index.js').Semester) {
+  async validateUnique(data: Partial<CreateSemesterDto>, existingItem?: import('#master/database/index.js').Semester) {
     const checkType = data.type || existingItem?.type;
     const checkYearId = data.academicYearId || existingItem?.academicYearId;
     

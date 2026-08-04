@@ -2,7 +2,7 @@
 //  internship-data.service.ts  —  concrete impls of internship-data port
 //  (type-safe: toleransi schema drift tanpa `as any` liar)
 // =============================================================================
-import { prisma, PlacementStatus } from '@internship/database/index.js';
+import { prisma, PlacementStatus } from '#internship/database/index.js';
 import {
   InternshipIndustryMentor,
   InternshipStudent,
@@ -14,7 +14,7 @@ import {
   IInternshipTeacherRepository,
   IInternshipCompanyRepository,
   IInternshipPlacementRepository,
-} from '@app/ports/internship-data.port.js';
+} from '#app/ports/internship-data.port.js';
 
 // -- helpers -----------------------------------------------------------------
 function nulStr(v: unknown): string | null { return typeof v === 'string' ? v : null; }

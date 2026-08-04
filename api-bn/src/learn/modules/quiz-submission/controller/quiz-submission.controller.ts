@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { QuizSubmissionService } from '../service/quiz-submission.service';
-import { sendResponse } from '@app/index.js';
+import { sendResponse } from '#app';
 import { SentriError } from 'sentri/core';
 
 export class QuizSubmissionController {

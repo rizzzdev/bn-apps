@@ -260,10 +260,12 @@
 	let totalPages = $state(1);
 	let totalItems = $state(0);
 
-	const fetchSubjects = async (page: number, limitPerPage: number) => {
+	const fetchSubjects = async (page: number, limitPerPage: number, search: string = '') => {
 		isLoading = true;
 		try {
-			const res = await apiClient(`/subjects?page=${page}&limit=${limitPerPage}`);
+			const res = await apiClient(
+				`/subjects?page=${page}&limit=${limitPerPage}${search ? `&search=${encodeURIComponent(search)}` : ''}`
+			);
 			const result = await res.json();
 			if (!result.error && result.data) {
 				subjects = Array.isArray(result.data) ? result.data : [];
@@ -279,20 +281,19 @@
 		}
 	};
 
+	let previousSearch = $state('');
+
 	$effect(() => {
-		fetchSubjects(currentPage, limit);
+		if (searchQuery !== previousSearch) {
+			previousSearch = searchQuery;
+			currentPage = 1;
+		}
+		fetchSubjects(currentPage, limit, searchQuery);
 	});
 
 	let searchQuery = $state('');
 
-	let filteredSubjects = $derived(
-		subjects.filter((s) => {
-			return (
-				(s.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-				(s.code || '').toLowerCase().includes(searchQuery.toLowerCase())
-			);
-		})
-	);
+	let filteredSubjects = $derived(subjects);
 </script>
 
 <div class="mb-md flex flex-col md:flex-row gap-sm items-center justify-between">

@@ -1,5 +1,5 @@
-import { createApp, env } from "@app/index.js";
-import { sentriAuth } from "@auth/index.js";
+import { createApp, env } from "#app";
+import { sentriAuth } from "#auth";
 
 const app = createApp()
 const port = env.PORT

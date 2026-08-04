@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { AcademicYearService, academicyearService } from '@master/modules/academic-year/service';
-import { sendResponse } from '@app/index.js';
-import { BadRequestError } from '@app/index.js';
+import { AcademicYearService, academicyearService } from '#master/modules/academic-year/service';
+import { sendResponse } from '#app';
+import { BadRequestError } from '#app';
 
 export class AcademicYearController {
   constructor(private service: AcademicYearService) {}
@@ -10,8 +10,9 @@ export class AcademicYearController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string | undefined;
       const includeSemesters = req.query.includeSemesters === 'true';
-      const { data, total } = await this.service.getAll(page, limit, includeSemesters);
+      const { data, total } = await this.service.getAll(page, limit, search, includeSemesters);
       const pagination = { currentPage: page, totalPage: Math.ceil(total / limit), totalData: total, dataPerPage: limit };
       sendResponse(res, 200, 'Success fetch data', data, pagination);
     } catch (error: unknown) { next(error); }

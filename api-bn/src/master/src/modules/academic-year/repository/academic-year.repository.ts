@@ -1,18 +1,36 @@
-import { prisma } from '@master/database/index.js';
-import { CreateAcademicYearDto, UpdateAcademicYearDto } from '@master/modules/academic-year/domain';
+import { prisma } from '#master/database/index.js';
+import { CreateAcademicYearDto, UpdateAcademicYearDto } from '#master/modules/academic-year/domain';
 
 export class AcademicYearRepository {
-  async findAll(skip: number, take: number, includeSemesters: boolean = false) {
+  async findAll(skip: number, take: number, search?: string, includeSemesters: boolean = false) {
+    const where: import('#master/database/index.js').Prisma.AcademicYearWhereInput = { deletedAt: null };
+    if (search) {
+      const searchNum = parseInt(search, 10);
+      const isNum = !isNaN(searchNum);
+      where.OR = [
+        { code: { contains: search, mode: 'insensitive' } },
+        ...(isNum ? [{ startYear: searchNum }, { endYear: searchNum }] : []),
+      ];
+    }
     return prisma.academicYear.findMany({ 
-      where: { deletedAt: null }, 
+      where, 
       skip, 
       take,
       include: includeSemesters ? { semesters: { where: { deletedAt: null } } } : undefined
     });
   }
 
-  async count() {
-    return prisma.academicYear.count({ where: { deletedAt: null } });
+  async count(search?: string) {
+    const where: import('#master/database/index.js').Prisma.AcademicYearWhereInput = { deletedAt: null };
+    if (search) {
+      const searchNum = parseInt(search, 10);
+      const isNum = !isNaN(searchNum);
+      where.OR = [
+        { code: { contains: search, mode: 'insensitive' } },
+        ...(isNum ? [{ startYear: searchNum }, { endYear: searchNum }] : []),
+      ];
+    }
+    return prisma.academicYear.count({ where });
   }
 
   async findById(id: string, includeSemesters: boolean = false) {

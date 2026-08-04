@@ -91,6 +91,9 @@ export interface IMasterStudentRepository {
   findByUserId(userId: string): Promise<MasterStudent | null>;
   findByEmail(email: string): Promise<MasterStudent | null>;
   findAll(): Promise<MasterStudent[]>;
+  updateCurrentClass(studentId: string, currentClassId: string | null, autoMajorId?: string | null): Promise<void>;
+  updateCurrentMajor(studentId: string, currentMajorId: string | null): Promise<void>;
+  updateStatus(studentId: string, status: 'Aktif' | 'Tidak_Aktif' | 'Lulus'): Promise<void>;
 }
 
 export interface IMasterAuthRepository {

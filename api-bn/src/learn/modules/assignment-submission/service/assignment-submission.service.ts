@@ -1,7 +1,7 @@
 import { SentriError } from 'sentri/core';
 import { AssignmentSubmissionRepository } from '../repository/assignment-submission.repository';
 import { SubmitAssignmentDto, GradeAssignmentDto, BulkGradeDto, submitAssignmentSchema, gradeAssignmentSchema, bulkGradeSchema } from '../domain/schemas';
-import { assignmentRepository } from '@/modules/assignment/repository/assignment.repository';
+import { assignmentRepository } from '#/modules/assignment/repository/assignment.repository';
 
 export class AssignmentSubmissionService {
   constructor(private repository: AssignmentSubmissionRepository) {}

@@ -1,7 +1,7 @@
-import { validate, uploadExcel } from '@master/middlewares';
+import { validate, uploadExcel } from '#master/middlewares';
 import { Router } from 'express';
-import { subjectController } from '@master/modules/subject/controller';
-import { batchGetSubjectSchema, createSubjectSchema, updateSubjectSchema } from '@master/modules/subject/domain';
+import { subjectController } from '#master/modules/subject/controller';
+import { batchGetSubjectSchema, createSubjectSchema, updateSubjectSchema } from '#master/modules/subject/domain';
 import { z } from 'zod';
 
 export const subjectRoute = Router();

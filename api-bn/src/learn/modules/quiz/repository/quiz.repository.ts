@@ -1,4 +1,4 @@
-import { prisma } from '@learn/database/index.js';
+import { prisma } from '#learn/database/index.js';
 import { shadowSyncService } from '../../../services/shadow-sync.service.js';
 import { CreateQuizDto, UpdateQuizDto } from '../domain/schemas.js';
 import { computeClassStudentCounts } from '../../common/hydrate.js';

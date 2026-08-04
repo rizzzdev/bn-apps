@@ -1,1 +1,1 @@
-export { dashboardRoute } from '@master/modules/dashboard/route';
+export { dashboardRoute } from '#master/modules/dashboard/route';

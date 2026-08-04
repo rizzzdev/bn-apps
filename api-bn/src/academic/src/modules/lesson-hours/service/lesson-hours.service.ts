@@ -1,7 +1,7 @@
-import { lessonHourRepository } from '@academic/modules/lesson-hours/repository';
-import type { LessonHourRepository } from '@academic/modules/lesson-hours/repository';
-import { NotFoundError } from '@app/index.js';
-import type { CreateLessonHourDto, UpdateLessonHourDto } from '@academic/modules/lesson-hours/domain';
+import { lessonHourRepository } from '#academic/modules/lesson-hours/repository';
+import type { LessonHourRepository } from '#academic/modules/lesson-hours/repository';
+import { NotFoundError } from '#app';
+import type { CreateLessonHourDto, UpdateLessonHourDto } from '#academic/modules/lesson-hours/domain';
 
 export class LessonHourService {
   constructor(private repository: LessonHourRepository) {}

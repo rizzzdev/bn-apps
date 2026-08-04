@@ -1,7 +1,7 @@
-import { prisma } from '@internship/database/index.js';
-import { CreateIndustryMentorDto, UpdateIndustryMentorDto } from '@internship/modules/industry-mentor/domain/index.js';
-import { Prisma } from '@internship/database/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { prisma } from '#internship/database/index.js';
+import { CreateIndustryMentorDto, UpdateIndustryMentorDto } from '#internship/modules/industry-mentor/domain/index.js';
+import { Prisma } from '#internship/database/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 export class IndustryMentorRepository {
   async findAll(skip: number, take: number, whereClause?: Prisma.IndustryMentorWhereInput) {

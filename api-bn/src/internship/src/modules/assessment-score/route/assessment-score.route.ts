@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { validate } from '@internship/middlewares/index.js';
-import { assessmentScoreController } from '@internship/modules/assessment-score/controller/index.js';
+import { validate } from '#internship/middlewares/index.js';
+import { assessmentScoreController } from '#internship/modules/assessment-score/controller/index.js';
 import {
   createAssessmentScoreSchema,
   updateAssessmentScoreSchema,
   bulkSubmitScoreSchema,
-} from '@internship/modules/assessment-score/domain/index.js';
+} from '#internship/modules/assessment-score/domain/index.js';
 
 export const assessmentScoreRoute = Router();
 

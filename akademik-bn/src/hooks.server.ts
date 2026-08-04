@@ -30,6 +30,10 @@ const clearAuthCookies = (event: Parameters<Handle>[0]['event']) => {
 };
 
 export const handle: Handle = async ({ event, resolve }) => {
+	if (event.url.pathname === '/health') {
+		return new Response('OK', { status: 200 });
+	}
+
 	let accessToken = event.cookies.get('access_token');
 	const refreshToken = event.cookies.get('refresh_token');
 

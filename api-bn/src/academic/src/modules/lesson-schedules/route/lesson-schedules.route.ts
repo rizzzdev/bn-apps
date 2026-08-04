@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { lessonScheduleController } from '@academic/modules/lesson-schedules/controller';
-import { validate } from '@academic/middlewares/validate';
+import { lessonScheduleController } from '#academic/modules/lesson-schedules/controller';
+import { validate } from '#academic/middlewares/validate';
 import {
   createLessonScheduleSchema,
   updateLessonScheduleSchema,
-} from '@academic/modules/lesson-schedules/domain';
+} from '#academic/modules/lesson-schedules/domain';
 
 export const lessonSchedulesRoute = Router();
 

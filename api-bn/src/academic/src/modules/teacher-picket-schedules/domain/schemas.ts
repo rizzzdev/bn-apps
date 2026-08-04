@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ActiveStatus } from '@academic/database/index.js';
+import { ActiveStatus } from '#academic/database/index.js';
 
 export const createTeacherPicketScheduleSchema = z.object({
   teacherId: z.string().uuid(),

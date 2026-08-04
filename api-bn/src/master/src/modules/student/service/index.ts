@@ -1,1 +1,1 @@
-export * from '@master/modules/student/service/student.service';
+export * from '#master/modules/student/service/student.service';

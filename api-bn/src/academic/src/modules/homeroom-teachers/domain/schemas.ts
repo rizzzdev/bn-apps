@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ActiveStatus } from '@academic/database/index.js';
+import { ActiveStatus } from '#academic/database/index.js';
 
 export const createHomeroomTeacherSchema = z.object({
   teacherId: z.string().uuid(),

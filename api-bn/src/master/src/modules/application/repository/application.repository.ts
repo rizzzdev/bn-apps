@@ -1,5 +1,5 @@
-import { prisma } from '@master/database/index.js';
-import { CreateApplicationDto, UpdateApplicationDto } from '@master/modules/application/domain';
+import { prisma } from '#master/database/index.js';
+import { CreateApplicationDto, UpdateApplicationDto } from '#master/modules/application/domain';
 
 export class ApplicationRepository {
   async findAll(skip: number, take: number) {

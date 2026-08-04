@@ -1,4 +1,4 @@
-import { Subject } from '@master/database/index.js';
+import { Subject } from '#master/database/index.js';
 
 export type SubjectType = Subject;
 

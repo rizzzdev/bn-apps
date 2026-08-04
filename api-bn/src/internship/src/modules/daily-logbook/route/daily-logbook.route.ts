@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { validate } from '@internship/middlewares/index.js';
-import { dailyLogbookController } from '@internship/modules/daily-logbook/controller/index.js';
-import { createDailyLogbookSchema, updateDailyLogbookSchema, bulkDeleteSchema, createLogbookReviewSchema } from '@internship/modules/daily-logbook/domain/index.js';
+import { validate } from '#internship/middlewares/index.js';
+import { dailyLogbookController } from '#internship/modules/daily-logbook/controller/index.js';
+import { createDailyLogbookSchema, updateDailyLogbookSchema, bulkDeleteSchema, createLogbookReviewSchema } from '#internship/modules/daily-logbook/domain/index.js';
 
 import multer from 'multer';
 import fs from 'fs';

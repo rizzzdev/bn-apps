@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { majorHeadController } from '@academic/modules/major-heads/controller';
+import { majorHeadController } from '#academic/modules/major-heads/controller';
 
 export const majorHeadsRoute = Router();
 

@@ -1,16 +1,16 @@
 import { Router } from 'express';
-import { sentriAuth } from '@auth/index.js';
+import { sentriAuth } from '#auth';
 
 import { resolveProfile } from '../middleware/resolve-profile.js';
 
-import { attachmentRoute } from '@/modules/attachment';
-import { materialRoute } from '@/modules/material';
-import { assignmentRoute } from '@/modules/assignment';
-import { assignmentSubmissionRoute, directSubmissionRoute } from '@/modules/assignment-submission';
-import { quizRoute } from '@/modules/quiz';
-import { quizSubmissionRoute } from '@/modules/quiz-submission';
-import { gradeRoute } from '@/modules/grade';
-import { dashboardRoute } from '@/modules/dashboard';
+import { attachmentRoute } from '#/modules/attachment';
+import { materialRoute } from '#/modules/material';
+import { assignmentRoute } from '#/modules/assignment';
+import { assignmentSubmissionRoute, directSubmissionRoute } from '#/modules/assignment-submission';
+import { quizRoute } from '#/modules/quiz';
+import { quizSubmissionRoute } from '#/modules/quiz-submission';
+import { gradeRoute } from '#/modules/grade';
+import { dashboardRoute } from '#/modules/dashboard';
 
 export const learnRouter = Router();
 

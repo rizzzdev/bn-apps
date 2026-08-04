@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { majorStudentController } from '@academic/modules/major-students/controller';
+import { majorStudentController } from '#academic/modules/major-students/controller';
 
 export const majorStudentsRoute = Router();
 

@@ -1,8 +1,8 @@
-import { ClassRepository, classRepository } from '@master/modules/class/repository';
-import { CreateClassDto, UpdateClassDto } from '@master/modules/class/domain';
-import { BadRequestError, NotFoundError, generateExcelTemplate, parseExcel, buildHeaderLabelMap, type HeaderSpec } from '@app/index.js';
-import { prisma } from '@master/database/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
+import { ClassRepository, classRepository } from '#master/modules/class/repository';
+import { CreateClassDto, UpdateClassDto } from '#master/modules/class/domain';
+import { BadRequestError, NotFoundError, generateExcelTemplate, parseExcel, buildHeaderLabelMap, type HeaderSpec } from '#app';
+import { prisma } from '#master/database/index.js';
+import { withCache, clearCachePattern, setCache } from '#app';
 
 const CLASS_EXCEL_HEADERS: HeaderSpec[] = [
   { label: 'Nama Kelas', key: 'name' },
@@ -12,12 +12,20 @@ const CLASS_EXCEL_HEADERS: HeaderSpec[] = [
 export class ClassService {
   constructor(private repository: ClassRepository) {}
 
-  async getAll(page: number, limit: number, includeMajor: boolean = false, includeCurrentStudent: boolean = false) {
-    return withCache(`class:all:page:${page}:limit:${limit}:includeMajor:${includeMajor}:includeCurrentStudent:${includeCurrentStudent}`, 600, async () => {
+  async getAll(
+    page: number,
+    limit: number,
+    search?: string,
+    majorId?: string | string[],
+    includeMajor: boolean = false,
+    includeCurrentStudent: boolean = false,
+  ) {
+    const majorKey = Array.isArray(majorId) ? majorId.slice().sort().join(',') : (majorId || '');
+    return withCache(`class:all:page:${page}:limit:${limit}:search:${search || ''}:majorId:${majorKey}:includeMajor:${includeMajor}:includeCurrentStudent:${includeCurrentStudent}`, 600, async () => {
       const skip = (page - 1) * limit;
       const [data, total] = await Promise.all([
-        this.repository.findAll(skip, limit, includeMajor, includeCurrentStudent),
-        this.repository.count()
+        this.repository.findAll(skip, limit, search, majorId, includeMajor, includeCurrentStudent),
+        this.repository.count(search, majorId)
       ]);
       return { data, total };
     });

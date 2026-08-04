@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { sendResponse, BadRequestError } from '@app/index.js';
+import { sendResponse, BadRequestError } from '#app';
 
 /**
  * Factory Express handler untuk download Excel template.

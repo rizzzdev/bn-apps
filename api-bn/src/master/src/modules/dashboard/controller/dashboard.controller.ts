@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import {
   DashboardService,
   dashboardService,
-} from '@master/modules/dashboard/service';
-import { sendResponse } from '@app/index.js';
+} from '#master/modules/dashboard/service';
+import { sendResponse } from '#app';
 
 export class DashboardController {
   constructor(private service: DashboardService) {}

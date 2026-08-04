@@ -1,1 +1,1 @@
-export * from '@academic/modules/subject-teachers/repository/subject-teachers.repository';
+export * from '#academic/modules/subject-teachers/repository/subject-teachers.repository';

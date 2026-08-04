@@ -1,4 +1,4 @@
-import { Major } from '@master/database/index.js';
+import { Major } from '#master/database/index.js';
 
 export type MajorType = Major;
 

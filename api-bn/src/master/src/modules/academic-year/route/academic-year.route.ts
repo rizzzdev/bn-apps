@@ -1,8 +1,8 @@
-import { validate } from '@master/middlewares';
+import { validate } from '#master/middlewares';
 import { Router } from "express";
-import { academicyearController } from '@master/modules/academic-year/controller';
-import { sentriAuth } from '@auth/index.js';
-import { batchGetAcademicYearSchema, createAcademicYearSchema, updateAcademicYearSchema } from '@master/modules/academic-year/domain';
+import { academicyearController } from '#master/modules/academic-year/controller';
+import { sentriAuth } from '#auth';
+import { batchGetAcademicYearSchema, createAcademicYearSchema, updateAcademicYearSchema } from '#master/modules/academic-year/domain';
 import { z } from 'zod';
 
 export const academicyearRoute = Router();

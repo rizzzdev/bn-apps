@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { CompanyService, companyService } from '@internship/modules/company/service/index.js';
+import { CompanyService, companyService } from '#internship/modules/company/service/index.js';
 import {
   sendResponse,
   createDownloadTemplateHandler,
-} from '@app/index.js';
+} from '#app';
 
 export class CompanyController {
   constructor(private service: CompanyService) {}

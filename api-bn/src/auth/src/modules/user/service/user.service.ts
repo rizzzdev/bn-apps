@@ -1,8 +1,8 @@
 import { userRepository } from '../repository/user.repository.js';
 import { UpdateRoleDto, BulkUpdateRoleDto } from '../domain/index.js';
-import { prisma as masterPrisma } from '@master/database/index.js';
-import { prisma as internshipPrisma } from '@internship/database/index.js';
-import { BadRequestError, NotFoundError } from '@app/index.js';
+import { prisma as masterPrisma } from '#master/database/index.js';
+import { prisma as internshipPrisma } from '#internship/database/index.js';
+import { BadRequestError, NotFoundError } from '#app';
 
 export class UserService {
   private formatUser(user: any) {

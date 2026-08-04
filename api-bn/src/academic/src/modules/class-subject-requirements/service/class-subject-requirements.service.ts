@@ -1,10 +1,10 @@
 import { classSubjectRequirementRepository } from '../repository';
 import type { ClassSubjectRequirementRepository } from '../repository';
 import type { CreateClassSubjectRequirementDto, UpdateClassSubjectRequirementDto, BulkUpsertClassSubjectRequirementDto } from '../domain';
-import { prisma } from '@academic/database/index.js';
-import type { Prisma } from '@academic/database/index.js';
-import { BadRequestError } from '@app/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { prisma } from '#academic/database/index.js';
+import type { Prisma } from '#academic/database/index.js';
+import { BadRequestError } from '#app';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 export class ClassSubjectRequirementService {
   constructor(private repository: ClassSubjectRequirementRepository) {}

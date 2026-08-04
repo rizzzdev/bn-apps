@@ -1,6 +1,6 @@
 import { SentriError } from 'sentri/core';
 import { AttachmentRepository } from '../repository/attachment.repository';
-import { getStorage } from '@app/index.js';
+import { getStorage } from '#app';
 import path from 'path';
 
 export class AttachmentService {

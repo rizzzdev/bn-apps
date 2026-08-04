@@ -1,1 +1,1 @@
-export { majorStudentsRoute } from '@academic/modules/major-students/route';
+export { majorStudentsRoute } from '#academic/modules/major-students/route';

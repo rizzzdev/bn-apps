@@ -1,6 +1,6 @@
-import { AttachmentRepository, attachmentRepository } from '@master/modules/attachment/repository';
-import { NotFoundError } from '@app/index.js';
-import { getStorage } from '@app/index.js';
+import { AttachmentRepository, attachmentRepository } from '#master/modules/attachment/repository';
+import { NotFoundError } from '#app';
+import { getStorage } from '#app';
 import path from 'path';
 
 export class AttachmentService {

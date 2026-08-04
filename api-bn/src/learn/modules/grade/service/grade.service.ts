@@ -1,5 +1,5 @@
 import { SentriError } from 'sentri/core';
-import { prisma } from '@learn/database/index.js';
+import { prisma } from '#learn/database/index.js';
 import { shadowSyncService } from '../../../services/shadow-sync.service.js';
 import { GradeRepository } from '../repository/grade.repository.js';
 import { getOrchestrator } from '../../common/hydrate.js';

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SubjectTeacherStatus } from '@academic/database/index.js';
+import { SubjectTeacherStatus } from '#academic/database/index.js';
 
 export const createSubjectTeacherSchema = z.object({
   teacherId: z.string().uuid(),

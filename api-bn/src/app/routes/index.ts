@@ -1,12 +1,12 @@
-import { authRouter } from "@auth/index.js";
+import { authRouter } from "#auth";
 import { Router } from "express";
 
 const appRouter = Router()
 
-import { masterRouter } from '@master/index.js';
-import { academicRouter } from '@academic/index.js';
-import { internshipRouter } from '@internship/index.js';
-import { learnRouter } from '@learn/index.js';
+import { masterRouter } from '#master';
+import { academicRouter } from '#academic';
+import { internshipRouter } from '#internship';
+import { learnRouter } from '#learn';
 
 appRouter.use("/api/v1/auth", authRouter)
 appRouter.use("/api/v1/master", masterRouter)

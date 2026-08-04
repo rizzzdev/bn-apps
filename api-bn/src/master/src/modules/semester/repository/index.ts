@@ -1,1 +1,1 @@
-export * from '@master/modules/semester/repository/semester.repository';
+export * from '#master/modules/semester/repository/semester.repository';

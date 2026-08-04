@@ -1,5 +1,5 @@
-import { prisma } from '@master/database/index.js';
-import { withCache } from '@app/index.js';
+import { prisma } from '#master/database/index.js';
+import { withCache } from '#app';
 
 export class DashboardService {
   async getSummary() {

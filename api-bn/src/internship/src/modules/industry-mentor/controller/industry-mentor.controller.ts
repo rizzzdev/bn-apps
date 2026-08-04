@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { IndustryMentorService, industryMentorService } from '@internship/modules/industry-mentor/service/index.js';
+import { IndustryMentorService, industryMentorService } from '#internship/modules/industry-mentor/service/index.js';
 import {
   sendResponse,
   createDownloadTemplateHandler,
-} from '@app/index.js';
+} from '#app';
 
 export class IndustryMentorController {
   constructor(private service: IndustryMentorService) {}

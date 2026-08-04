@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { TeacherPicketScheduleService, teacherPicketSchedulesService } from '@academic/modules/teacher-picket-schedules/service';
-import { sendResponse } from '@app/index.js';
+import { TeacherPicketScheduleService, teacherPicketSchedulesService } from '#academic/modules/teacher-picket-schedules/service';
+import { sendResponse } from '#app';
 
 export class TeacherPicketScheduleController {
   constructor(private service: TeacherPicketScheduleService) {}

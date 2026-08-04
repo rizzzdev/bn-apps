@@ -1,8 +1,8 @@
-import { SubjectRepository, subjectRepository } from '@master/modules/subject/repository';
-import { CreateSubjectDto, UpdateSubjectDto } from '@master/modules/subject/domain';
-import { BadRequestError, NotFoundError, generateExcelTemplate, parseExcel, buildHeaderLabelMap, type HeaderSpec } from '@app/index.js';
-import { prisma } from '@master/database/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
+import { SubjectRepository, subjectRepository } from '#master/modules/subject/repository';
+import { CreateSubjectDto, UpdateSubjectDto } from '#master/modules/subject/domain';
+import { BadRequestError, NotFoundError, generateExcelTemplate, parseExcel, buildHeaderLabelMap, type HeaderSpec } from '#app';
+import { prisma } from '#master/database/index.js';
+import { withCache, clearCachePattern, setCache } from '#app';
 
 const SUBJECT_EXCEL_HEADERS: HeaderSpec[] = [
   { label: 'Kode', key: 'code' },
@@ -12,12 +12,12 @@ const SUBJECT_EXCEL_HEADERS: HeaderSpec[] = [
 export class SubjectService {
   constructor(private repository: SubjectRepository) {}
 
-  async getAll(page: number, limit: number) {
-    return withCache(`subject:all:page:${page}:limit:${limit}`, 600, async () => {
+  async getAll(page: number, limit: number, search?: string) {
+    return withCache(`subject:all:page:${page}:limit:${limit}:search:${search || ''}`, 600, async () => {
       const skip = (page - 1) * limit;
       const [data, total] = await Promise.all([
-        this.repository.findAll(skip, limit),
-        this.repository.count()
+        this.repository.findAll(skip, limit, search),
+        this.repository.count(search)
       ]);
       return { data, total };
     });

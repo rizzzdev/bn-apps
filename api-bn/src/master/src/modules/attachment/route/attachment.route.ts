@@ -1,8 +1,8 @@
-import { validate } from '@master/middlewares';
-import { uploadAttachment, uploadAttachments } from '@master/middlewares/upload.middleware';
+import { validate } from '#master/middlewares';
+import { uploadAttachment, uploadAttachments } from '#master/middlewares/upload.middleware';
 import { Router } from 'express';
-import { attachmentController } from '@master/modules/attachment/controller';
-import { batchGetAttachmentsSchema, bulkDeleteAttachmentsSchema } from '@master/modules/attachment/domain';
+import { attachmentController } from '#master/modules/attachment/controller';
+import { batchGetAttachmentsSchema, bulkDeleteAttachmentsSchema } from '#master/modules/attachment/domain';
 
 export const attachmentRoute = Router();
 

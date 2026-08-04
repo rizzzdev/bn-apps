@@ -1,1 +1,1 @@
-export { lessonScheduleController } from '@academic/modules/lesson-schedules/controller/lesson-schedules.controller';
+export { lessonScheduleController } from '#academic/modules/lesson-schedules/controller/lesson-schedules.controller';

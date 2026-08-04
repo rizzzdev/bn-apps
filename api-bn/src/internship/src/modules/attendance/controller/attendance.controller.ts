@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AttendanceService } from '../service/index.js';
-import { sendResponse } from '@app/index.js';
+import { sendResponse } from '#app';
 
 export class AttendanceController {
   constructor(private service: AttendanceService) {}

@@ -1,4 +1,4 @@
-import { AcademicYear } from '@master/database/index.js';
+import { AcademicYear } from '#master/database/index.js';
 
 export type AcademicYearType = AcademicYear;
 

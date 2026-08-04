@@ -1,4 +1,4 @@
-import { prisma } from '@auth/database/index.js';
+import { prisma } from '#auth/database/index.js';
 
 export class UserRepository {
   async findAll(skip: number, take: number, search?: string) {

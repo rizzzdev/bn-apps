@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { UserService, userService } from '../service/user.service.js';
-import { sendResponse } from '@app/index.js';
+import { sendResponse } from '#app';
 
 export class UserController {
   constructor(private service: UserService) {}

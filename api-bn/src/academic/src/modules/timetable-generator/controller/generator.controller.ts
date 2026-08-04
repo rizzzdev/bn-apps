@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { generatorService } from '../service';
-import { sendResponse } from '@app/index.js';
+import { sendResponse } from '#app';
 
 export class GeneratorController {
   async preview(req: Request, res: Response, next: NextFunction) {

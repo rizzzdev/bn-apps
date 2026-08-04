@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { validate } from '@internship/middlewares/index.js';
-import { internshipPlacementController } from '@internship/modules/internship-placement/controller/index.js';
-import { createInternshipPlacementSchema, updateInternshipPlacementSchema, bulkDeleteSchema, bulkCreateInternshipPlacementSchema, bulkUpdateStatusSchema, bulkUpdateAssessableSchema } from '@internship/modules/internship-placement/domain/index.js';
+import { validate } from '#internship/middlewares/index.js';
+import { internshipPlacementController } from '#internship/modules/internship-placement/controller/index.js';
+import { createInternshipPlacementSchema, updateInternshipPlacementSchema, bulkDeleteSchema, bulkCreateInternshipPlacementSchema, bulkUpdateStatusSchema, bulkUpdateAssessableSchema } from '#internship/modules/internship-placement/domain/index.js';
 
 export const internshipPlacementRoute = Router();
 

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { lessonHourController } from '@academic/modules/lesson-hours/controller';
-import { validate } from '@academic/middlewares/validate';
-import { createLessonHourSchema, updateLessonHourSchema } from '@academic/modules/lesson-hours/domain';
+import { lessonHourController } from '#academic/modules/lesson-hours/controller';
+import { validate } from '#academic/middlewares/validate';
+import { createLessonHourSchema, updateLessonHourSchema } from '#academic/modules/lesson-hours/domain';
 
 export const lessonHoursRoute = Router();
 

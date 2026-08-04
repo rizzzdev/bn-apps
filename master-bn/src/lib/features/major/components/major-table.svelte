@@ -262,11 +262,11 @@
 	let totalPages = $state(1);
 	let totalItems = $state(0);
 
-	const fetchMajors = async (page: number, limitPerPage: number) => {
+	const fetchMajors = async (page: number, limitPerPage: number, search: string = '') => {
 		isLoading = true;
 		try {
 			const res = await apiClient(
-				`/majors?page=${page}&limit=${limitPerPage}&includeCurrentStudent=true`
+				`/majors?page=${page}&limit=${limitPerPage}&includeCurrentStudent=true${search ? `&search=${encodeURIComponent(search)}` : ''}`
 			);
 			const result = await res.json();
 			if (!result.error && result.data) {
@@ -283,20 +283,19 @@
 		}
 	};
 
+	let previousSearch = $state('');
+
 	$effect(() => {
-		fetchMajors(currentPage, limit);
+		if (searchQuery !== previousSearch) {
+			previousSearch = searchQuery;
+			currentPage = 1;
+		}
+		fetchMajors(currentPage, limit, searchQuery);
 	});
 
 	let searchQuery = $state('');
 
-	let filteredMajors = $derived(
-		majors.filter((m) => {
-			return (
-				m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				m.code.toLowerCase().includes(searchQuery.toLowerCase())
-			);
-		})
-	);
+	let filteredMajors = $derived(majors);
 </script>
 
 <div class="mb-md flex flex-col md:flex-row gap-sm items-center justify-between">

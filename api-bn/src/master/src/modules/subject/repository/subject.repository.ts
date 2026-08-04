@@ -1,13 +1,27 @@
-import { prisma } from '@master/database/index.js';
-import { CreateSubjectDto, UpdateSubjectDto } from '@master/modules/subject/domain';
+import { prisma } from '#master/database/index.js';
+import { CreateSubjectDto, UpdateSubjectDto } from '#master/modules/subject/domain';
 
 export class SubjectRepository {
-  async findAll(skip: number, take: number) {
-    return prisma.subject.findMany({ where: { deletedAt: null }, skip, take });
+  async findAll(skip: number, take: number, search?: string) {
+    const where: import('#master/database/index.js').Prisma.SubjectWhereInput = { deletedAt: null };
+    if (search) {
+      where.OR = [
+        { code: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    return prisma.subject.findMany({ where, skip, take });
   }
 
-  async count() {
-    return prisma.subject.count({ where: { deletedAt: null } });
+  async count(search?: string) {
+    const where: import('#master/database/index.js').Prisma.SubjectWhereInput = { deletedAt: null };
+    if (search) {
+      where.OR = [
+        { code: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    return prisma.subject.count({ where });
   }
 
   async findById(id: string) {
@@ -21,7 +35,7 @@ export class SubjectRepository {
   }
 
   async checkUnique(field: string, value: string, excludeId?: string) {
-    const where: import('@master/database/index.js').Prisma.SubjectWhereInput = { [field]: value, deletedAt: null };
+    const where: import('#master/database/index.js').Prisma.SubjectWhereInput = { [field]: value, deletedAt: null };
     if (excludeId) where.id = { not: excludeId };
     return prisma.subject.findFirst({ where });
   }

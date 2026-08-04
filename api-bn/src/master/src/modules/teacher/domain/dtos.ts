@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { batchGetTeacherSchema, createTeacherSchema, updateTeacherSchema, bulkUpdateTeacherStatusSchema, changePasswordSchema } from '@master/modules/teacher/domain/schemas';
+import { batchGetTeacherSchema, createTeacherSchema, updateTeacherSchema, bulkUpdateTeacherStatusSchema, changePasswordSchema } from '#master/modules/teacher/domain/schemas';
 
 export type CreateTeacherDto = z.infer<typeof createTeacherSchema>;
 export type UpdateTeacherDto = z.infer<typeof updateTeacherSchema>;

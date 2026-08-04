@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AssessmentService, assessmentService } from '@internship/modules/assessment/service/index.js';
-import { sendResponse } from '@app/index.js';
+import { AssessmentService, assessmentService } from '#internship/modules/assessment/service/index.js';
+import { sendResponse } from '#app';
 
 export class AssessmentController {
   constructor(private service: AssessmentService) {}

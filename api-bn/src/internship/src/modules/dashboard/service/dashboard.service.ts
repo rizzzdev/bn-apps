@@ -1,5 +1,5 @@
-import { prisma } from '@internship/database/index.js';
-import { getOrchestrator } from '@app/orchestrator.js';
+import { prisma } from '#internship/database/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 export class DashboardService {
   async getAdminStats() {

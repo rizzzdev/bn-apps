@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { ClassService, classService } from '@master/modules/class/service';
+import { ClassService, classService } from '#master/modules/class/service';
 import {
   sendResponse,
   createDownloadTemplateHandler,
   createUploadExcelHandler,
-} from '@app/index.js';
+} from '#app';
 
 export class ClassController {
   constructor(private service: ClassService) {}
@@ -13,9 +13,20 @@ export class ClassController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string | undefined;
+      let majorId: string | string[] | undefined;
+      if (req.query.majorId) {
+        if (Array.isArray(req.query.majorId)) {
+          majorId = req.query.majorId as string[];
+        } else if (typeof req.query.majorId === 'string' && req.query.majorId.includes(',')) {
+          majorId = (req.query.majorId as string).split(',').filter(Boolean);
+        } else {
+          majorId = req.query.majorId as string;
+        }
+      }
       const includeMajor = req.query.includeMajor === 'true';
       const includeCurrentStudent = req.query.includeCurrentStudent === 'true';
-      const { data, total } = await this.service.getAll(page, limit, includeMajor, includeCurrentStudent);
+      const { data, total } = await this.service.getAll(page, limit, search, majorId, includeMajor, includeCurrentStudent);
       const pagination = { currentPage: page, totalPage: Math.ceil(total / limit), totalData: total, dataPerPage: limit };
       sendResponse(res, 200, 'Berhasil mengambil data kelas', data, pagination);
     } catch (error) { next(error instanceof Error ? error : new Error(String(error))); }

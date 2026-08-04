@@ -1,7 +1,7 @@
-import { validate } from '@master/middlewares';
+import { validate } from '#master/middlewares';
 import { Router } from 'express';
-import { semesterController } from '@master/modules/semester/controller';
-import { batchGetSemesterSchema, createSemesterSchema, updateSemesterSchema } from '@master/modules/semester/domain';
+import { semesterController } from '#master/modules/semester/controller';
+import { batchGetSemesterSchema, createSemesterSchema, updateSemesterSchema } from '#master/modules/semester/domain';
 import { z } from 'zod';
 
 export const semesterRoute = Router();

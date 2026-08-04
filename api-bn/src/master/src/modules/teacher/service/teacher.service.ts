@@ -1,19 +1,19 @@
 import {
   TeacherRepository,
   teacherRepository,
-} from '@master/modules/teacher/repository';
-import { CreateTeacherDto, UpdateTeacherDto, ChangePasswordDto } from '@master/modules/teacher/domain';
-import { BadRequestError, NotFoundError } from '@app/index.js';
-import { prisma } from '@master/database/index.js';
-import { sentriAuth } from '@auth/index.js';
-import { TeacherStatus } from '@master/database/index.js';
-import { parseExcel, generateExcelTemplate, buildHeaderLabelMap, putOptionalToNull, type HeaderSpec } from '@app/index.js';
-import { withCache, clearCachePattern, setCache } from '@app/index.js';
-import { createTeacherSchema } from '@master/modules/teacher/domain/schemas';
-import { attachmentRepository } from '@master/modules/attachment/repository';
-import { attachmentService } from '@master/modules/attachment/service';
+} from '#master/modules/teacher/repository';
+import { CreateTeacherDto, UpdateTeacherDto, ChangePasswordDto } from '#master/modules/teacher/domain';
+import { BadRequestError, NotFoundError } from '#app';
+import { prisma } from '#master/database/index.js';
+import { sentriAuth } from '#auth';
+import { TeacherStatus } from '#master/database/index.js';
+import { parseExcel, generateExcelTemplate, buildHeaderLabelMap, putOptionalToNull, type HeaderSpec } from '#app';
+import { withCache, clearCachePattern, setCache } from '#app';
+import { createTeacherSchema } from '#master/modules/teacher/domain/schemas';
+import { attachmentRepository } from '#master/modules/attachment/repository';
+import { attachmentService } from '#master/modules/attachment/service';
 import { randomUUID } from "crypto";
-import { getOrchestrator } from '@app/orchestrator.js';
+import { getOrchestrator } from '#app/orchestrator.js';
 
 const TEACHER_EXCEL_HEADERS: HeaderSpec[] = [
   { label: 'Nama Lengkap', key: 'fullname' },
@@ -322,7 +322,7 @@ export class TeacherService {
 
     const failedRows: Array<Record<string, unknown> & { reason: string }> = [];
     const preparedRows: Array<{
-      parsed: Omit<import('@master/database/index.js').Prisma.TeacherUncheckedCreateInput, 'userId'> & { password?: string };
+      parsed: Omit<import('#master/database/index.js').Prisma.TeacherUncheckedCreateInput, 'userId'> & { password?: string };
     }> = [];
 
     // Phase 1: validate each row WITHOUT throwing — push to failedRows on failure.

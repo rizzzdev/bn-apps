@@ -1,1 +1,1 @@
-export * from '@master/modules/student/controller/student.controller';
+export * from '#master/modules/student/controller/student.controller';
