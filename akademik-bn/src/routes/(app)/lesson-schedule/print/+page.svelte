@@ -4,6 +4,7 @@
 	import type { TimetableCellSlot } from '$lib/components/molecules';
 	import {
 		lessonScheduleApi,
+		scheduleEventApi,
 		subjectApi,
 		teacherApi,
 		classApi,
@@ -11,6 +12,7 @@
 	} from '$lib/services';
 	import type {
 		LessonSchedule,
+		ScheduleEvent,
 		ShadowSubject,
 		ShadowTeacher,
 		ShadowClass,
@@ -19,6 +21,7 @@
 	import { onMount } from 'svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 	import { formatTeacherName } from '$lib/utils/image';
+	import { expandEventsToSlots } from '$lib/utils/schedule-event';
 	import { goto } from '$app/navigation';
 	import { WORK_DAYS } from '$lib/constants';
 
@@ -29,6 +32,7 @@
 	let allClasses = $state<ShadowClass[]>([]);
 	let allLessonHours = $state<LessonHour[]>([]);
 	let schedules = $state<LessonSchedule[]>([]);
+	let allEvents = $state<ScheduleEvent[]>([]);
 	let isLoading = $state(true);
 	let error = $state('');
 
@@ -52,8 +56,12 @@
 		return result;
 	});
 
-	let gridSlots = $derived.by<TimetableCellSlot[]>(() =>
-		filteredSchedules.map((s) => ({
+	let eventGridSlots = $derived.by<TimetableCellSlot[]>(() =>
+		expandEventsToSlots(allEvents, allLessonHours)
+	);
+
+	let gridSlots = $derived.by<TimetableCellSlot[]>(() => [
+		...filteredSchedules.map((s) => ({
 			id: s.id,
 			subjectName: getSubjectName(s.subjectId),
 			day: s.day,
@@ -65,8 +73,9 @@
 			classes:
 				mode === 'kelas' ? [] : s.classes.map((c) => ({ id: c.class.id, name: c.class.name })),
 			notes: s.notes
-		}))
-	);
+		})),
+		...eventGridSlots
+	]);
 
 	let sortedAllHours = $derived([...allLessonHours].sort((a, b) => a.order - b.order));
 
@@ -89,19 +98,22 @@
 		isLoading = true;
 		error = '';
 		try {
-			const [scheduleRes, subjectRes, teacherRes, classRes, lessonHourRes] = await Promise.all([
-				lessonScheduleApi.list(1, 200),
-				subjectApi.list(1, 200),
-				teacherApi.list(1, 200),
-				classApi.list(1, 200),
-				lessonHourApi.list(1, 50)
-			]);
+			const [scheduleRes, subjectRes, teacherRes, classRes, lessonHourRes, eventRes] =
+				await Promise.all([
+					lessonScheduleApi.list(1, 200),
+					subjectApi.list(1, 200),
+					teacherApi.list(1, 200),
+					classApi.list(1, 200),
+					lessonHourApi.list(1, 50),
+					scheduleEventApi.list(1, 200)
+				]);
 
 			if (subjectRes.data) allSubjects = subjectRes.data as ShadowSubject[];
 			if (teacherRes.data) allTeachers = teacherRes.data as ShadowTeacher[];
 			if (classRes.data) allClasses = classRes.data as ShadowClass[];
 			if (lessonHourRes.data) allLessonHours = lessonHourRes.data as LessonHour[];
 			if (scheduleRes.data) schedules = scheduleRes.data as LessonSchedule[];
+			if (eventRes.data) allEvents = eventRes.data as ScheduleEvent[];
 		} catch (e) {
 			error = String(e);
 			toast.error('Gagal memuat data jadwal');
@@ -279,6 +291,7 @@
 			hours={sortedAllHours}
 			days={days as unknown as string[]}
 			slots={gridSlots}
+			showEventClassLabel={false}
 		/>
 	{/if}
 </div>

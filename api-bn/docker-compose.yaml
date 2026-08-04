@@ -20,6 +20,7 @@ services:
     networks:
       - proxy
       - backend
+
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api-bn.rule=Host(`api-bn.${DOMAIN_NAME}`)"

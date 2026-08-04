@@ -41,7 +41,7 @@
 {#if href}
 	<a
 		{href}
-		class="relative group/tooltip inline-flex items-center justify-center w-10 h-10 border-2 neo-shadow-xs transition-all hover:translate-x-0.5 hover:translate-y-0.5 shrink-0 {variantClasses[
+		class="relative group/tooltip inline-flex items-center justify-center w-8 h-8 neo-border neo-shadow-xs transition-all hover:translate-x-0.5 hover:translate-y-0.5 shrink-0 {variantClasses[
 			variant as keyof typeof variantClasses
 		]} {customClass}"
 		aria-label={tooltip}

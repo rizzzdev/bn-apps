@@ -6,4 +6,5 @@ import { generateScheduleOptionsSchema, commitScheduleSchema } from '../domain';
 export const generatorRoute = Router();
 
 generatorRoute.post('/preview', validate(generateScheduleOptionsSchema), generatorController.preview);
+generatorRoute.get('/preview/:jobId', generatorController.previewStatus);
 generatorRoute.post('/commit', validate(commitScheduleSchema), generatorController.commit);

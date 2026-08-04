@@ -307,6 +307,35 @@ export interface TeacherPicketSchedule {
 	deletedAt: string | null;
 }
 
+export interface ScheduleEvent {
+	id: string;
+	name: string;
+	day: string;
+	startHourId: string;
+	durationHours: number;
+	notes: string | null;
+	startHour?: LessonHour;
+	createdAt: string;
+	updatedAt: string;
+	deletedAt: string | null;
+}
+
+export interface CreateScheduleEventRequest {
+	name: string;
+	day: string;
+	startHourId: string;
+	durationHours?: number;
+	notes?: string | null;
+}
+
+export interface UpdateScheduleEventRequest {
+	name?: string;
+	day?: string;
+	startHourId?: string;
+	durationHours?: number;
+	notes?: string | null;
+}
+
 export interface MajorHead {
 	id: string;
 	teacherId: string;

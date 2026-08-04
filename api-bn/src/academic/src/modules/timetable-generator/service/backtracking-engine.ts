@@ -37,11 +37,17 @@ export interface EngineLessonHourInput {
   endTime: string;
 }
 
+export interface EngineBlockedSlotInput {
+  day: string;
+  lessonHourIds: string[];
+}
+
 export interface EngineInput {
   requirements: EngineRequirementInput[];
   unavailabilities: EngineUnavailabilityInput[];
   lessonHours: EngineLessonHourInput[];
   workingDays: string[];
+  blockedSlots?: EngineBlockedSlotInput[];
   options?: {
     timeoutMs?: number;
     maxAttempts?: number;
@@ -172,6 +178,13 @@ export class BacktrackingEngine {
       return teacherUnavail.get(teacherId)?.get(day)?.has(lessonHourId) ?? false;
     };
 
+    // 2b. Global blocked slots dari event jadwal (berlaku untuk semua kelas)
+    const globalBlocked = new Map<string, Set<string>>();
+    for (const bs of input.blockedSlots ?? []) {
+      if (!globalBlocked.has(bs.day)) globalBlocked.set(bs.day, new Set());
+      for (const id of bs.lessonHourIds) globalBlocked.get(bs.day)!.add(id);
+    }
+
     // 3. Occupancy Tracking Matrices
     const classOccupied = new Map<string, Map<string, Set<string>>>();
     const teacherOccupied = new Map<string, Map<string, Set<string>>>();
@@ -224,6 +237,8 @@ export class BacktrackingEngine {
 
       for (let k = 0; k < unit.duration; k++) {
         const hour = sortedLessonHours[startHourIndex + k]!;
+
+        if (globalBlocked.get(day)?.has(hour.id)) return false;
 
         for (const cId of unit.classIds) {
           if (classOccupied.get(cId)?.get(day)?.has(hour.id)) return false;

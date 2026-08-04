@@ -140,6 +140,35 @@ export class LessonScheduleRepository {
     return (await hydrate([item]))[0] ?? null;
   }
 
+  async createManyInTx(
+    tx: Prisma.TransactionClient,
+    items: {
+      subjectId: string;
+      lessonHourId: string;
+      day: string;
+      notes?: string | null;
+      teacherIds: string[];
+      classIds: string[];
+    }[],
+  ) {
+    const results = [];
+    for (const d of items) {
+      results.push(
+        await tx.lessonSchedule.create({
+          data: {
+            subjectId: d.subjectId,
+            lessonHourId: d.lessonHourId,
+            day: d.day,
+            notes: d.notes ?? null,
+            teachers: { create: d.teacherIds.map((teacherId) => ({ teacherId })) },
+            classes: { create: d.classIds.map((classId) => ({ classId })) },
+          },
+        }),
+      );
+    }
+    return results;
+  }
+
   async update(
     id: string,
     data: {

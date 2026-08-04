@@ -10,6 +10,7 @@ import { lessonSchedulesRoute } from '#academic/modules/lesson-schedules';
 import { lessonHoursRoute } from '#academic/modules/lesson-hours';
 import { classSubjectRequirementsRoute } from '#academic/modules/class-subject-requirements';
 import { teacherUnavailabilitiesRoute } from '#academic/modules/teacher-unavailabilities';
+import { scheduleEventsRoute } from '#academic/modules/schedule-events';
 import { generatorRoute } from '#academic/modules/timetable-generator';
 import { shadowRoute } from './shadow.route.js';
 
@@ -24,6 +25,7 @@ academicRouter.use('/homeroom-teachers', homeroomTeachersRoute);
 academicRouter.use('/subject-teachers', subjectTeachersRoute);
 academicRouter.use('/teacher-picket-schedules', teacherPicketSchedulesRoute);
 academicRouter.use('/major-heads', majorHeadsRoute);
+academicRouter.use('/schedule-events', scheduleEventsRoute);
 academicRouter.use('/lesson-schedules/generator', generatorRoute);
 academicRouter.use('/lesson-schedules', lessonSchedulesRoute);
 academicRouter.use('/lesson-hours', lessonHoursRoute);

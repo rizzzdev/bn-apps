@@ -19,3 +19,11 @@ export const updateLessonScheduleSchema = z.object({
   teacherIds: z.array(z.string().uuid()).min(1, 'Minimal 1 guru').optional(),
   classIds: z.array(z.string().uuid()).min(1, 'Minimal 1 kelas').optional(),
 });
+
+export const createLessonSchedulesBatchSchema = z.object({
+  data: z.array(createLessonScheduleSchema).min(1, 'Minimal 1 jadwal pelajaran'),
+});
+
+export const bulkDeleteLessonSchedulesSchema = z.object({
+  ids: z.array(z.string().uuid()).min(1, 'Minimal 1 id'),
+});

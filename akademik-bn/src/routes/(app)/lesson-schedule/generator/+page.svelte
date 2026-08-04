@@ -10,6 +10,7 @@
     classSubjectRequirementApi,
     teacherUnavailabilityApi,
     timetableGeneratorApi,
+    scheduleEventApi,
   } from '$lib/services';
   import type {
     ShadowClass,
@@ -20,10 +21,12 @@
     ClassSubjectRequirement,
     TeacherUnavailability,
     GeneratorPreviewResult,
+    ScheduleEvent,
   } from '$lib/types';
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { toast } from '$lib/stores/toast.svelte';
   import { formatTeacherName } from '$lib/utils/image';
+  import { expandEventsToSlots } from '$lib/utils/schedule-event';
   import { WORK_DAYS } from '$lib/constants';
 
   const days = WORK_DAYS;
@@ -37,6 +40,7 @@
   let allTeachers = $state<ShadowTeacher[]>([]);
   let allLessonHours = $state<LessonHour[]>([]);
   let subjectTeachers = $state<SubjectTeacher[]>([]);
+  let allEvents = $state<ScheduleEvent[]>([]);
   let isLoadingMaster = $state(true);
 
   // Tab 1: Requirements State
@@ -89,6 +93,16 @@
   let timeoutMs = $state<number>(15000);
   let enableBatchTeaching = $state(true);
   let isGenerating = $state(false);
+  let generateElapsed = $state(0);
+  let generateTimer: ReturnType<typeof setInterval> | null = null;
+
+  // Bersihkan timer jika halaman ditutup di tengah proses generasi.
+  onDestroy(() => {
+    if (generateTimer) {
+      clearInterval(generateTimer);
+      generateTimer = null;
+    }
+  });
 
   // Tab 4: Preview Result State
   let previewResult = $state<GeneratorPreviewResult | null>(null);
@@ -102,46 +116,54 @@
   let sortedLessonHours = $derived([...allLessonHours].sort((a, b) => a.order - b.order));
 
   // Derived Preview Grid Slots for TimetableGridTable component
+  let previewEventSlots = $derived.by<TimetableCellSlot[]>(() =>
+    expandEventsToSlots(allEvents, allLessonHours)
+  );
+
   let previewGridSlots = $derived.by<TimetableCellSlot[]>(() => {
-    if (!previewResult) return [];
-    return previewResult.schedules
-      .filter((s) => {
-        if (previewMode === 'class') {
-          return (s.classIds || [s.classId]).includes(selectedPreviewClassId);
-        } else {
-          return (s.teacherIds || [s.teacherId]).includes(selectedPreviewTeacherId);
-        }
-      })
-      .map((s) => {
-        const teacherList = s.teacherIds
-          ? s.teacherIds.map((tid, i) => ({ id: tid, name: (s.teacherNames || [])[i] || s.teacherName }))
-          : [{ id: s.teacherId, name: s.teacherName }];
-        const classList = s.classIds
-          ? s.classIds.map((cid, i) => ({ id: cid, name: (s.classNames || [])[i] || s.className }))
-          : [{ id: s.classId, name: s.className }];
-        return {
-          id: `${(s.classIds || [s.classId]).join(',')}_${(s.teacherIds || [s.teacherId]).join(',')}_${s.day}_${s.lessonHourId}`,
-          subjectName: s.subjectName,
-          day: s.day,
-          lessonHourId: s.lessonHourId,
-          teachers: teacherList,
-          classes: classList
-        };
-      });
+    const lessonSlots: TimetableCellSlot[] = previewResult
+      ? previewResult.schedules
+          .filter((s) => {
+            if (previewMode === 'class') {
+              return (s.classIds || [s.classId]).includes(selectedPreviewClassId);
+            } else {
+              return (s.teacherIds || [s.teacherId]).includes(selectedPreviewTeacherId);
+            }
+          })
+          .map((s) => {
+            const teacherList = s.teacherIds
+              ? s.teacherIds.map((tid, i) => ({ id: tid, name: (s.teacherNames || [])[i] || s.teacherName }))
+              : [{ id: s.teacherId, name: s.teacherName }];
+            const classList = s.classIds
+              ? s.classIds.map((cid, i) => ({ id: cid, name: (s.classNames || [])[i] || s.className }))
+              : [{ id: s.classId, name: s.className }];
+            return {
+              id: `${(s.classIds || [s.classId]).join(',')}_${(s.teacherIds || [s.teacherId]).join(',')}_${s.day}_${s.lessonHourId}`,
+              subjectName: s.subjectName,
+              day: s.day,
+              lessonHourId: s.lessonHourId,
+              teachers: teacherList,
+              classes: classList,
+            };
+          })
+      : [];
+    return [...lessonSlots, ...previewEventSlots];
   });
 
   // Load all master data
   onMount(async () => {
     try {
       isLoadingMaster = true;
-      const [classRes, subjectRes, teacherRes, hourRes, stRes, reqRes] = await Promise.all([
-        classApi.list(1, 200),
-        subjectApi.list(1, 200),
-        teacherApi.list(1, 200),
-        lessonHourApi.list(1, 50),
-        teacherApi.subjectTeachers.list(1, 500),
-        classSubjectRequirementApi.list({}),
-      ]);
+      const [classRes, subjectRes, teacherRes, hourRes, stRes, reqRes, eventRes] =
+        await Promise.all([
+          classApi.list(1, 200),
+          subjectApi.list(1, 200),
+          teacherApi.list(1, 200),
+          lessonHourApi.list(1, 50),
+          teacherApi.subjectTeachers.list(1, 500),
+          classSubjectRequirementApi.list({}),
+          scheduleEventApi.list(1, 200),
+        ]);
 
       if (classRes.data) allClasses = classRes.data as ShadowClass[];
       if (subjectRes.data) allSubjects = subjectRes.data as ShadowSubject[];
@@ -149,6 +171,7 @@
       if (hourRes.data) allLessonHours = hourRes.data as LessonHour[];
       if (stRes.data) subjectTeachers = stRes.data as SubjectTeacher[];
       if (reqRes.data) allClassRequirements = reqRes.data as ClassSubjectRequirement[];
+      if (eventRes.data) allEvents = eventRes.data as ScheduleEvent[];
 
       if (allClasses.length > 0) {
         selectedRequirementClassId = allClasses[0]!.id;
@@ -495,19 +518,70 @@
 
     try {
       isGenerating = true;
+      generateElapsed = 0;
+      generateTimer = setInterval(() => generateElapsed++, 1000);
       const result = await timetableGeneratorApi.preview({
         workingDays: selectedWorkingDays,
         timeoutMs,
         enableBatchTeaching,
       });
 
-      if (result.data) {
-        previewResult = result.data as GeneratorPreviewResult;
+      const data = result.data;
+      if (!data) {
+        toast.error('Generator tidak menghasilkan data. Pastikan matriks Beban Jam (Tab 1) sudah terisi.');
+        return;
+      }
+
+      // Fallback: Redis tidak tersedia → hasil langsung dikembalikan (engine
+      // berjalan di worker thread di sisi API).
+      if (data.mode === 'inline') {
+        previewResult = data.result;
         activeTab = 'preview';
         toast.success(`Generator selesai! Kualitas jadwal: ${previewResult.qualityScore}%`);
-      } else {
-        toast.error('Generator tidak menghasilkan data. Pastikan matriks Beban Jam (Tab 1) sudah terisi.');
+        return;
       }
+
+      // Jalur utama: job diproses di background (BullMQ). Polling status.
+      const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+      const deadline = Date.now() + (timeoutMs ?? 15000) + 30000;
+      while (Date.now() < deadline) {
+        await sleep(1500);
+
+        let statusRes: Awaited<ReturnType<typeof timetableGeneratorApi.previewStatus>>;
+        try {
+          statusRes = await timetableGeneratorApi.previewStatus(data.jobId);
+        } catch {
+          toast.error('Layanan antrian tidak tersedia. Silakan coba lagi.');
+          return;
+        }
+
+        const status = statusRes.data;
+        if (!status) {
+          toast.error('Gagal membaca status job preview.');
+          return;
+        }
+
+        if (status.status === 'completed' && status.result) {
+          previewResult = status.result;
+          activeTab = 'preview';
+          toast.success(`Generator selesai! Kualitas jadwal: ${previewResult.qualityScore}%`);
+          return;
+        }
+        if (status.status === 'failed') {
+          toast.error(`Generator gagal: ${status.error}`);
+          return;
+        }
+        if (status.status === 'not_found') {
+          toast.error('Job preview tidak ditemukan. Silakan coba lagi.');
+          return;
+        }
+        if (status.status === 'unavailable') {
+          toast.error('Layanan antrian tidak tersedia. Silakan coba lagi.');
+          return;
+        }
+      }
+
+      toast.error('Waktu proses generator habis. Silakan coba lagi.');
     } catch (e) {
       const msg =
         e instanceof Error ? e.message : String(e || 'Gagal menjalankan generator jadwal');
@@ -517,6 +591,10 @@
       }
     } finally {
       isGenerating = false;
+      if (generateTimer) {
+        clearInterval(generateTimer);
+        generateTimer = null;
+      }
     }
   }
 
@@ -906,12 +984,17 @@
           >
             {#if isGenerating}
               <div class="animate-spin rounded-full h-5 w-5 border-2 border-on-primary border-t-transparent shrink-0"></div>
-              <span>MENGHITUNG JADWAL (CSP SOLVER RUNNING)...</span>
+              <span>MEMPROSES JADWAL DI BACKGROUND... ({generateElapsed}s)</span>
             {:else}
               <Icon name="play" class="shrink-0" />
               <span>JALANKAN ENGINE GENERATOR JADWAL</span>
             {/if}
           </Button>
+          {#if isGenerating}
+            <p class="text-[10px] text-on-surface-variant uppercase mt-2 text-center">
+              Proses berjalan di background — biarkan halaman ini terbuka; hasil akan muncul otomatis.
+            </p>
+          {/if}
         </div>
       </div>
     {/if}

@@ -18,6 +18,7 @@ model LessonHour {
   deletedAt        DateTime?               @map("deleted_at")
   schedules        LessonSchedule[]
   unavailabilities TeacherUnavailability[]
+  events         ScheduleEvent[]
 
   @@map("lesson_hours")
 }
@@ -307,4 +308,19 @@ model ShadowSubject {
   lastSyncAt DateTime? @map("last_sync_at")
 
   @@map("shadow_subjects")
+}
+
+model ScheduleEvent {
+  id            String      @id @default(uuid())
+  name          String
+  day           String
+  startHourId   String      @map("start_hour_id")
+  durationHours Int         @default(1) @map("duration_hours")
+  notes         String?
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  deletedAt     DateTime?   @map("deleted_at")
+  startHour     LessonHour  @relation(fields: [startHourId], references: [id])
+
+  @@map("schedule_events")
 }

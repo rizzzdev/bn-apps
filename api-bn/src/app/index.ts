@@ -32,7 +32,9 @@ const createApp = () => {
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin", "Cookie"],
         optionsSuccessStatus: 200,
     }))
-    app.use(express.json())
+    // Limit dinaikkan agar muat payload commit jadwal generator (ratusan slot)
+    // dan unggah data massal. Default express.json hanya 100kb.
+    app.use(express.json({ limit: '10mb' }))
 
     if (env.COOKIE_DOMAIN) {
         const cookieDomain = env.COOKIE_DOMAIN.trim().replace(/^\.+/, '');

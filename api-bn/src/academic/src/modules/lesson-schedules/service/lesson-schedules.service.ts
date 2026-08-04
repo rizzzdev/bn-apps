@@ -43,11 +43,12 @@ export class LessonScheduleService {
       await this.#validateNoConflicts(d.teacherIds, d.classIds, d.day, lh.startTime, lh.endTime);
     }
 
-    const results = await Promise.all(
-      data.map((d) => this.repository.create(d as any)),
+    // Seluruh batch dibuat dalam satu transaksi: jika ada satu item gagal,
+    // tidak ada item lain yang ikut tersimpan (mencegah data parsial/duplikat).
+    return prisma.$transaction(
+      (tx) => this.repository.createManyInTx(tx, data as any),
+      { timeout: 15000 },
     );
-
-    return results;
   }
 
   async update(id: string, data: UpdateLessonScheduleDto) {
@@ -117,6 +118,27 @@ export class LessonScheduleService {
     if (overlappingHours.length === 0) return;
 
     const overlappingHourIds = overlappingHours.map((h) => h.id);
+
+    // Cek bentrok dengan event jadwal (event berlaku untuk semua kelas)
+    const eventsOnDay = await prisma.scheduleEvent.findMany({
+      where: { day, deletedAt: null },
+      include: { startHour: true },
+    });
+    for (const ev of eventsOnDay) {
+      const evHours = await prisma.lessonHour.findMany({
+        where: {
+          deletedAt: null,
+          order: { gte: ev.startHour.order, lt: ev.startHour.order + ev.durationHours },
+        },
+        select: { id: true },
+      });
+      const evHourIdSet = new Set(evHours.map((h) => h.id));
+      if (overlappingHourIds.some((id) => evHourIdSet.has(id))) {
+        throw new ValidationError(
+          `Tidak dapat menyimpan jadwal: bentrok dengan event "${ev.name}" pada ${day} (event berlaku untuk semua kelas).`,
+        );
+      }
+    }
 
     const scheduleFilter: any = {
       day,

@@ -131,3 +131,8 @@ export type ShadowStudent = Prisma.ShadowStudentModel
  * 
  */
 export type ShadowSubject = Prisma.ShadowSubjectModel
+/**
+ * Model ScheduleEvent
+ * 
+ */
+export type ScheduleEvent = Prisma.ScheduleEventModel

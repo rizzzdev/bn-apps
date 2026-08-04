@@ -45,3 +45,22 @@ export interface GeneratorPreviewResult {
     durationMs: number;
   };
 }
+
+/**
+ * Hasil POST /preview:
+ * - mode 'queue'  → job dijalankan di background (BullMQ), frontend mem-poll
+ *   GET /preview/:jobId.
+ * - mode 'inline' → fallback: Redis tidak tersedia, hasil dikembalikan langsung
+ *   (engine dijalankan di worker thread).
+ */
+export type GeneratePreviewResponse =
+  | { mode: 'queue'; jobId: string }
+  | { mode: 'inline'; result: GeneratorPreviewResult };
+
+export type PreviewJobStatus =
+  | { status: 'processing' }
+  | { status: 'completed'; result: GeneratorPreviewResult }
+  | { status: 'failed'; error: string }
+  | { status: 'not_found' }
+  | { status: 'unavailable' };
+

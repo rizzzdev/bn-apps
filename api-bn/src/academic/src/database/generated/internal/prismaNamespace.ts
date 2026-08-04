@@ -401,7 +401,8 @@ export const ModelName = {
   ShadowClass: 'ShadowClass',
   ShadowTeacher: 'ShadowTeacher',
   ShadowStudent: 'ShadowStudent',
-  ShadowSubject: 'ShadowSubject'
+  ShadowSubject: 'ShadowSubject',
+  ScheduleEvent: 'ScheduleEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "lessonHour" | "majorStudent" | "classStudent" | "homeroomTeacher" | "majorHead" | "subjectTeacher" | "lessonSchedule" | "lessonScheduleTeacher" | "lessonScheduleClass" | "teacherPicketSchedule" | "classSubjectRequirement" | "teacherUnavailability" | "shadowAcademicYear" | "shadowMajor" | "shadowClass" | "shadowTeacher" | "shadowStudent" | "shadowSubject"
+    modelProps: "lessonHour" | "majorStudent" | "classStudent" | "homeroomTeacher" | "majorHead" | "subjectTeacher" | "lessonSchedule" | "lessonScheduleTeacher" | "lessonScheduleClass" | "teacherPicketSchedule" | "classSubjectRequirement" | "teacherUnavailability" | "shadowAcademicYear" | "shadowMajor" | "shadowClass" | "shadowTeacher" | "shadowStudent" | "shadowSubject" | "scheduleEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1753,6 +1754,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ScheduleEvent: {
+      payload: Prisma.$ScheduleEventPayload<ExtArgs>
+      fields: Prisma.ScheduleEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ScheduleEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduleEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ScheduleEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduleEventPayload>
+        }
+        findFirst: {
+          args: Prisma.ScheduleEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduleEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ScheduleEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduleEventPayload>
+        }
+        findMany: {
+          args: Prisma.ScheduleEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduleEventPayload>[]
+        }
+        create: {
+          args: Prisma.ScheduleEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduleEventPayload>
+        }
+        createMany: {
+          args: Prisma.ScheduleEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ScheduleEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduleEventPayload>[]
+        }
+        delete: {
+          args: Prisma.ScheduleEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduleEventPayload>
+        }
+        update: {
+          args: Prisma.ScheduleEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduleEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.ScheduleEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ScheduleEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ScheduleEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduleEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.ScheduleEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduleEventPayload>
+        }
+        aggregate: {
+          args: Prisma.ScheduleEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateScheduleEvent>
+        }
+        groupBy: {
+          args: Prisma.ScheduleEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ScheduleEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ScheduleEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ScheduleEventCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2062,6 +2137,21 @@ export const ShadowSubjectScalarFieldEnum = {
 export type ShadowSubjectScalarFieldEnum = (typeof ShadowSubjectScalarFieldEnum)[keyof typeof ShadowSubjectScalarFieldEnum]
 
 
+export const ScheduleEventScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  day: 'day',
+  startHourId: 'startHourId',
+  durationHours: 'durationHours',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ScheduleEventScalarFieldEnum = (typeof ScheduleEventScalarFieldEnum)[keyof typeof ScheduleEventScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2345,6 +2435,7 @@ export type GlobalOmitConfig = {
   shadowTeacher?: Prisma.ShadowTeacherOmit
   shadowStudent?: Prisma.ShadowStudentOmit
   shadowSubject?: Prisma.ShadowSubjectOmit
+  scheduleEvent?: Prisma.ScheduleEventOmit
 }
 
 /* Types for Logging */

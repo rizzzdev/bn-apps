@@ -14,6 +14,7 @@
     notes?: string | null;
     selected?: boolean;
     colorClass?: string;
+    isEvent?: boolean;
   }
 
   let {
@@ -22,6 +23,7 @@
     slots = [],
     selectedIds = [],
     selectable = false,
+    showEventClassLabel = true,
     onSlotClick = undefined,
     onToggleSelect = undefined
   } = $props<{
@@ -30,6 +32,7 @@
     slots: TimetableCellSlot[];
     selectedIds?: string[];
     selectable?: boolean;
+    showEventClassLabel?: boolean;
     onSlotClick?: (slot: TimetableCellSlot) => void;
     onToggleSelect?: (slotId: string) => void;
   }>();
@@ -59,7 +62,7 @@
     if (target && target.closest('input[type="checkbox"], label')) {
       return;
     }
-    if (onToggleSelect && selectable) {
+    if (onToggleSelect && selectable && !slot.isEvent) {
       onToggleSelect(slot.id);
     }
     if (onSlotClick) {
@@ -102,18 +105,20 @@
                   {#each daySlots as slot}
                     {@const selected = isSelected(slot.id)}
                     <div
-                      class="neo-border-sm p-2 mb-2 last:mb-0 transition-shadow hover:shadow-[2px_2px_0px_0px_#1C1B1B] {slot.colorClass
+                      class="neo-border-sm p-2 mb-2 last:mb-0 transition-shadow hover:shadow-[2px_2px_0px_0px_#1C1B1B] {slot.isEvent
+                        ? 'bg-tertiary-fixed border-tertiary'
+                        : slot.colorClass
                         ? slot.colorClass
                         : selected
                         ? 'bg-primary-container border-primary'
-                        : 'bg-surface'} {onSlotClick || selectable ? 'cursor-pointer' : ''}"
+                        : 'bg-surface'} {onSlotClick || (selectable && !slot.isEvent) ? 'cursor-pointer' : ''}"
                       onclick={(e) => handleSlotClick(slot, e)}
                       onkeydown={(e) => e.key === 'Enter' && handleSlotClick(slot, e as any)}
                       role="button"
                       tabindex="0"
                     >
                       <div class="flex items-start gap-2">
-                        {#if selectable}
+                        {#if selectable && !slot.isEvent}
                           <Checkbox
                             checked={selected}
                             onchange={() => {
@@ -123,7 +128,21 @@
                           />
                         {/if}
                         <div class="min-w-0 flex-1">
-                          <p class="font-bold text-sm leading-tight truncate">{slot.subjectName}</p>
+                          <div class="flex items-center gap-1">
+                            {#if slot.isEvent}
+                              <Icon name="sparkles" size="12px" class="shrink-0" />
+                            {/if}
+                            <p class="font-bold text-sm leading-tight truncate">{slot.subjectName}</p>
+                          </div>
+
+                          {#if slot.isEvent && showEventClassLabel}
+                            <div class="mt-1 flex flex-wrap gap-1">
+                              <span class="bg-surface text-xs px-1.5 py-0.5 neo-border-xs whitespace-nowrap flex items-center gap-1">
+                                <Icon name="group" size="10px" />
+                                Semua Kelas
+                              </span>
+                            </div>
+                          {/if}
 
                           <!-- Teachers (team teaching) -->
                           {#if slot.teachers && slot.teachers.length > 0}

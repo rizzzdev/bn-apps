@@ -242,6 +242,7 @@ export type LessonHourWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"LessonHour"> | Date | string | null
   schedules?: Prisma.LessonScheduleListRelationFilter
   unavailabilities?: Prisma.TeacherUnavailabilityListRelationFilter
+  events?: Prisma.ScheduleEventListRelationFilter
 }
 
 export type LessonHourOrderByWithRelationInput = {
@@ -255,6 +256,7 @@ export type LessonHourOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   schedules?: Prisma.LessonScheduleOrderByRelationAggregateInput
   unavailabilities?: Prisma.TeacherUnavailabilityOrderByRelationAggregateInput
+  events?: Prisma.ScheduleEventOrderByRelationAggregateInput
 }
 
 export type LessonHourWhereUniqueInput = Prisma.AtLeast<{
@@ -271,6 +273,7 @@ export type LessonHourWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"LessonHour"> | Date | string | null
   schedules?: Prisma.LessonScheduleListRelationFilter
   unavailabilities?: Prisma.TeacherUnavailabilityListRelationFilter
+  events?: Prisma.ScheduleEventListRelationFilter
 }, "id">
 
 export type LessonHourOrderByWithAggregationInput = {
@@ -314,6 +317,7 @@ export type LessonHourCreateInput = {
   deletedAt?: Date | string | null
   schedules?: Prisma.LessonScheduleCreateNestedManyWithoutLessonHourInput
   unavailabilities?: Prisma.TeacherUnavailabilityCreateNestedManyWithoutLessonHourInput
+  events?: Prisma.ScheduleEventCreateNestedManyWithoutStartHourInput
 }
 
 export type LessonHourUncheckedCreateInput = {
@@ -327,6 +331,7 @@ export type LessonHourUncheckedCreateInput = {
   deletedAt?: Date | string | null
   schedules?: Prisma.LessonScheduleUncheckedCreateNestedManyWithoutLessonHourInput
   unavailabilities?: Prisma.TeacherUnavailabilityUncheckedCreateNestedManyWithoutLessonHourInput
+  events?: Prisma.ScheduleEventUncheckedCreateNestedManyWithoutStartHourInput
 }
 
 export type LessonHourUpdateInput = {
@@ -340,6 +345,7 @@ export type LessonHourUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   schedules?: Prisma.LessonScheduleUpdateManyWithoutLessonHourNestedInput
   unavailabilities?: Prisma.TeacherUnavailabilityUpdateManyWithoutLessonHourNestedInput
+  events?: Prisma.ScheduleEventUpdateManyWithoutStartHourNestedInput
 }
 
 export type LessonHourUncheckedUpdateInput = {
@@ -353,6 +359,7 @@ export type LessonHourUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   schedules?: Prisma.LessonScheduleUncheckedUpdateManyWithoutLessonHourNestedInput
   unavailabilities?: Prisma.TeacherUnavailabilityUncheckedUpdateManyWithoutLessonHourNestedInput
+  events?: Prisma.ScheduleEventUncheckedUpdateManyWithoutStartHourNestedInput
 }
 
 export type LessonHourCreateManyInput = {
@@ -482,6 +489,20 @@ export type LessonHourUpdateOneRequiredWithoutUnavailabilitiesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LessonHourUpdateToOneWithWhereWithoutUnavailabilitiesInput, Prisma.LessonHourUpdateWithoutUnavailabilitiesInput>, Prisma.LessonHourUncheckedUpdateWithoutUnavailabilitiesInput>
 }
 
+export type LessonHourCreateNestedOneWithoutEventsInput = {
+  create?: Prisma.XOR<Prisma.LessonHourCreateWithoutEventsInput, Prisma.LessonHourUncheckedCreateWithoutEventsInput>
+  connectOrCreate?: Prisma.LessonHourCreateOrConnectWithoutEventsInput
+  connect?: Prisma.LessonHourWhereUniqueInput
+}
+
+export type LessonHourUpdateOneRequiredWithoutEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.LessonHourCreateWithoutEventsInput, Prisma.LessonHourUncheckedCreateWithoutEventsInput>
+  connectOrCreate?: Prisma.LessonHourCreateOrConnectWithoutEventsInput
+  upsert?: Prisma.LessonHourUpsertWithoutEventsInput
+  connect?: Prisma.LessonHourWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LessonHourUpdateToOneWithWhereWithoutEventsInput, Prisma.LessonHourUpdateWithoutEventsInput>, Prisma.LessonHourUncheckedUpdateWithoutEventsInput>
+}
+
 export type LessonHourCreateWithoutSchedulesInput = {
   id?: string
   name: string
@@ -492,6 +513,7 @@ export type LessonHourCreateWithoutSchedulesInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   unavailabilities?: Prisma.TeacherUnavailabilityCreateNestedManyWithoutLessonHourInput
+  events?: Prisma.ScheduleEventCreateNestedManyWithoutStartHourInput
 }
 
 export type LessonHourUncheckedCreateWithoutSchedulesInput = {
@@ -504,6 +526,7 @@ export type LessonHourUncheckedCreateWithoutSchedulesInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   unavailabilities?: Prisma.TeacherUnavailabilityUncheckedCreateNestedManyWithoutLessonHourInput
+  events?: Prisma.ScheduleEventUncheckedCreateNestedManyWithoutStartHourInput
 }
 
 export type LessonHourCreateOrConnectWithoutSchedulesInput = {
@@ -532,6 +555,7 @@ export type LessonHourUpdateWithoutSchedulesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   unavailabilities?: Prisma.TeacherUnavailabilityUpdateManyWithoutLessonHourNestedInput
+  events?: Prisma.ScheduleEventUpdateManyWithoutStartHourNestedInput
 }
 
 export type LessonHourUncheckedUpdateWithoutSchedulesInput = {
@@ -544,6 +568,7 @@ export type LessonHourUncheckedUpdateWithoutSchedulesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   unavailabilities?: Prisma.TeacherUnavailabilityUncheckedUpdateManyWithoutLessonHourNestedInput
+  events?: Prisma.ScheduleEventUncheckedUpdateManyWithoutStartHourNestedInput
 }
 
 export type LessonHourCreateWithoutUnavailabilitiesInput = {
@@ -556,6 +581,7 @@ export type LessonHourCreateWithoutUnavailabilitiesInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   schedules?: Prisma.LessonScheduleCreateNestedManyWithoutLessonHourInput
+  events?: Prisma.ScheduleEventCreateNestedManyWithoutStartHourInput
 }
 
 export type LessonHourUncheckedCreateWithoutUnavailabilitiesInput = {
@@ -568,6 +594,7 @@ export type LessonHourUncheckedCreateWithoutUnavailabilitiesInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   schedules?: Prisma.LessonScheduleUncheckedCreateNestedManyWithoutLessonHourInput
+  events?: Prisma.ScheduleEventUncheckedCreateNestedManyWithoutStartHourInput
 }
 
 export type LessonHourCreateOrConnectWithoutUnavailabilitiesInput = {
@@ -596,6 +623,7 @@ export type LessonHourUpdateWithoutUnavailabilitiesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   schedules?: Prisma.LessonScheduleUpdateManyWithoutLessonHourNestedInput
+  events?: Prisma.ScheduleEventUpdateManyWithoutStartHourNestedInput
 }
 
 export type LessonHourUncheckedUpdateWithoutUnavailabilitiesInput = {
@@ -608,6 +636,75 @@ export type LessonHourUncheckedUpdateWithoutUnavailabilitiesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   schedules?: Prisma.LessonScheduleUncheckedUpdateManyWithoutLessonHourNestedInput
+  events?: Prisma.ScheduleEventUncheckedUpdateManyWithoutStartHourNestedInput
+}
+
+export type LessonHourCreateWithoutEventsInput = {
+  id?: string
+  name: string
+  startTime: string
+  endTime: string
+  order: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  schedules?: Prisma.LessonScheduleCreateNestedManyWithoutLessonHourInput
+  unavailabilities?: Prisma.TeacherUnavailabilityCreateNestedManyWithoutLessonHourInput
+}
+
+export type LessonHourUncheckedCreateWithoutEventsInput = {
+  id?: string
+  name: string
+  startTime: string
+  endTime: string
+  order: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  schedules?: Prisma.LessonScheduleUncheckedCreateNestedManyWithoutLessonHourInput
+  unavailabilities?: Prisma.TeacherUnavailabilityUncheckedCreateNestedManyWithoutLessonHourInput
+}
+
+export type LessonHourCreateOrConnectWithoutEventsInput = {
+  where: Prisma.LessonHourWhereUniqueInput
+  create: Prisma.XOR<Prisma.LessonHourCreateWithoutEventsInput, Prisma.LessonHourUncheckedCreateWithoutEventsInput>
+}
+
+export type LessonHourUpsertWithoutEventsInput = {
+  update: Prisma.XOR<Prisma.LessonHourUpdateWithoutEventsInput, Prisma.LessonHourUncheckedUpdateWithoutEventsInput>
+  create: Prisma.XOR<Prisma.LessonHourCreateWithoutEventsInput, Prisma.LessonHourUncheckedCreateWithoutEventsInput>
+  where?: Prisma.LessonHourWhereInput
+}
+
+export type LessonHourUpdateToOneWithWhereWithoutEventsInput = {
+  where?: Prisma.LessonHourWhereInput
+  data: Prisma.XOR<Prisma.LessonHourUpdateWithoutEventsInput, Prisma.LessonHourUncheckedUpdateWithoutEventsInput>
+}
+
+export type LessonHourUpdateWithoutEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  schedules?: Prisma.LessonScheduleUpdateManyWithoutLessonHourNestedInput
+  unavailabilities?: Prisma.TeacherUnavailabilityUpdateManyWithoutLessonHourNestedInput
+}
+
+export type LessonHourUncheckedUpdateWithoutEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  schedules?: Prisma.LessonScheduleUncheckedUpdateManyWithoutLessonHourNestedInput
+  unavailabilities?: Prisma.TeacherUnavailabilityUncheckedUpdateManyWithoutLessonHourNestedInput
 }
 
 
@@ -618,11 +715,13 @@ export type LessonHourUncheckedUpdateWithoutUnavailabilitiesInput = {
 export type LessonHourCountOutputType = {
   schedules: number
   unavailabilities: number
+  events: number
 }
 
 export type LessonHourCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   schedules?: boolean | LessonHourCountOutputTypeCountSchedulesArgs
   unavailabilities?: boolean | LessonHourCountOutputTypeCountUnavailabilitiesArgs
+  events?: boolean | LessonHourCountOutputTypeCountEventsArgs
 }
 
 /**
@@ -649,6 +748,13 @@ export type LessonHourCountOutputTypeCountUnavailabilitiesArgs<ExtArgs extends r
   where?: Prisma.TeacherUnavailabilityWhereInput
 }
 
+/**
+ * LessonHourCountOutputType without action
+ */
+export type LessonHourCountOutputTypeCountEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ScheduleEventWhereInput
+}
+
 
 export type LessonHourSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -661,6 +767,7 @@ export type LessonHourSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   deletedAt?: boolean
   schedules?: boolean | Prisma.LessonHour$schedulesArgs<ExtArgs>
   unavailabilities?: boolean | Prisma.LessonHour$unavailabilitiesArgs<ExtArgs>
+  events?: boolean | Prisma.LessonHour$eventsArgs<ExtArgs>
   _count?: boolean | Prisma.LessonHourCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["lessonHour"]>
 
@@ -701,6 +808,7 @@ export type LessonHourOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type LessonHourInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   schedules?: boolean | Prisma.LessonHour$schedulesArgs<ExtArgs>
   unavailabilities?: boolean | Prisma.LessonHour$unavailabilitiesArgs<ExtArgs>
+  events?: boolean | Prisma.LessonHour$eventsArgs<ExtArgs>
   _count?: boolean | Prisma.LessonHourCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LessonHourIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -711,6 +819,7 @@ export type $LessonHourPayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     schedules: Prisma.$LessonSchedulePayload<ExtArgs>[]
     unavailabilities: Prisma.$TeacherUnavailabilityPayload<ExtArgs>[]
+    events: Prisma.$ScheduleEventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1117,6 +1226,7 @@ export interface Prisma__LessonHourClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   schedules<T extends Prisma.LessonHour$schedulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LessonHour$schedulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LessonSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   unavailabilities<T extends Prisma.LessonHour$unavailabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LessonHour$unavailabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherUnavailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  events<T extends Prisma.LessonHour$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LessonHour$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScheduleEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1592,6 +1702,30 @@ export type LessonHour$unavailabilitiesArgs<ExtArgs extends runtime.Types.Extens
   take?: number
   skip?: number
   distinct?: Prisma.TeacherUnavailabilityScalarFieldEnum | Prisma.TeacherUnavailabilityScalarFieldEnum[]
+}
+
+/**
+ * LessonHour.events
+ */
+export type LessonHour$eventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ScheduleEvent
+   */
+  select?: Prisma.ScheduleEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ScheduleEvent
+   */
+  omit?: Prisma.ScheduleEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ScheduleEventInclude<ExtArgs> | null
+  where?: Prisma.ScheduleEventWhereInput
+  orderBy?: Prisma.ScheduleEventOrderByWithRelationInput | Prisma.ScheduleEventOrderByWithRelationInput[]
+  cursor?: Prisma.ScheduleEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ScheduleEventScalarFieldEnum | Prisma.ScheduleEventScalarFieldEnum[]
 }
 
 /**

@@ -1,11 +1,20 @@
 import { prisma } from '#academic/database/index.js';
+import type { Prisma } from '#academic/database/index.js';
 import { backtrackingEngine } from './backtracking-engine';
-import type { GenerateScheduleOptionsDto, CommitScheduleDto, GeneratorPreviewResult } from '../domain';
+import { runEngineInWorker } from './engine-runner';
+import { isRedisAvailable, enqueuePreview, getPreviewJob, invalidateRedisHealth } from './timetable-queue';
+import type {
+  GenerateScheduleOptionsDto,
+  CommitScheduleDto,
+  GeneratorPreviewResult,
+  PreviewJobStatus,
+  GeneratePreviewResponse,
+} from '../domain';
 import { ValidationError } from '#app';
 import { getOrchestrator } from '#app/orchestrator.js';
 
 export class GeneratorService {
-  async generatePreview(options: GenerateScheduleOptionsDto): Promise<GeneratorPreviewResult> {
+  async generatePreview(options: GenerateScheduleOptionsDto): Promise<GeneratePreviewResponse> {
     const reqWhere: any = { deletedAt: null };
     if (options.classIds && options.classIds.length > 0) {
       reqWhere.classId = { in: options.classIds };
@@ -45,6 +54,9 @@ export class GeneratorService {
       throw new ValidationError('Belum ada data Jam Pelajaran (LessonHour). Silakan buat jam pelajaran terlebih dahulu.');
     }
 
+    // Ekspansi event menjadi slot jam yang diblokir (berlaku untuk semua kelas)
+    const blockedSlots = await this.#getEventBlockedSlots();
+
     const formatName = (teacher: { prefixTitle?: string | null; fullname?: string | null; suffixTitle?: string | null } | undefined | null) =>
       `${teacher?.prefixTitle?.trim() ? `${teacher.prefixTitle.trim()} ` : ''}${teacher?.fullname?.trim() ?? 'Unassigned'}${teacher?.suffixTitle?.trim() ? `, ${teacher.suffixTitle.trim()}` : ''}`;
 
@@ -71,6 +83,7 @@ export class GeneratorService {
         startTime: h.startTime,
         endTime: h.endTime,
       })),
+      blockedSlots,
       workingDays: options.workingDays,
       options: {
         timeoutMs: options.timeoutMs,
@@ -79,7 +92,36 @@ export class GeneratorService {
       },
     };
 
-    return backtrackingEngine.solve(engineInput);
+    if (await isRedisAvailable()) {
+      try {
+        // Jalur utama: enqueue ke BullMQ — worker process terpisah yang
+        // menjalankan engine. Request langsung balas dengan jobId.
+        const jobId = await enqueuePreview(engineInput);
+        return { mode: 'queue', jobId };
+      } catch {
+        // Redis mati di antara health check & enqueue (TOCTOU) → jangan lempar
+        // error, jatuh ke fallback inline. Reset cache agar tidak mencoba lagi.
+        invalidateRedisHealth();
+      }
+    }
+
+    // Fallback: Redis tidak tersedia → jalankan engine di worker thread agar
+    // event loop utama API tetap bebas. Tidak melempar error hanya karena Redis mati.
+    const result = await runEngineInWorker(engineInput, options.timeoutMs ?? 15000);
+    return { mode: 'inline', result };
+  }
+
+  /** Ambil status & hasil job preview (dipakai frontend saat mem-poll). */
+  async getPreviewResult(jobId: string): Promise<PreviewJobStatus> {
+    const job = await getPreviewJob(jobId);
+    if (!job) return { status: 'not_found' };
+    if (job.failedReason) {
+      return { status: 'failed', error: job.failedReason };
+    }
+    if (job.returnvalue) {
+      return { status: 'completed', result: job.returnvalue as GeneratorPreviewResult };
+    }
+    return { status: 'processing' };
   }
 
   async commitSchedule(data: CommitScheduleDto) {
@@ -87,7 +129,24 @@ export class GeneratorService {
       throw new ValidationError('Daftar jadwal yang akan di-commit tidak boleh kosong.');
     }
 
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(
+      async (tx) => {
+        // Re-validasi (di dalam transaksi): pastikan slot hasil generator tidak
+        // menabrak event jadwal yang mungkin dibuat/diubah setelah preview.
+        const blockedEvents = await this.#getEventBlockedSlots(tx);
+        const blockedMap = new Map<string, Set<string>>();
+        for (const b of blockedEvents) {
+          if (!blockedMap.has(b.day)) blockedMap.set(b.day, new Set());
+          for (const id of b.lessonHourIds) blockedMap.get(b.day)!.add(id);
+        }
+        for (const slot of data.schedules) {
+          if (blockedMap.get(slot.day)?.has(slot.lessonHourId)) {
+            throw new ValidationError(
+              `Tidak dapat mempublikasikan jadwal: slot ${slot.day} jam tersebut sudah terisi event jadwal. Hapus/ubah event terlebih dahulu, atau jalankan ulang generator.`,
+            );
+          }
+        }
+
       if (data.clearExisting) {
         const activeSchedules = await tx.lessonSchedule.findMany({
           where: { deletedAt: null },
@@ -141,6 +200,29 @@ export class GeneratorService {
       }
 
       return { count: insertedCount };
+    });
+  }
+
+  /** Daftar slot jam yang diblokir oleh event jadwal aktif (berlaku semua kelas). */
+  async #getEventBlockedSlots(
+    client: Prisma.TransactionClient | typeof prisma = prisma,
+  ): Promise<{ day: string; lessonHourIds: string[] }[]> {
+    const events = await client.scheduleEvent.findMany({
+      where: { deletedAt: null },
+      include: { startHour: true },
+    });
+    const lessonHours = await client.lessonHour.findMany({
+      where: { deletedAt: null },
+      orderBy: { order: 'asc' },
+    });
+    const hourOrderToId = new Map(lessonHours.map((h) => [h.order, h.id]));
+    return events.map((ev) => {
+      const lessonHourIds: string[] = [];
+      for (let o = ev.startHour.order; o < ev.startHour.order + ev.durationHours; o++) {
+        const id = hourOrderToId.get(o);
+        if (id) lessonHourIds.push(id);
+      }
+      return { day: ev.day, lessonHourIds };
     });
   }
 }

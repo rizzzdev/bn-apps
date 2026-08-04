@@ -68,7 +68,8 @@ export const ModelName = {
   ShadowClass: 'ShadowClass',
   ShadowTeacher: 'ShadowTeacher',
   ShadowStudent: 'ShadowStudent',
-  ShadowSubject: 'ShadowSubject'
+  ShadowSubject: 'ShadowSubject',
+  ScheduleEvent: 'ScheduleEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -355,6 +356,21 @@ export const ShadowSubjectScalarFieldEnum = {
 } as const
 
 export type ShadowSubjectScalarFieldEnum = (typeof ShadowSubjectScalarFieldEnum)[keyof typeof ShadowSubjectScalarFieldEnum]
+
+
+export const ScheduleEventScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  day: 'day',
+  startHourId: 'startHourId',
+  durationHours: 'durationHours',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ScheduleEventScalarFieldEnum = (typeof ScheduleEventScalarFieldEnum)[keyof typeof ScheduleEventScalarFieldEnum]
 
 
 export const SortOrder = {

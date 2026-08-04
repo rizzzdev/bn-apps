@@ -1,4 +1,4 @@
-import { getList, createItem, deleteItem, bulkDelete, parseResponse } from './base';
+import { getList, createItem, getById, deleteItem, bulkDelete, parseResponse } from './base';
 import type {
   ClassSubjectRequirement,
   TeacherUnavailability,
@@ -51,9 +51,27 @@ export interface CommitPayload {
   schedules: GeneratedSlot[];
 }
 
+/**
+ * Hasil POST /preview:
+ * - mode 'queue'  → job diproses di background (BullMQ), polling via previewStatus(jobId).
+ * - mode 'inline' → fallback: Redis tidak tersedia, hasil langsung dikembalikan.
+ */
+export type GeneratePreviewResponse =
+  | { mode: 'queue'; jobId: string }
+  | { mode: 'inline'; result: GeneratorPreviewResult };
+
+export type PreviewJobResponse =
+  | { status: 'processing' }
+  | { status: 'completed'; result: GeneratorPreviewResult }
+  | { status: 'failed'; error: string }
+  | { status: 'not_found' }
+  | { status: 'unavailable' };
+
 export const timetableGeneratorApi = {
   preview: (options: GenerateOptions) =>
-    createItem<GenerateOptions, GeneratorPreviewResult>('/academic/lesson-schedules/generator/preview', options),
+    createItem<GenerateOptions, GeneratePreviewResponse>('/academic/lesson-schedules/generator/preview', options),
+  previewStatus: (jobId: string) =>
+    getById<PreviewJobResponse>('/academic/lesson-schedules/generator/preview', jobId),
   commit: (payload: CommitPayload) =>
     createItem<CommitPayload, { count: number }>('/academic/lesson-schedules/generator/commit', payload),
 };
