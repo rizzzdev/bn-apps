@@ -10,7 +10,7 @@ const getApiUrl = (): string => {
 const getCookieDomain = (): string => {
 	const raw = publicEnv.PUBLIC_COOKIE_DOMAIN || '';
 	if (!raw) return '';
-	return raw.startsWith('.') ? raw : `.${raw}`;
+	return raw.trim().replace(/^\.+/, '');
 };
 
 export const handle: Handle = async ({ event, resolve }) => {

@@ -20,7 +20,7 @@ export const getPortalLoginUrl = (): string => {
 const getCookieDomain = (): string => {
   const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || '';
   if (!raw) return '';
-  return raw.startsWith('.') ? raw : `.${raw}`;
+  return raw.trim().replace(/^\.+/, '');
 };
 
 function getIdentifier(data: any): string {

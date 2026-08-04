@@ -35,7 +35,7 @@ const createApp = () => {
     app.use(express.json())
 
     if (env.COOKIE_DOMAIN) {
-        const cookieDomain = env.COOKIE_DOMAIN.startsWith(".") ? env.COOKIE_DOMAIN : `.${env.COOKIE_DOMAIN}`;
+        const cookieDomain = env.COOKIE_DOMAIN.trim().replace(/^\.+/, '');
         // sentri tidak mendukung opsi `domain`, jadi disuntikkan lewat override
         // res.cookie per-request. res.clearCookie juga memanggil this.cookie,
         // sehingga pembersihan cookie ikut mendapat Domain yang sama.

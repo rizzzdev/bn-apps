@@ -5,7 +5,7 @@ import { canAccess } from '$lib/constants/roles';
 const getCookieDomain = (): string => {
 	const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || '';
 	if (!raw) return '';
-	return raw.startsWith('.') ? raw : `.${raw}`;
+	return raw.trim().replace(/^\.+/, '');
 };
 
 const getApiUrl = (): string => {
