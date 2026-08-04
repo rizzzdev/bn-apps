@@ -1,17 +1,14 @@
 import { PUBLIC_API_URL, PUBLIC_PORTAL_URL } from '$env/static/public';
 import { browser } from '$app/environment';
 
-const getAuthApiUrl = (): string => {
-  const raw = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
-  const match = raw.match(/^(https?:\/\/[^/]+(?:\/api\/v1)?)/i);
-  if (match) {
-    const base = match[1].replace(/\/+$/, '');
-    return base.endsWith('/api/v1') ? base : `${base}/api/v1`;
+export function getApiBaseUrl(): string {
+  let raw = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+  if (raw.endsWith('/learn')) {
+    raw = raw.slice(0, -6).replace(/\/+$/, '');
   }
-  return 'http://localhost:3000/api/v1';
-};
+  return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
+}
 
-const BASE_URL = PUBLIC_API_URL || 'http://localhost:3000/api/v1/learn';
 const PORTAL_URL = PUBLIC_PORTAL_URL || 'http://localhost:5173';
 
 function getCookie(name: string): string | null {
@@ -37,6 +34,17 @@ function redirectToPortal() {
 
 export async function apiClient(endpoint: string, options: RequestInit = {}): Promise<Response> {
   const token = getCookie('access_token');
+  const apiBase = getApiBaseUrl();
+
+  let fullPath = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  if (
+    !fullPath.startsWith('/learn') &&
+    !fullPath.startsWith('/master') &&
+    !fullPath.startsWith('/academic') &&
+    !fullPath.startsWith('/auth')
+  ) {
+    fullPath = `/learn${fullPath}`;
+  }
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -54,10 +62,10 @@ export async function apiClient(endpoint: string, options: RequestInit = {}): Pr
   };
 
   try {
-    const response = await fetch(`${BASE_URL}${endpoint}`, config);
+    const response = await fetch(`${apiBase}${fullPath}`, config);
 
     if (response.status === 401) {
-      const refreshRes = await fetch(`${getAuthApiUrl()}/auth/refresh`, {
+      const refreshRes = await fetch(`${apiBase}/auth/refresh`, {
         method: 'POST',
         credentials: 'include',
       });
@@ -71,7 +79,7 @@ export async function apiClient(endpoint: string, options: RequestInit = {}): Pr
         if (newToken) retryHeaders['Authorization'] = `Bearer ${newToken}`;
         if (isFormData) delete retryHeaders['Content-Type'];
 
-        return fetch(`${BASE_URL}${endpoint}`, {
+        return fetch(`${apiBase}${fullPath}`, {
           ...options,
           headers: retryHeaders,
           credentials: 'include',

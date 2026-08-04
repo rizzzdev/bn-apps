@@ -8,13 +8,11 @@ const getCookieDomain = (): string => {
 };
 
 const getApiUrl = (): string => {
-	const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_API_URL || 'http://localhost:3000';
-	const match = raw.match(/^(https?:\/\/[^/]+(?:\/api\/v1)?)/i);
-	if (match) {
-		const base = match[1].replace(/\/+$/, '');
-		return base.endsWith('/api/v1') ? base : `${base}/api/v1`;
+	let raw = ((publicEnv as Record<string, string | undefined>).PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+	if (raw.endsWith('/learn')) {
+		raw = raw.slice(0, -6).replace(/\/+$/, '');
 	}
-	return 'http://localhost:3000/api/v1';
+	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
 };
 
 const getPortalLoginUrl = (): string => {

@@ -1,15 +1,13 @@
 import { PUBLIC_API_URL, PUBLIC_PORTAL_URL } from '$env/static/public';
 import { browser } from '$app/environment';
 
-const getAuthApiUrl = (): string => {
-  const raw = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
-  const match = raw.match(/^(https?:\/\/[^/]+(?:\/api\/v1)?)/i);
-  if (match) {
-    const base = match[1].replace(/\/+$/, '');
-    return base.endsWith('/api/v1') ? base : `${base}/api/v1`;
+export function getApiBaseUrl(): string {
+  let raw = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+  if (raw.endsWith('/learn')) {
+    raw = raw.slice(0, -6).replace(/\/+$/, '');
   }
-  return 'http://localhost:3000/api/v1';
-};
+  return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
+}
 
 const PORTAL_URL = PUBLIC_PORTAL_URL || 'http://localhost:5173';
 
@@ -45,7 +43,17 @@ class ApiError extends Error {
 
 async function request<T>(path: string, options: RequestInit = {}, isFormData = false): Promise<T> {
   const token = getCookie('access_token');
-  const baseUrl = PUBLIC_API_URL;
+  const apiBase = getApiBaseUrl();
+
+  let fullPath = path.startsWith('/') ? path : `/${path}`;
+  if (
+    !fullPath.startsWith('/learn') &&
+    !fullPath.startsWith('/master') &&
+    !fullPath.startsWith('/academic') &&
+    !fullPath.startsWith('/auth')
+  ) {
+    fullPath = `/learn${fullPath}`;
+  }
 
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string>),
@@ -61,14 +69,14 @@ async function request<T>(path: string, options: RequestInit = {}, isFormData = 
     credentials: 'include',
   };
 
-  const res = await fetch(`${baseUrl}${path}`, config);
+  const res = await fetch(`${apiBase}${fullPath}`, config);
 
   if (res.status === 401) {
     if (!browser) {
       throw new ApiError('Unauthorized', 401);
     }
 
-    const refreshRes = await fetch(`${getAuthApiUrl()}/auth/refresh`, {
+    const refreshRes = await fetch(`${apiBase}/auth/refresh`, {
       method: 'POST',
       credentials: 'include',
     });
@@ -83,7 +91,7 @@ async function request<T>(path: string, options: RequestInit = {}, isFormData = 
       }
       if (newToken) retryHeaders['Authorization'] = `Bearer ${newToken}`;
 
-      const retryRes = await fetch(`${baseUrl}${path}`, {
+      const retryRes = await fetch(`${apiBase}${fullPath}`, {
         ...options,
         headers: retryHeaders,
         credentials: 'include',

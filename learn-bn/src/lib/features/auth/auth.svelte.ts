@@ -64,10 +64,11 @@ class AuthState {
   }
 
   async logout() {
-    const rawApiUrl = ((publicEnv as Record<string, string | undefined>).PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
-    const match = rawApiUrl.match(/^(https?:\/\/[^/]+(?:\/api\/v1)?)/i);
-    const baseUrl = match ? match[1].replace(/\/+$/, '') : 'http://localhost:3000/api/v1';
-    const authUrl = baseUrl.endsWith('/api/v1') ? baseUrl : `${baseUrl}/api/v1`;
+    let raw = ((publicEnv as Record<string, string | undefined>).PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+    if (raw.endsWith('/learn')) {
+      raw = raw.slice(0, -6).replace(/\/+$/, '');
+    }
+    const authUrl = raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
 
     try {
       await fetch(`${authUrl}/auth/logout`, {

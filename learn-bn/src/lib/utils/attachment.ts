@@ -6,7 +6,10 @@ export function getAttachmentUrl(fileUrl?: string | null): string {
     return fileUrl;
   }
   const filename = fileUrl.split(/[/\\]/).pop() || fileUrl;
-  const baseUrl = (PUBLIC_API_URL || 'http://localhost:3000/api/v1').replace(/\/+$/, '');
-  const cleanBaseUrl = baseUrl.endsWith('/learn') ? baseUrl.slice(0, -6) : baseUrl;
-  return `${cleanBaseUrl}/learn/attachments/file/${encodeURIComponent(filename)}`;
+  let raw = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+  if (raw.endsWith('/learn')) {
+    raw = raw.slice(0, -6).replace(/\/+$/, '');
+  }
+  const apiBase = raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
+  return `${apiBase}/learn/attachments/file/${encodeURIComponent(filename)}`;
 }
