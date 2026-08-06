@@ -6,7 +6,7 @@
 	<title>Error {$page.status} - Exam-BN</title>
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center bg-(--bg-primary) px-4">
+<div class="min-h-dvh flex items-center justify-center bg-(--bg-primary) px-4">
 	<div class="text-center max-w-md">
 		<div class="icon-circle-red mx-auto mb-6 h-16 w-16 flex items-center justify-center">
 			<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

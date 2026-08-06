@@ -239,62 +239,62 @@ export interface SubjectTeacher {
 }
 
 export interface LessonHour {
-  id: string;
-  name: string;
-  startTime: string;
-  endTime: string;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+	id: string;
+	name: string;
+	startTime: string;
+	endTime: string;
+	order: number;
+	createdAt: string;
+	updatedAt: string;
+	deletedAt: string | null;
 }
 
 export interface CreateLessonHourRequest {
-  name: string;
-  startTime: string;
-  endTime: string;
-  order: number;
+	name: string;
+	startTime: string;
+	endTime: string;
+	order: number;
 }
 
 export interface UpdateLessonHourRequest {
-  name?: string;
-  startTime?: string;
-  endTime?: string;
-  order?: number;
+	name?: string;
+	startTime?: string;
+	endTime?: string;
+	order?: number;
 }
 
 export interface LessonSchedule {
-  id: string;
-  subjectId: string;
-  lessonHourId: string;
-  day: string;
-  notes: string | null;
-  status: 'Aktif' | 'Tidak Aktif';
-  subject?: ShadowSubject;
-  lessonHour?: LessonHour;
-  teachers: { teacher: ShadowTeacher }[];
-  classes: { class: ShadowClass }[];
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+	id: string;
+	subjectId: string;
+	lessonHourId: string;
+	day: string;
+	notes: string | null;
+	status: 'Aktif' | 'Tidak Aktif';
+	subject?: ShadowSubject;
+	lessonHour?: LessonHour;
+	teachers: { teacher: ShadowTeacher }[];
+	classes: { class: ShadowClass }[];
+	createdAt: string;
+	updatedAt: string;
+	deletedAt: string | null;
 }
 
 export interface CreateLessonScheduleRequest {
-  subjectId: string;
-  lessonHourId: string;
-  day: string;
-  notes?: string | null;
-  teacherIds: string[];
-  classIds: string[];
+	subjectId: string;
+	lessonHourId: string;
+	day: string;
+	notes?: string | null;
+	teacherIds: string[];
+	classIds: string[];
 }
 
 export interface UpdateLessonScheduleRequest {
-  subjectId?: string;
-  lessonHourId?: string;
-  day?: string;
-  notes?: string;
-  teacherIds?: string[];
-  classIds?: string[];
+	subjectId?: string;
+	lessonHourId?: string;
+	day?: string;
+	notes?: string;
+	teacherIds?: string[];
+	classIds?: string[];
 }
 
 export interface TeacherPicketSchedule {
@@ -483,6 +483,8 @@ export interface ClassSubjectRequirement {
 	subjectId: string;
 	teacherId?: string | null;
 	weeklyHours: number;
+	batchWeeklyHours?: number;
+	batchGroupId?: string | null;
 	maxHoursPerDay: number;
 	class?: ShadowClass;
 	subject?: ShadowSubject;
@@ -538,4 +540,3 @@ export interface GeneratorPreviewResult {
 		durationMs: number;
 	};
 }
-

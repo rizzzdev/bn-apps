@@ -4,10 +4,13 @@
 		Pagination,
 		SearchBar,
 		AssignStudentModal,
-		AssignTeacherModal
+		AssignTeacherModal,
+		TooltipIconButton,
+		ExcelImport
 	} from '$lib/components/molecules';
 	import { ClassTable } from '$lib/features/class';
 	import { classApi, majorApi, academicYearApi, studentApi, teacherApi } from '$lib/services';
+	import { downloadExcel } from '$lib/services/base';
 	import type {
 		Class,
 		ShadowClass,
@@ -221,6 +224,16 @@
 			toast.error('Gagal menambahkan pemetaan murid kelas');
 		}
 	}
+
+	async function handleExport() {
+		try {
+			const date = new Date().toISOString().slice(0, 10);
+			await downloadExcel('/academic/class-students/export', `kelas-murid_${date}.xlsx`);
+			toast.success('Data kelas murid berhasil diunduh');
+		} catch {
+			toast.error('Gagal mengunduh data kelas murid');
+		}
+	}
 </script>
 
 <svelte:head>
@@ -232,6 +245,18 @@
 		title="Pemetaan Murid Kelas"
 		description="MANAJEMEN PEMETAAN MURID DAFTAR KELAS AKADEMIK"
 	/>
+
+	<!-- Toolbar upload — di luar #if agar modal tetap terbuka saat data di-refresh -->
+	<div class="flex items-center justify-end gap-2">
+		<TooltipIconButton icon="download" tooltip="Export Excel" onclick={handleExport} />
+		<ExcelImport
+			templateEndpoint="/academic/class-students/template"
+			templateFilename="class_students_template.xlsx"
+			uploadEndpoint="/academic/class-students/batch/excel"
+			serviceLabel="Kelas Murid"
+			onSuccess={loadClasses}
+		/>
+	</div>
 
 	{#if isLoading}
 		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">Memuat data...</div>

@@ -20,11 +20,11 @@ services:
       - proxy
       - backend
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.akademik-bn.rule=Host(`akademik-bn.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.akademik-bn.entrypoints=websecure"
-      - "traefik.http.routers.akademik-bn.tls.certresolver=myresolver"
-      - "traefik.http.services.akademik-bn.loadbalancer.server.port=3005"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.akademik-bn.rule=Host(`akademik-bn.${DOMAIN_NAME}`)'
+      - 'traefik.http.routers.akademik-bn.entrypoints=websecure'
+      - 'traefik.http.routers.akademik-bn.tls.certresolver=myresolver'
+      - 'traefik.http.services.akademik-bn.loadbalancer.server.port=3005'
 
 networks:
   proxy:

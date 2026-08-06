@@ -3,7 +3,10 @@ import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 
 const getApiUrl = (): string => {
-	const raw = (env.API_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+	const raw = (env.API_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:3000').replace(
+		/\/+$/,
+		''
+	);
 	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
 };
 
@@ -44,7 +47,12 @@ export const load: PageServerLoad = async ({ fetch, cookies, parent, url }) => {
 				isSuperAdmin,
 				user,
 				applications: [],
-				pagination: { currentPage: Number(page), totalPage: 1, totalData: 0, dataPerPage: Number(limit) }
+				pagination: {
+					currentPage: Number(page),
+					totalPage: 1,
+					totalData: 0,
+					dataPerPage: Number(limit)
+				}
 			};
 		}
 
@@ -66,8 +74,12 @@ export const load: PageServerLoad = async ({ fetch, cookies, parent, url }) => {
 			isSuperAdmin,
 			user,
 			applications: [],
-			pagination: { currentPage: Number(page), totalPage: 1, totalData: 0, dataPerPage: Number(limit) }
+			pagination: {
+				currentPage: Number(page),
+				totalPage: 1,
+				totalData: 0,
+				dataPerPage: Number(limit)
+			}
 		};
 	}
 };
-

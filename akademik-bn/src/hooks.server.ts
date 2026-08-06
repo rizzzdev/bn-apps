@@ -1,26 +1,6 @@
 import { redirect, type Handle } from '@sveltejs/kit';
-import { env as publicEnv } from '$env/dynamic/public';
+import { getApiBaseUrl, getCookieDomain, getPortalLoginUrl } from '$lib/utils/env';
 import { canAccess } from '$lib/constants/roles';
-
-const getCookieDomain = (): string => {
-	const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || '';
-	if (!raw) return '';
-	return raw.trim().replace(/^\.+/, '');
-};
-
-const getApiUrl = (): string => {
-	const raw = (
-		(publicEnv as Record<string, string | undefined>).PUBLIC_API_URL || 'http://localhost:3000'
-	).replace(/\/+$/, '');
-	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
-};
-
-const getPortalLoginUrl = (): string => {
-	const raw = (
-		(publicEnv as Record<string, string | undefined>).PUBLIC_PORTAL_URL || 'http://localhost:5173'
-	).replace(/\/+$/, '');
-	return raw.endsWith('/login') ? raw : `${raw}/login`;
-};
 
 const clearAuthCookies = (event: Parameters<Handle>[0]['event']) => {
 	const base = { path: '/', ...(getCookieDomain() ? { domain: getCookieDomain() } : {}) };
@@ -44,7 +24,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	try {
 		if (!accessToken && refreshToken) {
-			const refreshRes = await event.fetch(`${getApiUrl()}/auth/refresh`, {
+			const refreshRes = await event.fetch(`${getApiBaseUrl()}/auth/refresh`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -62,7 +42,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 
 		if (accessToken) {
-			const meRes = await event.fetch(`${getApiUrl()}/auth/me`, {
+			const meRes = await event.fetch(`${getApiBaseUrl()}/auth/me`, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`
 				}

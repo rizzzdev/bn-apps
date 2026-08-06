@@ -42,81 +42,40 @@ export function mapAppItemToApiPayload(app: Partial<AppItem>) {
 	return payload;
 }
 
-const STORAGE_KEY = 'bn_apps_list';
-
-function loadInitialApps(): AppItem[] {
-	if (typeof window !== 'undefined') {
-		try {
-			const stored = localStorage.getItem(STORAGE_KEY);
-			if (stored) {
-				const parsed = JSON.parse(stored);
-				if (Array.isArray(parsed)) {
-					return parsed;
-				}
-			}
-		} catch (e) {
-			console.error('Failed to load apps from localStorage', e);
-		}
-	}
-	return [];
-}
-
+/**
+ * Store aplikasi bersifat cache in-memory saja (tidak memakai localStorage).
+ * Sumber data utama adalah database melalui SSR `+page.server.ts` atau fetch
+ * langsung ke API — sehingga daftar aplikasi tidak pernah kosong/stale hanya
+ * karena localStorage browser kosong.
+ */
 function createAppsStore() {
-	const { subscribe, set, update } = writable<AppItem[]>(loadInitialApps());
-
-	function saveToStorage(apps: AppItem[]) {
-		if (typeof window !== 'undefined') {
-			try {
-				localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
-			} catch (e) {
-				console.error('Failed to save apps to localStorage', e);
-			}
-		}
-	}
+	const { subscribe, set, update } = writable<AppItem[]>([]);
 
 	return {
 		subscribe,
 		setApps: (apps: AppItem[]) => {
 			set(apps);
-			saveToStorage(apps);
 		},
 		setAppsFromApi: (apiApps: ApiApplication[]) => {
-			const mapped = apiApps.map(mapApiAppToAppItem);
-			set(mapped);
-			saveToStorage(mapped);
+			set(apiApps.map(mapApiAppToAppItem));
 		},
 		addApp: (newApp: Omit<AppItem, 'id'>) => {
 			update((apps) => {
 				const id = 'app_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-				const updated = [{ id, ...newApp }, ...apps];
-				saveToStorage(updated);
-				return updated;
+				return [{ id, ...newApp }, ...apps];
 			});
 		},
 		updateApp: (id: string, updatedData: Partial<Omit<AppItem, 'id'>>) => {
-			update((apps) => {
-				const updated = apps.map((app) => (app.id === id ? { ...app, ...updatedData } : app));
-				saveToStorage(updated);
-				return updated;
-			});
+			update((apps) => apps.map((app) => (app.id === id ? { ...app, ...updatedData } : app)));
 		},
 		deleteApp: (id: string) => {
-			update((apps) => {
-				const updated = apps.filter((app) => app.id !== id);
-				saveToStorage(updated);
-				return updated;
-			});
+			update((apps) => apps.filter((app) => app.id !== id));
 		},
 		bulkDeleteApps: (ids: string[]) => {
-			update((apps) => {
-				const updated = apps.filter((app) => !ids.includes(app.id));
-				saveToStorage(updated);
-				return updated;
-			});
+			update((apps) => apps.filter((app) => !ids.includes(app.id)));
 		},
 		resetToDefault: () => {
 			set([]);
-			saveToStorage([]);
 		}
 	};
 }

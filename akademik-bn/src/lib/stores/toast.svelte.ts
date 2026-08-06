@@ -1,5 +1,3 @@
-import { Icon } from '$lib/components/atoms';
-
 export type ToastType = 'success' | 'error' | 'info';
 
 export interface ToastMessage {

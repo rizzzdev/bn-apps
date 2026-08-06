@@ -67,7 +67,11 @@
 </script>
 
 <svelte:head>
-	<title>{subject ? `Riwayat Guru ${subject.name} - Akademik-BN` : 'Riwayat Guru Mata Pelajaran - Akademik-BN'}</title>
+	<title
+		>{subject
+			? `Riwayat Guru ${subject.name} - Akademik-BN`
+			: 'Riwayat Guru Mata Pelajaran - Akademik-BN'}</title
+	>
 </svelte:head>
 
 <div class="flex flex-col gap-8">
@@ -85,7 +89,9 @@
 			{error}
 		</div>
 	{:else if items.length === 0}
-		<div class="neo-border bg-surface p-8 text-center font-data-mono text-data-mono text-on-surface-variant">
+		<div
+			class="neo-border bg-surface p-8 text-center font-data-mono text-data-mono text-on-surface-variant"
+		>
 			Belum ada riwayat guru untuk mata pelajaran ini.
 		</div>
 	{:else}
@@ -102,7 +108,9 @@
 							<span class="font-headline-sm text-base font-bold text-on-surface"
 								>{item.teacherName}</span
 							>
-							<Badge variant={item.status === 'Aktif' ? 'success' : 'default'}>{item.status === 'TidakAktif' ? 'Tidak Aktif' : item.status}</Badge>
+							<Badge variant={item.status === 'Aktif' ? 'success' : 'default'}
+								>{item.status === 'TidakAktif' ? 'Tidak Aktif' : item.status}</Badge
+							>
 						</div>
 						<div
 							class="flex flex-wrap items-center gap-x-6 gap-y-1 font-data-mono text-sm text-on-surface-variant"
@@ -110,7 +118,9 @@
 							<span>NIP: <strong class="text-on-surface">{item.nip}</strong></span>
 						</div>
 					</div>
-					<div class="font-data-mono text-sm text-on-surface-variant shrink-0 self-start sm:self-center">
+					<div
+						class="font-data-mono text-sm text-on-surface-variant shrink-0 self-start sm:self-center"
+					>
 						{item.createdAt}
 					</div>
 				</div>
@@ -126,6 +136,8 @@
 	{/if}
 
 	<div class="mt-4">
-		<Button variant="ghost" onclick={() => goto(`/subject/${id}`)}>Kembali ke Detail Mata Pelajaran</Button>
+		<Button variant="ghost" onclick={() => goto(`/subject/${id}`)}
+			>Kembali ke Detail Mata Pelajaran</Button
+		>
 	</div>
 </div>

@@ -1,32 +1,13 @@
 import multer, { memoryStorage } from 'multer';
-import { BadRequestError } from '#app';
-import { Request } from 'express';
 import path from 'path';
 import fs from 'fs';
 
-// -- Excel upload (existing) --
-const EXCEL_MIME_TYPES = [
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'application/vnd.ms-excel',
-];
-
-const excelStorage = memoryStorage();
-
-const excelFileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  if (EXCEL_MIME_TYPES.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new BadRequestError('Only Excel files (.xlsx, .xls) are allowed'));
-  }
-};
-
-const excelUpload = multer({
-  storage: excelStorage,
-  fileFilter: excelFileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
-});
-
-export const uploadExcel = excelUpload.single('file');
+// -- Excel upload --
+// Definisi ada di `#app/middlewares/upload-excel.middleware.js` (single source of truth).
+// PENTING: re-export LANGSUNG dari file (bukan barrel `#app`) — barrel `#app` ikut
+// memuat routes yang memuat modul ini lagi, sehingga re-export lewat barrel
+// memicu circular dependency ("Cannot access 'uploadExcel' before initialization").
+export { uploadExcel } from '#app/middlewares/upload-excel.middleware.js';
 
 // -- Attachment upload (new) --
 const publicDir = path.resolve(process.cwd(), 'public');

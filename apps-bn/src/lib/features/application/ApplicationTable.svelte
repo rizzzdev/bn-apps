@@ -442,14 +442,16 @@
 	</div>
 
 	<!-- Pagination -->
-	<div class="flex items-center justify-between border-t-4 border-black bg-surface-variant p-4">
-		<span class="font-label-bold text-sm text-on-surface">
+	<div
+		class="flex flex-col gap-3 border-t-4 border-black bg-surface-variant p-4 md:flex-row md:items-center md:justify-between"
+	>
+		<span class="text-center font-label-bold text-xs text-on-surface md:text-left md:text-sm">
 			Halaman {currentPage} dari {totalPages} (Total Data: {filteredApps.length})
 		</span>
-		<div class="flex gap-2">
+		<div class="flex flex-wrap items-center justify-center gap-1.5 md:gap-2">
 			<Button
 				variant="secondary"
-				className="!w-auto !py-1.5 !px-3"
+				className="!w-auto !py-1 !px-2 !text-xs md:!py-1.5 md:!px-3 md:!text-sm"
 				disabled={currentPage <= 1}
 				onclick={() => goToPage(currentPage - 1)}
 			>
@@ -458,11 +460,14 @@
 
 			{#each getPaginationPages(currentPage, totalPages) as item, idx (idx)}
 				{#if item === '...'}
-					<span class="px-2 py-1.5 font-bold text-on-surface">...</span>
+					<span class="px-1.5 py-1 text-xs font-bold text-on-surface md:px-2 md:py-1.5 md:text-sm"
+						>...</span
+					>
 				{:else}
 					<Button
 						variant={currentPage === item ? 'primary' : 'secondary'}
-						className="!w-auto !py-1.5 !px-3 {currentPage === item
+						className="!w-auto !py-1 !px-2 !text-xs md:!py-1.5 md:!px-3 md:!text-sm {currentPage ===
+						item
 							? '!bg-primary-container text-white'
 							: ''}"
 						onclick={() => goToPage(item)}
@@ -474,7 +479,7 @@
 
 			<Button
 				variant="secondary"
-				className="!w-auto !py-1.5 !px-3"
+				className="!w-auto !py-1 !px-2 !text-xs md:!py-1.5 md:!px-3 md:!text-sm"
 				disabled={currentPage >= totalPages}
 				onclick={() => goToPage(currentPage + 1)}
 			>

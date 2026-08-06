@@ -19,8 +19,6 @@ export async function parseResponse<T>(res: Response): Promise<ApiResponse<T>> {
 	return body as unknown as ApiResponse<T>;
 }
 
-const toJson = parseResponse;
-
 export async function getList<T>(
 	endpoint: string,
 	params?: Record<string, string | number | undefined>
@@ -33,12 +31,12 @@ export async function getList<T>(
 	}
 	const qs = searchParams.toString();
 	const res = await apiClient(`${endpoint}${qs ? `?${qs}` : ''}`);
-	return toJson<T[]>(res);
+	return parseResponse<T[]>(res);
 }
 
 export async function getById<T>(endpoint: string, id: string): Promise<ApiResponse<T>> {
 	const res = await apiClient(`${endpoint}/${id}`);
-	return toJson<T>(res);
+	return parseResponse<T>(res);
 }
 
 export async function createItem<T, R>(endpoint: string, data: T): Promise<ApiResponse<R>> {
@@ -46,7 +44,7 @@ export async function createItem<T, R>(endpoint: string, data: T): Promise<ApiRe
 		method: 'POST',
 		body: JSON.stringify(data)
 	});
-	return toJson<R>(res);
+	return parseResponse<R>(res);
 }
 
 export async function updateItem<T, R>(
@@ -58,12 +56,12 @@ export async function updateItem<T, R>(
 		method: 'PUT',
 		body: JSON.stringify(data)
 	});
-	return toJson<R>(res);
+	return parseResponse<R>(res);
 }
 
 export async function deleteItem(endpoint: string, id: string): Promise<ApiResponse<null>> {
 	const res = await apiClient(`${endpoint}/${id}`, { method: 'DELETE' });
-	return toJson<null>(res);
+	return parseResponse<null>(res);
 }
 
 export async function bulkCreate<T>(
@@ -74,7 +72,7 @@ export async function bulkCreate<T>(
 		method: 'POST',
 		body: JSON.stringify({ data })
 	});
-	return toJson<{ created: number }>(res);
+	return parseResponse<{ created: number }>(res);
 }
 
 export async function bulkDelete(
@@ -85,7 +83,7 @@ export async function bulkDelete(
 		method: 'DELETE',
 		body: JSON.stringify({ ids })
 	});
-	return toJson<{ deleted: number }>(res);
+	return parseResponse<{ deleted: number }>(res);
 }
 
 export async function bulkUpdateStatus(
@@ -97,7 +95,7 @@ export async function bulkUpdateStatus(
 		method: 'PATCH',
 		body: JSON.stringify({ ids, status })
 	});
-	return toJson<{ updated: number }>(res);
+	return parseResponse<{ updated: number }>(res);
 }
 
 export async function bulkUpdateTargetHours(
@@ -109,7 +107,7 @@ export async function bulkUpdateTargetHours(
 		method: 'PATCH',
 		body: JSON.stringify({ ids, targetHours })
 	});
-	return toJson<{ updated: number }>(res);
+	return parseResponse<{ updated: number }>(res);
 }
 
 export async function bulkAction<T>(
@@ -121,5 +119,29 @@ export async function bulkAction<T>(
 		method: 'POST',
 		body: JSON.stringify(data)
 	});
-	return toJson<unknown>(res);
+	return parseResponse<unknown>(res);
+}
+
+/** Upload file Excel ke endpoint `POST /{resource}/batch/excel` (multipart field "file"). */
+export async function uploadExcel<T>(endpoint: string, file: File): Promise<ApiResponse<T>> {
+	const fd = new FormData();
+	fd.append('file', file);
+	const res = await apiClient(endpoint, { method: 'POST', body: fd });
+	return parseResponse<T>(res);
+}
+
+/** Unduh template Excel dari `GET /{resource}/template` dan simpan ke disk. */
+export async function downloadExcel(endpoint: string, filename: string): Promise<void> {
+	const res = await apiClient(endpoint);
+	// parseResponse melempar Error dengan message dari server bila gagal.
+	if (!res.ok) await parseResponse(res);
+	const blob = await res.blob();
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = filename;
+	document.body.appendChild(a);
+	a.click();
+	a.remove();
+	URL.revokeObjectURL(url);
 }

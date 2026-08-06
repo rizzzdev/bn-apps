@@ -1,11 +1,20 @@
 import { ClassStudentRepository, classStudentRepository } from '#academic/modules/class-students/repository';
 import { MajorStudentRepository, majorStudentRepository } from '#academic/modules/major-students/repository';
-import { NotFoundError, BadRequestError } from '#app';
+import { NotFoundError, BadRequestError, buildExcelExport, parseExcel, buildHeaderLabelMap, generateExcelTemplate } from '#app';
+import type { HeaderSpec } from '#app';
 import { BaseService } from '#academic/utils/index.js';
 import type { CreateClassStudentDto, UpdateClassStudentDto } from '#academic/modules/class-students/domain';
 
 import { getOrchestrator } from '#app/orchestrator.js';
 import { prisma } from '#academic/database/index.js';
+
+const CLASS_STUDENT_EXCEL_HEADERS: HeaderSpec[] = [
+  { label: 'Email Murid', key: 'email', width: 32 },
+  { label: 'Nama Kelas', key: 'className', width: 18 },
+  { label: 'Status', key: 'status', width: 14 },
+];
+
+const CLASS_STUDENT_STATUSES = ['Aktif', 'TidakAktif', 'NaikKelas', 'TinggalKelas', 'Pindah', 'Lulus'];
 
 export class ClassStudentService extends BaseService<any, CreateClassStudentDto, UpdateClassStudentDto> {
   constructor(
@@ -296,6 +305,146 @@ export class ClassStudentService extends BaseService<any, CreateClassStudentDto,
       }
     }
     return { deleted: count };
+  }
+
+  /** Generate template Excel kosong (label Indonesia + sample row + dropdown nama kelas & status). */
+  async getExcelTemplate(): Promise<Buffer> {
+    const classes = await prisma.shadowClass.findMany({ where: { deletedAt: null } });
+    const classNames = classes.map((c) => c.name).filter((c): c is string => Boolean(c));
+    return generateExcelTemplate(CLASS_STUDENT_EXCEL_HEADERS, 'Kelas Murid', {
+      email: 'murid@example.com',
+      className: classNames[0] ?? '10 RPL 1',
+      status: 'Aktif',
+    }, {
+      className: classNames,
+      status: CLASS_STUDENT_STATUSES,
+    });
+  }
+
+  /**
+   * Import data kelas murid dari Excel.
+   * Lookup murid via EMAIL (orchestrator master — shadow_students tidak menyimpan
+   * email, tetapi ID shadow == ID master). Lookup kelas via shadow_classes.name.
+   * Tahun ajaran = tahun ajaran aktif (perilaku sama dengan UI).
+   * Validasi bisnis `create()` (jurusan aktif sesuai kelas, belum punya kelas aktif)
+   * tetap dijalankan per baris; baris gagal masuk `failedRows`.
+   * Dedupe per studentId: satu murid hanya boleh memiliki satu kelas aktif.
+   */
+  async bulkCreateFromExcel(buffer: Buffer) {
+    type RawRow = Record<string, unknown>;
+    const rows = await parseExcel<RawRow>(
+      buffer,
+      ['email', 'className'],
+      buildHeaderLabelMap(CLASS_STUDENT_EXCEL_HEADERS),
+    );
+
+    const [masterStudents, shadowClasses, activeAcademicYear] = await Promise.all([
+      getOrchestrator().masterStudent.findAll(),
+      prisma.shadowClass.findMany({ where: { deletedAt: null } }),
+      getOrchestrator().masterAcademicYear.findActive(),
+    ]);
+
+    if (!activeAcademicYear) {
+      throw new BadRequestError('Tidak ada tahun ajaran aktif');
+    }
+
+    const studentByEmail = new Map<string, string>();
+    for (const s of masterStudents) {
+      if (s.email) studentByEmail.set(s.email.trim().toLowerCase(), s.id);
+    }
+    const classByName = new Map<string, string>();
+    for (const c of shadowClasses) {
+      classByName.set(c.name.trim().toLowerCase(), c.id);
+    }
+
+    const failedRows: Array<Record<string, unknown> & { reason: string }> = [];
+    const preparedRows: Array<CreateClassStudentDto & { rowData: Record<string, unknown> }> = [];
+    const seenStudents = new Set<string>();
+
+    for (const raw of rows) {
+      const email = raw['email'] ? String(raw['email']).trim().toLowerCase() : '';
+      const className = raw['className'] ? String(raw['className']).trim().toLowerCase() : '';
+      const status = raw['status'] ? String(raw['status']).trim() : 'Aktif';
+
+      const rowData: Record<string, unknown> = {
+        email: raw['email'],
+        className: raw['className'],
+        status: raw['status'],
+      };
+
+      const studentId = studentByEmail.get(email);
+      if (!studentId) {
+        failedRows.push({ ...rowData, reason: `Murid dengan email ${email} tidak ditemukan` });
+        continue;
+      }
+      const classId = classByName.get(className);
+      if (!classId) {
+        failedRows.push({ ...rowData, reason: `Kelas dengan nama ${raw['className']} tidak ditemukan` });
+        continue;
+      }
+      if (!CLASS_STUDENT_STATUSES.includes(status)) {
+        failedRows.push({ ...rowData, reason: `Status tidak valid: ${status} (harus ${CLASS_STUDENT_STATUSES.join(' / ')})` });
+        continue;
+      }
+
+      // Dedupe per murid (bukan per pasangan murid+kelas): satu murid hanya boleh
+      // punya satu kelas aktif, sehingga muncul 2× dalam file = kesalahan user.
+      if (seenStudents.has(studentId)) {
+        failedRows.push({ ...rowData, reason: 'Duplikat dalam file (murid sama muncul lebih dari sekali)' });
+        continue;
+      }
+      seenStudents.add(studentId);
+
+      preparedRows.push({
+        studentId,
+        classId,
+        academicYearId: activeAcademicYear.id,
+        status: status as CreateClassStudentDto['status'],
+        rowData,
+      });
+    }
+
+    const successRows: Array<any> = [];
+    await Promise.all(
+      preparedRows.map(async (row) => {
+        const { rowData, ...dto } = row;
+        try {
+          const item = await this.create(dto as CreateClassStudentDto);
+          successRows.push(item);
+        } catch (err: any) {
+          failedRows.push({ ...rowData, reason: err?.message ?? 'Gagal menyimpan baris' });
+        }
+      }),
+    );
+
+    return {
+      createdItems: successRows,
+      successCount: successRows.length,
+      successRows,
+      failedRows,
+    };
+  }
+
+
+  /** Export seluruh kelas murid (tanpa pagination), kompatibel untuk di-import ulang. */
+  async getExcelExport() {
+    const [items, shadowClasses] = await Promise.all([
+      prisma.classStudent.findMany({ where: { deletedAt: null } }),
+      prisma.shadowClass.findMany({ where: { deletedAt: null } }),
+    ]);
+    const studentIds = [...new Set(items.map((i) => i.studentId).filter((id): id is string => Boolean(id)))];
+    const masterStudents = studentIds.length ? await getOrchestrator().masterStudent.findByIds(studentIds) : [];
+    const emailByStudentId = new Map(masterStudents.map((s) => [s.id, s.email ?? '']));
+    const nameByClassId = new Map(shadowClasses.map((c) => [c.id, c.name ?? '']));
+    return buildExcelExport(
+      'Kelas Murid',
+      CLASS_STUDENT_EXCEL_HEADERS,
+      items.map((r) => ({
+        email: emailByStudentId.get(r.studentId) ?? '',
+        className: nameByClassId.get(r.classId) ?? '',
+        status: r.status,
+      })),
+    );
   }
 }
 

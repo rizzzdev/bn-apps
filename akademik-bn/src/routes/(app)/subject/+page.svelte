@@ -5,10 +5,13 @@
 		Modal,
 		SearchBar,
 		SearchableSelect,
-		Pagination
+		Pagination,
+		TooltipIconButton,
+		ExcelImport
 	} from '$lib/components/molecules';
 	import { SubjectTable } from '$lib/features/subject';
 	import { subjectApi, teacherApi } from '$lib/services';
+	import { downloadExcel } from '$lib/services/base';
 	import type { ShadowSubject, ShadowTeacher, Subject } from '$lib/types';
 	import { onMount } from 'svelte';
 	import { toast } from '$lib/stores/toast.svelte';
@@ -85,7 +88,7 @@
 
 				subjects = subjectList.map((s) => {
 					const totalTeachers = subjectTeachers.filter(
-						(st: any) => st.subjectId === s.id && st.status === 'Aktif' && !st.deletedAt
+						(st) => st.subjectId === s.id && st.status === 'Aktif' && !st.deletedAt
 					).length;
 					return {
 						id: s.id,
@@ -140,6 +143,16 @@
 			toast.error('Gagal menambahkan pemetaan guru mata pelajaran');
 		}
 	}
+
+	async function handleExport() {
+		try {
+			const date = new Date().toISOString().slice(0, 10);
+			await downloadExcel('/academic/subject-teachers/export', `guru-mapel_${date}.xlsx`);
+			toast.success('Data guru mapel berhasil diunduh');
+		} catch {
+			toast.error('Gagal mengunduh data guru mapel');
+		}
+	}
 </script>
 
 <svelte:head>
@@ -151,6 +164,18 @@
 		title="Pemetaan Guru Mata Pelajaran"
 		description="MANAJEMEN PEMETAAN GURU DAFTAR MATA PELAJARAN"
 	/>
+
+	<!-- Toolbar upload — di luar #if agar modal tetap terbuka saat data di-refresh -->
+	<div class="flex items-center justify-end gap-2">
+		<TooltipIconButton icon="download" tooltip="Export Excel" onclick={handleExport} />
+		<ExcelImport
+			templateEndpoint="/academic/subject-teachers/template"
+			templateFilename="subject_teachers_template.xlsx"
+			uploadEndpoint="/academic/subject-teachers/batch/excel"
+			serviceLabel="Guru Mapel"
+			onSuccess={loadSubjects}
+		/>
+	</div>
 
 	{#if isLoading}
 		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">Memuat data...</div>

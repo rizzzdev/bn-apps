@@ -22,7 +22,8 @@ export const majorApi = {
 	getById: (id: string) => getById<ShadowMajor>('/academic/shadow-majors', id),
 
 	majorStudents: {
-		list: (page = 1, limit = 10) => getList<MajorStudent>('/academic/major-students', { page, limit }),
+		list: (page = 1, limit = 10) =>
+			getList<MajorStudent>('/academic/major-students', { page, limit }),
 		getById: (id: string) => getById<MajorStudent>('/academic/major-students', id),
 		create: (data: CreateMajorStudentRequest) =>
 			createItem<CreateMajorStudentRequest, MajorStudent>('/academic/major-students', data),
@@ -32,8 +33,11 @@ export const majorApi = {
 		bulkCreate: (data: CreateMajorStudentRequest[]) =>
 			bulkCreate<CreateMajorStudentRequest>('/academic/major-students', data),
 		bulkDelete: (ids: string[]) => bulkDelete('/academic/major-students', ids),
-		bulkStatus: (ids: string[], status: string) => bulkUpdateStatus('/academic/major-students', ids, status),
-		transfer: (data: BulkStudentActionRequest) => bulkAction('/academic/major-students', 'transfer', data),
-		graduate: (data: BulkStudentActionRequest) => bulkAction('/academic/major-students', 'graduate', data)
+		bulkStatus: (ids: string[], status: string) =>
+			bulkUpdateStatus('/academic/major-students', ids, status),
+		transfer: (data: BulkStudentActionRequest) =>
+			bulkAction('/academic/major-students', 'transfer', data),
+		graduate: (data: BulkStudentActionRequest) =>
+			bulkAction('/academic/major-students', 'graduate', data)
 	}
 };

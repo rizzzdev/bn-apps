@@ -1,247 +1,589 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Apps-BN Dashboard</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "tertiary-container": "#570027",
-                        "tertiary": "#310013",
-                        "outline-variant": "#c5c6d2",
-                        "on-tertiary-fixed": "#3f001a",
-                        "surface-tint": "#435b9f",
-                        "primary-container": "#002366",
-                        "on-background": "#1b1b1b",
-                        "on-primary-fixed-variant": "#2a4386",
-                        "on-tertiary-fixed-variant": "#8f0044",
-                        "error": "#ba1a1a",
-                        "inverse-primary": "#b3c5ff",
-                        "background": "#f9f9f9",
-                        "surface-container": "#eeeeee",
-                        "on-primary": "#ffffff",
-                        "secondary": "#6a5f00",
-                        "on-tertiary-container": "#ff478c",
-                        "on-error-container": "#93000a",
-                        "surface-container-lowest": "#ffffff",
-                        "primary-fixed": "#dbe1ff",
-                        "surface-dim": "#dadada",
-                        "primary": "#00113a",
-                        "on-error": "#ffffff",
-                        "surface": "#f9f9f9",
-                        "inverse-surface": "#303030",
-                        "on-primary-container": "#758dd5",
-                        "on-secondary-container": "#6e6300",
-                        "on-secondary-fixed": "#201c00",
-                        "on-secondary-fixed-variant": "#4f4700",
-                        "on-surface-variant": "#444650",
-                        "surface-container-highest": "#e2e2e2",
-                        "primary-fixed-dim": "#b3c5ff",
-                        "on-surface": "#1b1b1b",
-                        "tertiary-fixed": "#ffd9e1",
-                        "error-container": "#ffdad6",
-                        "surface-bright": "#f9f9f9",
-                        "surface-variant": "#e2e2e2",
-                        "inverse-on-surface": "#f1f1f1",
-                        "on-secondary": "#ffffff",
-                        "on-tertiary": "#ffffff",
-                        "tertiary-fixed-dim": "#ffb1c4",
-                        "on-primary-fixed": "#00174a",
-                        "surface-container-high": "#e8e8e8",
-                        "secondary-fixed-dim": "#ddc800",
-                        "secondary-fixed": "#fbe40f",
-                        "outline": "#757682",
-                        "surface-container-low": "#f3f3f3",
-                        "secondary-container": "#f8e206"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
-                    },
-                    "spacing": {
-                        "shadow-offset": "6px",
-                        "stack-sm": "8px",
-                        "border-width": "4px",
-                        "margin": "32px",
-                        "stack-lg": "32px",
-                        "gutter": "24px",
-                        "stack-md": "16px"
-                    },
-                    "fontFamily": {
-                        "headline-xl": ["Bricolage Grotesque"],
-                        "body-lg": ["Archivo Narrow"],
-                        "headline-lg": ["Bricolage Grotesque"],
-                        "headline-md": ["Bricolage Grotesque"],
-                        "label-bold": ["Space Mono"],
-                        "label-sm": ["Space Mono"],
-                        "body-md": ["Archivo Narrow"],
-                        "headline-lg-mobile": ["Bricolage Grotesque"]
-                    },
-                    "fontSize": {
-                        "headline-xl": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800" }],
-                        "body-lg": ["18px", { "lineHeight": "1.5", "fontWeight": "500" }],
-                        "headline-lg": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }],
-                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
-                        "label-bold": ["14px", { "lineHeight": "1", "fontWeight": "700" }],
-                        "label-sm": ["12px", { "lineHeight": "1", "fontWeight": "400" }],
-                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
-                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "800" }]
-                    }
-                }
-            }
-        }
-    </script>
-<style>
-        .neobrutal-shadow {
-            box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
-        }
-        .neobrutal-shadow-hover:hover {
-            box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
-            transform: translate(4px, 4px);
-        }
-        .bg-dot-grid {
-            background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
-            background-size: 24px 24px;
-        }
-    </style>
-</head>
-<body class="bg-background bg-dot-grid text-on-background min-h-screen flex flex-col font-body-md text-body-md relative overflow-x-hidden">
-<!-- Decorative Ornaments -->
-<div class="absolute top-40 left-10 w-16 h-16 bg-secondary-fixed border-4 border-black rounded-full neobrutal-shadow hidden lg:block z-0 animate-bounce" style="animation-duration: 3s;"></div>
-<svg class="absolute top-[30%] right-20 w-24 h-24 text-tertiary-fixed-dim z-0 hidden xl:block" fill="currentColor" stroke="black" stroke-width="4" viewbox="0 0 100 100">
-<polygon points="50,5 61,35 95,35 68,54 78,85 50,65 22,85 32,54 5,35 39,35"></polygon>
-</svg>
-<svg class="absolute bottom-60 left-20 w-20 h-20 text-primary-fixed z-0 hidden lg:block" fill="none" stroke="black" stroke-width="8" viewbox="0 0 100 100">
-<path d="M10,90 L30,10 L50,90 L70,10 L90,90" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-<!-- TopNavBar -->
-<header class="bg-surface dark:bg-surface-container w-full border-b-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] relative z-50">
-<div class="flex justify-between items-center w-full px-margin py-4 max-w-[1280px] mx-auto">
-<div class="font-headline-md text-headline-md font-black text-primary dark:text-primary-fixed uppercase tracking-tighter">
-                Apps-BN
-            </div>
-<nav class="hidden md:flex gap-gutter items-center">
-<a class="text-primary dark:text-secondary-fixed border-b-4 border-secondary-fixed pb-1 font-label-bold text-label-bold" href="#">Dashboard</a>
-<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary font-label-bold text-label-bold" href="#">Apps</a>
-<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary font-label-bold text-label-bold" href="#">Profile</a>
-<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary font-label-bold text-label-bold" href="#">Support</a>
-</nav>
-<button class="bg-primary text-on-primary border-4 border-black font-label-bold text-label-bold px-6 py-2 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all hidden md:block rounded-xl">
-                Sign Out
-            </button>
-<button class="md:hidden p-2 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none bg-secondary-fixed rounded-xl">
-<span class="material-symbols-outlined block">menu</span>
-</button>
-</div>
-</header>
-<!-- Main Content -->
-<main class="flex-grow w-full max-w-[1280px] mx-auto px-margin py-stack-lg md:py-[64px] relative z-10">
-<!-- Hero Section -->
-<div class="mb-stack-lg md:mb-[64px] bg-white border-4 border-black neobrutal-shadow rounded-3xl overflow-hidden flex flex-col md:flex-row">
-<div class="p-gutter md:w-1/2 border-b-4 md:border-b-0 md:border-r-4 border-black flex flex-col justify-center">
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-xl md:text-headline-xl text-primary mb-stack-sm uppercase tracking-tighter">
-            PILIH APLIKASI
-        </h1>
-<p class="font-body-lg text-body-lg text-on-surface-variant">
-            Akses sistem utama perusahaan melalui portal terpusat. Kelola operasional, sumber daya, dan analisis data dengan efisien.
-        </p>
-</div>
-<div class="p-gutter md:w-1/2 bg-inverse-surface text-inverse-on-surface relative overflow-hidden flex flex-col justify-center">
-<div class="absolute -right-10 -bottom-10 opacity-20 pointer-events-none">
-<span class="material-symbols-outlined text-[200px]">hub</span>
-</div>
-<div class="relative z-10">
-<h3 class="font-headline-md text-headline-md md:font-headline-lg md:text-headline-lg mb-2 uppercase">SISTEM TERINTEGRASI</h3>
-<p class="font-body-md text-body-md mb-6 opacity-90">Semua aplikasi kini terhubung dalam satu arsitektur data. Single Sign-On (SSO) aktif.</p>
-<a class="inline-flex items-center gap-2 font-label-bold text-label-bold border-b-4 border-secondary-fixed pb-1 hover:text-secondary-fixed transition-colors" href="#">
-                BACA DOKUMENTASI <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-</a>
-</div>
-</div>
-</div>
-<!-- Promo/Info Widget (Moved) -->
-<!-- Apps Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter md:gap-stack-lg">
-<!-- App Card 1: CRM -->
-<div class="bg-[#002366] text-white border-4 border-black neobrutal-shadow flex flex-col h-full relative group rounded-3xl overflow-hidden">
-<div class="p-gutter border-b-4 border-black flex justify-between items-start"><div class="flex justify-end w-full"><span class="font-label-bold text-label-bold px-3 py-1 border-2 border-black bg-white text-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">v{{VERSION}}</span></div></div>
-<div class="p-gutter flex-grow flex flex-col"><h2 class="font-headline-lg text-headline-lg text-white mb-4 leading-tight">Customer Hub (CRM)</h2><p class="font-body-lg text-body-lg text-gray-200 mb-stack-lg flex-grow opacity-90">Manajemen hubungan pelanggan, pelacakan prospek, dan otomatisasi pemasaran terpadu.</p><button class="w-full bg-secondary-fixed text-black border-4 border-black py-4 font-label-bold text-label-bold neobrutal-shadow neobrutal-shadow-hover transition-all flex items-center justify-center gap-2 rounded-xl uppercase tracking-wider"><span>MASUK</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button></div>
-</div>
-<!-- App Card 2: Inventory -->
-<div class="bg-[#002366] text-white border-4 border-black neobrutal-shadow flex flex-col h-full relative group rounded-3xl overflow-hidden">
-<div class="p-gutter border-b-4 border-black flex justify-between items-start"><div class="flex justify-end w-full"><span class="font-label-bold text-label-bold px-3 py-1 border-2 border-black bg-white text-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">v{{VERSION}}</span></div></div>
-<div class="p-gutter flex-grow flex flex-col"><h2 class="font-headline-lg text-headline-lg text-white mb-4 leading-tight">StockFlow (Inventory)</h2><p class="font-body-lg text-body-lg text-gray-200 mb-stack-lg flex-grow opacity-90">Kendali inventaris real-time, manajemen gudang, dan pemantauan rantai pasok.</p><button class="w-full bg-secondary-fixed text-black border-4 border-black py-4 font-label-bold text-label-bold neobrutal-shadow neobrutal-shadow-hover transition-all flex items-center justify-center gap-2 rounded-xl uppercase tracking-wider"><span>MASUK</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button></div>
-</div>
-<!-- App Card 3: Analytics -->
-<div class="bg-[#002366] text-white border-4 border-black neobrutal-shadow flex flex-col h-full relative group rounded-3xl overflow-hidden">
-<div class="p-gutter border-b-4 border-black flex justify-between items-start"><div class="flex justify-end w-full"><span class="font-label-bold text-label-bold px-3 py-1 border-2 border-black bg-white text-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">v{{VERSION}}</span></div></div>
-<div class="p-gutter flex-grow flex flex-col"><h2 class="font-headline-lg text-headline-lg text-white mb-4 leading-tight">DataSense (Analytics)</h2><p class="font-body-lg text-body-lg text-gray-200 mb-stack-lg flex-grow opacity-90">Dasbor analitik canggih, laporan kustom, dan visualisasi metrik bisnis utama.</p><button class="w-full bg-secondary-fixed text-black border-4 border-black py-4 font-label-bold text-label-bold neobrutal-shadow neobrutal-shadow-hover transition-all flex items-center justify-center gap-2 rounded-xl uppercase tracking-wider"><span>MASUK</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button></div>
-</div>
-<!-- App Card 4: HRIS -->
-<div class="bg-[#002366] text-white border-4 border-black neobrutal-shadow flex flex-col h-full relative group rounded-3xl overflow-hidden">
-<div class="p-gutter border-b-4 border-black flex justify-between items-start"><div class="flex justify-end w-full"><span class="font-label-bold text-label-bold px-3 py-1 border-2 border-black bg-white text-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">v{{VERSION}}</span></div></div>
-<div class="p-gutter flex-grow flex flex-col"><h2 class="font-headline-lg text-headline-lg text-white mb-4 leading-tight">People Core (HRIS)</h2><p class="font-body-lg text-body-lg text-gray-200 mb-stack-lg flex-grow opacity-90">Manajemen sumber daya manusia, penggajian, dan portal layanan mandiri karyawan.</p><button class="w-full bg-secondary-fixed text-black border-4 border-black py-4 font-label-bold text-label-bold neobrutal-shadow neobrutal-shadow-hover transition-all flex items-center justify-center gap-2 rounded-xl uppercase tracking-wider"><span>MASUK</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button></div>
-</div>
-<!-- App Card 5: SCM -->
-<div class="bg-[#002366] text-white border-4 border-black neobrutal-shadow flex flex-col h-full relative group rounded-3xl overflow-hidden">
-<div class="p-gutter border-b-4 border-black flex justify-between items-start"><div class="flex justify-end w-full"><span class="font-label-bold text-label-bold px-3 py-1 border-2 border-black bg-white text-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">v{{VERSION}}</span></div></div>
-<div class="p-gutter flex-grow flex flex-col"><h2 class="font-headline-lg text-headline-lg text-white mb-4 leading-tight">SupplyChain (SCM)</h2><p class="font-body-lg text-body-lg text-gray-200 mb-stack-lg flex-grow opacity-90">Integrasi logistik, manajemen pemasok, dan optimalisasi rute pengiriman perusahaan.</p><button class="w-full bg-secondary-fixed text-black border-4 border-black py-4 font-label-bold text-label-bold neobrutal-shadow neobrutal-shadow-hover transition-all flex items-center justify-center gap-2 rounded-xl uppercase tracking-wider"><span>MASUK</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button></div>
-</div>
-<!-- App Card 6: Finance -->
-<div class="bg-[#002366] text-white border-4 border-black neobrutal-shadow flex flex-col h-full relative group rounded-3xl overflow-hidden">
-<div class="p-gutter border-b-4 border-black flex justify-between items-start"><div class="flex justify-end w-full"><span class="font-label-bold text-label-bold px-3 py-1 border-2 border-black bg-white text-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">v{{VERSION}}</span></div></div>
-<div class="p-gutter flex-grow flex flex-col"><h2 class="font-headline-lg text-headline-lg text-white mb-4 leading-tight">Finance Hub</h2><p class="font-body-lg text-body-lg text-gray-200 mb-stack-lg flex-grow opacity-90">Pelacakan anggaran, faktur, pembukuan, dan pelaporan keuangan secara real-time.</p><button class="w-full bg-secondary-fixed text-black border-4 border-black py-4 font-label-bold text-label-bold neobrutal-shadow neobrutal-shadow-hover transition-all flex items-center justify-center gap-2 rounded-xl uppercase tracking-wider"><span>MASUK</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button></div>
-</div>
-<!-- App Card 7: IT Support -->
-<div class="bg-[#002366] text-white border-4 border-black neobrutal-shadow flex flex-col h-full relative group rounded-3xl overflow-hidden">
-<div class="p-gutter border-b-4 border-black flex justify-between items-start"><div class="flex justify-end w-full"><span class="font-label-bold text-label-bold px-3 py-1 border-2 border-black bg-white text-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">v{{VERSION}}</span></div></div>
-<div class="p-gutter flex-grow flex flex-col"><h2 class="font-headline-lg text-headline-lg text-white mb-4 leading-tight">IT Support</h2><p class="font-body-lg text-body-lg text-gray-200 mb-stack-lg flex-grow opacity-90">Sistem manajemen tiket IT, penyelesaian insiden, dan permintaan layanan infrastruktur.</p><button class="w-full bg-secondary-fixed text-black border-4 border-black py-4 font-label-bold text-label-bold neobrutal-shadow neobrutal-shadow-hover transition-all flex items-center justify-center gap-2 rounded-xl uppercase tracking-wider"><span>MASUK</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button></div>
-</div>
-<!-- App Card 8: Learning -->
-<div class="bg-[#002366] text-white border-4 border-black neobrutal-shadow flex flex-col h-full relative group rounded-3xl overflow-hidden">
-<div class="p-gutter border-b-4 border-black flex justify-between items-start"><div class="flex justify-end w-full"><span class="font-label-bold text-label-bold px-3 py-1 border-2 border-black bg-white text-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">v{{VERSION}}</span></div></div>
-<div class="p-gutter flex-grow flex flex-col"><h2 class="font-headline-lg text-headline-lg text-white mb-4 leading-tight">Learning Center</h2><p class="font-body-lg text-body-lg text-gray-200 mb-stack-lg flex-grow opacity-90">Platform e-learning, sertifikasi karyawan, dan program pelatihan internal.</p><button class="w-full bg-secondary-fixed text-black border-4 border-black py-4 font-label-bold text-label-bold neobrutal-shadow neobrutal-shadow-hover transition-all flex items-center justify-center gap-2 rounded-xl uppercase tracking-wider"><span>MASUK</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button></div>
-</div>
-<!-- App Card 9: Legal -->
-<div class="bg-[#002366] text-white border-4 border-black neobrutal-shadow flex flex-col h-full relative group rounded-3xl overflow-hidden">
-<div class="p-gutter border-b-4 border-black flex justify-between items-start"><div class="flex justify-end w-full"><span class="font-label-bold text-label-bold px-3 py-1 border-2 border-black bg-white text-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">v{{VERSION}}</span></div></div>
-<div class="p-gutter flex-grow flex flex-col"><h2 class="font-headline-lg text-headline-lg text-white mb-4 leading-tight">Legal Doc</h2><p class="font-body-lg text-body-lg text-gray-200 mb-stack-lg flex-grow opacity-90">Penyimpanan kontrak, persetujuan legal, dan kepatuhan dokumen perusahaan.</p><button class="w-full bg-secondary-fixed text-black border-4 border-black py-4 font-label-bold text-label-bold neobrutal-shadow neobrutal-shadow-hover transition-all flex items-center justify-center gap-2 rounded-xl uppercase tracking-wider"><span>MASUK</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button></div>
-</div>
-<!-- App Card 10: Marketing -->
-<div class="bg-[#002366] text-white border-4 border-black neobrutal-shadow flex flex-col h-full relative group rounded-3xl overflow-hidden">
-<div class="p-gutter border-b-4 border-black flex justify-between items-start"><div class="flex justify-end w-full"><span class="font-label-bold text-label-bold px-3 py-1 border-2 border-black bg-white text-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">v{{VERSION}}</span></div></div>
-<div class="p-gutter flex-grow flex flex-col"><h2 class="font-headline-lg text-headline-lg text-white mb-4 leading-tight">Marketing Pro</h2><p class="font-body-lg text-body-lg text-gray-200 mb-stack-lg flex-grow opacity-90">Manajemen kampanye, aset media, dan analitik kinerja pemasaran.</p><button class="w-full bg-secondary-fixed text-black border-4 border-black py-4 font-label-bold text-label-bold neobrutal-shadow neobrutal-shadow-hover transition-all flex items-center justify-center gap-2 rounded-xl uppercase tracking-wider"><span>MASUK</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button></div>
-</div>
-<!-- App Card 11: Asset Tracker -->
-<div class="bg-[#002366] text-white border-4 border-black neobrutal-shadow flex flex-col h-full relative group rounded-3xl overflow-hidden">
-<div class="p-gutter border-b-4 border-black flex justify-between items-start"><div class="flex justify-end w-full"><span class="font-label-bold text-label-bold px-3 py-1 border-2 border-black bg-white text-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">v{{VERSION}}</span></div></div>
-<div class="p-gutter flex-grow flex flex-col"><h2 class="font-headline-lg text-headline-lg text-white mb-4 leading-tight">Asset Tracker</h2><p class="font-body-lg text-body-lg text-gray-200 mb-stack-lg flex-grow opacity-90">Pemantauan aset fisik, manajemen siklus hidup, dan penyusutan inventaris.</p><button class="w-full bg-secondary-fixed text-black border-4 border-black py-4 font-label-bold text-label-bold neobrutal-shadow neobrutal-shadow-hover transition-all flex items-center justify-center gap-2 rounded-xl uppercase tracking-wider"><span>MASUK</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button></div>
-</div>
-</div>
-</main>
-<!-- Footer -->
-<footer class="bg-primary dark:bg-primary-container w-full border-t-4 border-black mt-stack-lg relative z-40">
-<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin py-stack-md max-w-[1280px] mx-auto">
-<div class="font-headline-md text-headline-md text-secondary-fixed mb-4 md:mb-0 uppercase tracking-tighter">
-                Apps-BN
-            </div>
-<div class="flex gap-6 items-center mb-4 md:mb-0">
-<a class="font-label-bold text-label-bold text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed transition-all duration-200" href="#">Privacy Policy</a>
-<a class="font-label-bold text-label-bold text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed transition-all duration-200" href="#">Terms of Service</a>
-<a class="font-label-bold text-label-bold text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed transition-all duration-200" href="#">Contact Admin</a>
-</div>
-<div class="font-label-bold text-label-bold text-on-primary dark:text-on-primary-container opacity-50 text-center md:text-right">
-                © 2024 Apps-BN ARCHITECTS. ALL RIGHTS RESERVED.
-            </div>
-</div>
-</footer>
-</body></html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+		<title>Apps-BN Dashboard</title>
+		<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<script id="tailwind-config">
+			tailwind.config = {
+				darkMode: 'class',
+				theme: {
+					extend: {
+						colors: {
+							'tertiary-container': '#570027',
+							tertiary: '#310013',
+							'outline-variant': '#c5c6d2',
+							'on-tertiary-fixed': '#3f001a',
+							'surface-tint': '#435b9f',
+							'primary-container': '#002366',
+							'on-background': '#1b1b1b',
+							'on-primary-fixed-variant': '#2a4386',
+							'on-tertiary-fixed-variant': '#8f0044',
+							error: '#ba1a1a',
+							'inverse-primary': '#b3c5ff',
+							background: '#f9f9f9',
+							'surface-container': '#eeeeee',
+							'on-primary': '#ffffff',
+							secondary: '#6a5f00',
+							'on-tertiary-container': '#ff478c',
+							'on-error-container': '#93000a',
+							'surface-container-lowest': '#ffffff',
+							'primary-fixed': '#dbe1ff',
+							'surface-dim': '#dadada',
+							primary: '#00113a',
+							'on-error': '#ffffff',
+							surface: '#f9f9f9',
+							'inverse-surface': '#303030',
+							'on-primary-container': '#758dd5',
+							'on-secondary-container': '#6e6300',
+							'on-secondary-fixed': '#201c00',
+							'on-secondary-fixed-variant': '#4f4700',
+							'on-surface-variant': '#444650',
+							'surface-container-highest': '#e2e2e2',
+							'primary-fixed-dim': '#b3c5ff',
+							'on-surface': '#1b1b1b',
+							'tertiary-fixed': '#ffd9e1',
+							'error-container': '#ffdad6',
+							'surface-bright': '#f9f9f9',
+							'surface-variant': '#e2e2e2',
+							'inverse-on-surface': '#f1f1f1',
+							'on-secondary': '#ffffff',
+							'on-tertiary': '#ffffff',
+							'tertiary-fixed-dim': '#ffb1c4',
+							'on-primary-fixed': '#00174a',
+							'surface-container-high': '#e8e8e8',
+							'secondary-fixed-dim': '#ddc800',
+							'secondary-fixed': '#fbe40f',
+							outline: '#757682',
+							'surface-container-low': '#f3f3f3',
+							'secondary-container': '#f8e206'
+						},
+						borderRadius: {
+							DEFAULT: '0.125rem',
+							lg: '0.25rem',
+							xl: '0.5rem',
+							full: '0.75rem'
+						},
+						spacing: {
+							'shadow-offset': '6px',
+							'stack-sm': '8px',
+							'border-width': '4px',
+							margin: '32px',
+							'stack-lg': '32px',
+							gutter: '24px',
+							'stack-md': '16px'
+						},
+						fontFamily: {
+							'headline-xl': ['Bricolage Grotesque'],
+							'body-lg': ['Archivo Narrow'],
+							'headline-lg': ['Bricolage Grotesque'],
+							'headline-md': ['Bricolage Grotesque'],
+							'label-bold': ['Space Mono'],
+							'label-sm': ['Space Mono'],
+							'body-md': ['Archivo Narrow'],
+							'headline-lg-mobile': ['Bricolage Grotesque']
+						},
+						fontSize: {
+							'headline-xl': [
+								'64px',
+								{ lineHeight: '1.1', letterSpacing: '-0.04em', fontWeight: '800' }
+							],
+							'body-lg': ['18px', { lineHeight: '1.5', fontWeight: '500' }],
+							'headline-lg': [
+								'40px',
+								{ lineHeight: '1.2', letterSpacing: '-0.02em', fontWeight: '800' }
+							],
+							'headline-md': ['24px', { lineHeight: '1.3', fontWeight: '700' }],
+							'label-bold': ['14px', { lineHeight: '1', fontWeight: '700' }],
+							'label-sm': ['12px', { lineHeight: '1', fontWeight: '400' }],
+							'body-md': ['16px', { lineHeight: '1.5', fontWeight: '400' }],
+							'headline-lg-mobile': ['32px', { lineHeight: '1.2', fontWeight: '800' }]
+						}
+					}
+				}
+			};
+		</script>
+		<style>
+			.neobrutal-shadow {
+				box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
+			}
+			.neobrutal-shadow-hover:hover {
+				box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+				transform: translate(4px, 4px);
+			}
+			.bg-dot-grid {
+				background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
+				background-size: 24px 24px;
+			}
+		</style>
+	</head>
+	<body
+		class="bg-dot-grid text-body-md relative flex min-h-screen flex-col overflow-x-hidden bg-background font-body-md text-on-background"
+	>
+		<!-- Decorative Ornaments -->
+		<div
+			class="neobrutal-shadow absolute top-40 left-10 z-0 hidden h-16 w-16 animate-bounce rounded-full border-4 border-black bg-secondary-fixed lg:block"
+			style="animation-duration: 3s"
+		></div>
+		<svg
+			class="absolute top-[30%] right-20 z-0 hidden h-24 w-24 text-tertiary-fixed-dim xl:block"
+			fill="currentColor"
+			stroke="black"
+			stroke-width="4"
+			viewbox="0 0 100 100"
+		>
+			<polygon points="50,5 61,35 95,35 68,54 78,85 50,65 22,85 32,54 5,35 39,35"></polygon>
+		</svg>
+		<svg
+			class="absolute bottom-60 left-20 z-0 hidden h-20 w-20 text-primary-fixed lg:block"
+			fill="none"
+			stroke="black"
+			stroke-width="8"
+			viewbox="0 0 100 100"
+		>
+			<path
+				d="M10,90 L30,10 L50,90 L70,10 L90,90"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			></path>
+		</svg>
+		<!-- TopNavBar -->
+		<header
+			class="relative z-50 w-full border-b-4 border-black bg-surface shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:bg-surface-container"
+		>
+			<div class="px-margin mx-auto flex w-full max-w-[1280px] items-center justify-between py-4">
+				<div
+					class="text-headline-md font-headline-md font-black tracking-tighter text-primary uppercase dark:text-primary-fixed"
+				>
+					Apps-BN
+				</div>
+				<nav class="gap-gutter hidden items-center md:flex">
+					<a
+						class="text-label-bold border-b-4 border-secondary-fixed pb-1 font-label-bold text-primary dark:text-secondary-fixed"
+						href="#"
+						>Dashboard</a
+					>
+					<a
+						class="text-label-bold font-label-bold text-on-surface-variant hover:text-primary dark:text-outline-variant"
+						href="#"
+						>Apps</a
+					>
+					<a
+						class="text-label-bold font-label-bold text-on-surface-variant hover:text-primary dark:text-outline-variant"
+						href="#"
+						>Profile</a
+					>
+					<a
+						class="text-label-bold font-label-bold text-on-surface-variant hover:text-primary dark:text-outline-variant"
+						href="#"
+						>Support</a
+					>
+				</nav>
+				<button
+					class="text-label-bold hidden rounded-xl border-4 border-black bg-primary px-6 py-2 font-label-bold text-on-primary shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none md:block"
+				>
+					Sign Out
+				</button>
+				<button
+					class="rounded-xl border-4 border-black bg-secondary-fixed p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none md:hidden"
+				>
+					<span class="material-symbols-outlined block">menu</span>
+				</button>
+			</div>
+		</header>
+		<!-- Main Content -->
+		<main
+			class="px-margin py-stack-lg relative z-10 mx-auto w-full max-w-[1280px] flex-grow md:py-[64px]"
+		>
+			<!-- Hero Section -->
+			<div
+				class="mb-stack-lg neobrutal-shadow flex flex-col overflow-hidden rounded-3xl border-4 border-black bg-white md:mb-[64px] md:flex-row"
+			>
+				<div
+					class="p-gutter flex flex-col justify-center border-b-4 border-black md:w-1/2 md:border-r-4 md:border-b-0"
+				>
+					<h1
+						class="text-headline-lg-mobile md:text-headline-xl mb-stack-sm font-headline-lg-mobile tracking-tighter text-primary uppercase md:font-headline-xl"
+					>
+						PILIH APLIKASI
+					</h1>
+					<p class="text-body-lg font-body-lg text-on-surface-variant">
+						Akses sistem utama perusahaan melalui portal terpusat. Kelola operasional, sumber daya,
+						dan analisis data dengan efisien.
+					</p>
+				</div>
+				<div
+					class="p-gutter relative flex flex-col justify-center overflow-hidden bg-inverse-surface text-inverse-on-surface md:w-1/2"
+				>
+					<div class="pointer-events-none absolute -right-10 -bottom-10 opacity-20">
+						<span class="material-symbols-outlined text-[200px]">hub</span>
+					</div>
+					<div class="relative z-10">
+						<h3
+							class="text-headline-md md:text-headline-lg mb-2 font-headline-md uppercase md:font-headline-lg"
+						>
+							SISTEM TERINTEGRASI
+						</h3>
+						<p class="text-body-md mb-6 font-body-md opacity-90">
+							Semua aplikasi kini terhubung dalam satu arsitektur data. Single Sign-On (SSO) aktif.
+						</p>
+						<a
+							class="text-label-bold inline-flex items-center gap-2 border-b-4 border-secondary-fixed pb-1 font-label-bold transition-colors hover:text-secondary-fixed"
+							href="#"
+						>
+							BACA DOKUMENTASI
+							<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<!-- Promo/Info Widget (Moved) -->
+			<!-- Apps Grid -->
+			<div class="gap-gutter md:gap-stack-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+				<!-- App Card 1: CRM -->
+				<div
+					class="neobrutal-shadow group relative flex h-full flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#002366] text-white"
+				>
+					<div class="p-gutter flex items-start justify-between border-b-4 border-black">
+						<div class="flex w-full justify-end">
+							<span
+								class="text-label-bold rounded-xl border-2 border-black bg-white px-3 py-1 font-label-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+								>v{{VERSION}}</span
+							>
+						</div>
+					</div>
+					<div class="p-gutter flex flex-grow flex-col">
+						<h2 class="text-headline-lg mb-4 font-headline-lg leading-tight text-white">
+							Customer Hub (CRM)
+						</h2>
+						<p class="text-body-lg mb-stack-lg flex-grow font-body-lg text-gray-200 opacity-90">
+							Manajemen hubungan pelanggan, pelacakan prospek, dan otomatisasi pemasaran terpadu.
+						</p>
+						<button
+							class="text-label-bold neobrutal-shadow neobrutal-shadow-hover flex w-full items-center justify-center gap-2 rounded-xl border-4 border-black bg-secondary-fixed py-4 font-label-bold tracking-wider text-black uppercase transition-all"
+						>
+							<span>MASUK</span
+							><span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+						</button>
+					</div>
+				</div>
+				<!-- App Card 2: Inventory -->
+				<div
+					class="neobrutal-shadow group relative flex h-full flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#002366] text-white"
+				>
+					<div class="p-gutter flex items-start justify-between border-b-4 border-black">
+						<div class="flex w-full justify-end">
+							<span
+								class="text-label-bold rounded-xl border-2 border-black bg-white px-3 py-1 font-label-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+								>v{{VERSION}}</span
+							>
+						</div>
+					</div>
+					<div class="p-gutter flex flex-grow flex-col">
+						<h2 class="text-headline-lg mb-4 font-headline-lg leading-tight text-white">
+							StockFlow (Inventory)
+						</h2>
+						<p class="text-body-lg mb-stack-lg flex-grow font-body-lg text-gray-200 opacity-90">
+							Kendali inventaris real-time, manajemen gudang, dan pemantauan rantai pasok.
+						</p>
+						<button
+							class="text-label-bold neobrutal-shadow neobrutal-shadow-hover flex w-full items-center justify-center gap-2 rounded-xl border-4 border-black bg-secondary-fixed py-4 font-label-bold tracking-wider text-black uppercase transition-all"
+						>
+							<span>MASUK</span
+							><span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+						</button>
+					</div>
+				</div>
+				<!-- App Card 3: Analytics -->
+				<div
+					class="neobrutal-shadow group relative flex h-full flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#002366] text-white"
+				>
+					<div class="p-gutter flex items-start justify-between border-b-4 border-black">
+						<div class="flex w-full justify-end">
+							<span
+								class="text-label-bold rounded-xl border-2 border-black bg-white px-3 py-1 font-label-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+								>v{{VERSION}}</span
+							>
+						</div>
+					</div>
+					<div class="p-gutter flex flex-grow flex-col">
+						<h2 class="text-headline-lg mb-4 font-headline-lg leading-tight text-white">
+							DataSense (Analytics)
+						</h2>
+						<p class="text-body-lg mb-stack-lg flex-grow font-body-lg text-gray-200 opacity-90">
+							Dasbor analitik canggih, laporan kustom, dan visualisasi metrik bisnis utama.
+						</p>
+						<button
+							class="text-label-bold neobrutal-shadow neobrutal-shadow-hover flex w-full items-center justify-center gap-2 rounded-xl border-4 border-black bg-secondary-fixed py-4 font-label-bold tracking-wider text-black uppercase transition-all"
+						>
+							<span>MASUK</span
+							><span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+						</button>
+					</div>
+				</div>
+				<!-- App Card 4: HRIS -->
+				<div
+					class="neobrutal-shadow group relative flex h-full flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#002366] text-white"
+				>
+					<div class="p-gutter flex items-start justify-between border-b-4 border-black">
+						<div class="flex w-full justify-end">
+							<span
+								class="text-label-bold rounded-xl border-2 border-black bg-white px-3 py-1 font-label-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+								>v{{VERSION}}</span
+							>
+						</div>
+					</div>
+					<div class="p-gutter flex flex-grow flex-col">
+						<h2 class="text-headline-lg mb-4 font-headline-lg leading-tight text-white">
+							People Core (HRIS)
+						</h2>
+						<p class="text-body-lg mb-stack-lg flex-grow font-body-lg text-gray-200 opacity-90">
+							Manajemen sumber daya manusia, penggajian, dan portal layanan mandiri karyawan.
+						</p>
+						<button
+							class="text-label-bold neobrutal-shadow neobrutal-shadow-hover flex w-full items-center justify-center gap-2 rounded-xl border-4 border-black bg-secondary-fixed py-4 font-label-bold tracking-wider text-black uppercase transition-all"
+						>
+							<span>MASUK</span
+							><span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+						</button>
+					</div>
+				</div>
+				<!-- App Card 5: SCM -->
+				<div
+					class="neobrutal-shadow group relative flex h-full flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#002366] text-white"
+				>
+					<div class="p-gutter flex items-start justify-between border-b-4 border-black">
+						<div class="flex w-full justify-end">
+							<span
+								class="text-label-bold rounded-xl border-2 border-black bg-white px-3 py-1 font-label-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+								>v{{VERSION}}</span
+							>
+						</div>
+					</div>
+					<div class="p-gutter flex flex-grow flex-col">
+						<h2 class="text-headline-lg mb-4 font-headline-lg leading-tight text-white">
+							SupplyChain (SCM)
+						</h2>
+						<p class="text-body-lg mb-stack-lg flex-grow font-body-lg text-gray-200 opacity-90">
+							Integrasi logistik, manajemen pemasok, dan optimalisasi rute pengiriman perusahaan.
+						</p>
+						<button
+							class="text-label-bold neobrutal-shadow neobrutal-shadow-hover flex w-full items-center justify-center gap-2 rounded-xl border-4 border-black bg-secondary-fixed py-4 font-label-bold tracking-wider text-black uppercase transition-all"
+						>
+							<span>MASUK</span
+							><span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+						</button>
+					</div>
+				</div>
+				<!-- App Card 6: Finance -->
+				<div
+					class="neobrutal-shadow group relative flex h-full flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#002366] text-white"
+				>
+					<div class="p-gutter flex items-start justify-between border-b-4 border-black">
+						<div class="flex w-full justify-end">
+							<span
+								class="text-label-bold rounded-xl border-2 border-black bg-white px-3 py-1 font-label-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+								>v{{VERSION}}</span
+							>
+						</div>
+					</div>
+					<div class="p-gutter flex flex-grow flex-col">
+						<h2 class="text-headline-lg mb-4 font-headline-lg leading-tight text-white">
+							Finance Hub
+						</h2>
+						<p class="text-body-lg mb-stack-lg flex-grow font-body-lg text-gray-200 opacity-90">
+							Pelacakan anggaran, faktur, pembukuan, dan pelaporan keuangan secara real-time.
+						</p>
+						<button
+							class="text-label-bold neobrutal-shadow neobrutal-shadow-hover flex w-full items-center justify-center gap-2 rounded-xl border-4 border-black bg-secondary-fixed py-4 font-label-bold tracking-wider text-black uppercase transition-all"
+						>
+							<span>MASUK</span
+							><span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+						</button>
+					</div>
+				</div>
+				<!-- App Card 7: IT Support -->
+				<div
+					class="neobrutal-shadow group relative flex h-full flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#002366] text-white"
+				>
+					<div class="p-gutter flex items-start justify-between border-b-4 border-black">
+						<div class="flex w-full justify-end">
+							<span
+								class="text-label-bold rounded-xl border-2 border-black bg-white px-3 py-1 font-label-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+								>v{{VERSION}}</span
+							>
+						</div>
+					</div>
+					<div class="p-gutter flex flex-grow flex-col">
+						<h2 class="text-headline-lg mb-4 font-headline-lg leading-tight text-white">
+							IT Support
+						</h2>
+						<p class="text-body-lg mb-stack-lg flex-grow font-body-lg text-gray-200 opacity-90">
+							Sistem manajemen tiket IT, penyelesaian insiden, dan permintaan layanan infrastruktur.
+						</p>
+						<button
+							class="text-label-bold neobrutal-shadow neobrutal-shadow-hover flex w-full items-center justify-center gap-2 rounded-xl border-4 border-black bg-secondary-fixed py-4 font-label-bold tracking-wider text-black uppercase transition-all"
+						>
+							<span>MASUK</span
+							><span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+						</button>
+					</div>
+				</div>
+				<!-- App Card 8: Learning -->
+				<div
+					class="neobrutal-shadow group relative flex h-full flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#002366] text-white"
+				>
+					<div class="p-gutter flex items-start justify-between border-b-4 border-black">
+						<div class="flex w-full justify-end">
+							<span
+								class="text-label-bold rounded-xl border-2 border-black bg-white px-3 py-1 font-label-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+								>v{{VERSION}}</span
+							>
+						</div>
+					</div>
+					<div class="p-gutter flex flex-grow flex-col">
+						<h2 class="text-headline-lg mb-4 font-headline-lg leading-tight text-white">
+							Learning Center
+						</h2>
+						<p class="text-body-lg mb-stack-lg flex-grow font-body-lg text-gray-200 opacity-90">
+							Platform e-learning, sertifikasi karyawan, dan program pelatihan internal.
+						</p>
+						<button
+							class="text-label-bold neobrutal-shadow neobrutal-shadow-hover flex w-full items-center justify-center gap-2 rounded-xl border-4 border-black bg-secondary-fixed py-4 font-label-bold tracking-wider text-black uppercase transition-all"
+						>
+							<span>MASUK</span
+							><span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+						</button>
+					</div>
+				</div>
+				<!-- App Card 9: Legal -->
+				<div
+					class="neobrutal-shadow group relative flex h-full flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#002366] text-white"
+				>
+					<div class="p-gutter flex items-start justify-between border-b-4 border-black">
+						<div class="flex w-full justify-end">
+							<span
+								class="text-label-bold rounded-xl border-2 border-black bg-white px-3 py-1 font-label-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+								>v{{VERSION}}</span
+							>
+						</div>
+					</div>
+					<div class="p-gutter flex flex-grow flex-col">
+						<h2 class="text-headline-lg mb-4 font-headline-lg leading-tight text-white">
+							Legal Doc
+						</h2>
+						<p class="text-body-lg mb-stack-lg flex-grow font-body-lg text-gray-200 opacity-90">
+							Penyimpanan kontrak, persetujuan legal, dan kepatuhan dokumen perusahaan.
+						</p>
+						<button
+							class="text-label-bold neobrutal-shadow neobrutal-shadow-hover flex w-full items-center justify-center gap-2 rounded-xl border-4 border-black bg-secondary-fixed py-4 font-label-bold tracking-wider text-black uppercase transition-all"
+						>
+							<span>MASUK</span
+							><span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+						</button>
+					</div>
+				</div>
+				<!-- App Card 10: Marketing -->
+				<div
+					class="neobrutal-shadow group relative flex h-full flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#002366] text-white"
+				>
+					<div class="p-gutter flex items-start justify-between border-b-4 border-black">
+						<div class="flex w-full justify-end">
+							<span
+								class="text-label-bold rounded-xl border-2 border-black bg-white px-3 py-1 font-label-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+								>v{{VERSION}}</span
+							>
+						</div>
+					</div>
+					<div class="p-gutter flex flex-grow flex-col">
+						<h2 class="text-headline-lg mb-4 font-headline-lg leading-tight text-white">
+							Marketing Pro
+						</h2>
+						<p class="text-body-lg mb-stack-lg flex-grow font-body-lg text-gray-200 opacity-90">
+							Manajemen kampanye, aset media, dan analitik kinerja pemasaran.
+						</p>
+						<button
+							class="text-label-bold neobrutal-shadow neobrutal-shadow-hover flex w-full items-center justify-center gap-2 rounded-xl border-4 border-black bg-secondary-fixed py-4 font-label-bold tracking-wider text-black uppercase transition-all"
+						>
+							<span>MASUK</span
+							><span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+						</button>
+					</div>
+				</div>
+				<!-- App Card 11: Asset Tracker -->
+				<div
+					class="neobrutal-shadow group relative flex h-full flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#002366] text-white"
+				>
+					<div class="p-gutter flex items-start justify-between border-b-4 border-black">
+						<div class="flex w-full justify-end">
+							<span
+								class="text-label-bold rounded-xl border-2 border-black bg-white px-3 py-1 font-label-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+								>v{{VERSION}}</span
+							>
+						</div>
+					</div>
+					<div class="p-gutter flex flex-grow flex-col">
+						<h2 class="text-headline-lg mb-4 font-headline-lg leading-tight text-white">
+							Asset Tracker
+						</h2>
+						<p class="text-body-lg mb-stack-lg flex-grow font-body-lg text-gray-200 opacity-90">
+							Pemantauan aset fisik, manajemen siklus hidup, dan penyusutan inventaris.
+						</p>
+						<button
+							class="text-label-bold neobrutal-shadow neobrutal-shadow-hover flex w-full items-center justify-center gap-2 rounded-xl border-4 border-black bg-secondary-fixed py-4 font-label-bold tracking-wider text-black uppercase transition-all"
+						>
+							<span>MASUK</span
+							><span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</main>
+		<!-- Footer -->
+		<footer
+			class="mt-stack-lg relative z-40 w-full border-t-4 border-black bg-primary dark:bg-primary-container"
+		>
+			<div
+				class="px-margin py-stack-md mx-auto flex w-full max-w-[1280px] flex-col items-center justify-between md:flex-row"
+			>
+				<div
+					class="text-headline-md mb-4 font-headline-md tracking-tighter text-secondary-fixed uppercase md:mb-0"
+				>
+					Apps-BN
+				</div>
+				<div class="mb-4 flex items-center gap-6 md:mb-0">
+					<a
+						class="text-label-bold font-label-bold text-on-primary-container opacity-80 transition-all duration-200 hover:text-secondary-fixed hover:opacity-100"
+						href="#"
+						>Privacy Policy</a
+					>
+					<a
+						class="text-label-bold font-label-bold text-on-primary-container opacity-80 transition-all duration-200 hover:text-secondary-fixed hover:opacity-100"
+						href="#"
+						>Terms of Service</a
+					>
+					<a
+						class="text-label-bold font-label-bold text-on-primary-container opacity-80 transition-all duration-200 hover:text-secondary-fixed hover:opacity-100"
+						href="#"
+						>Contact Admin</a
+					>
+				</div>
+				<div
+					class="text-label-bold text-center font-label-bold text-on-primary opacity-50 md:text-right dark:text-on-primary-container"
+				>
+					© 2024 Apps-BN ARCHITECTS. ALL RIGHTS RESERVED.
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>

@@ -9,6 +9,8 @@ export { academicYearApi } from './academic-year.service';
 export { lessonScheduleApi } from './lesson-schedule.service';
 export { scheduleEventApi } from './schedule-event.service';
 export { lessonHourApi } from './lesson-hour.service';
-export { classSubjectRequirementApi, teacherUnavailabilityApi, timetableGeneratorApi } from './timetable-generator.service';
-export { syncApi } from './sync.service';
-
+export {
+	classSubjectRequirementApi,
+	teacherUnavailabilityApi,
+	timetableGeneratorApi
+} from './timetable-generator.service';

@@ -1,10 +1,3 @@
-<script lang="ts">
-	let { class: className = '', ...rest } = $props<{
-		class?: string;
-		[key: string]: unknown;
-	}>();
-</script>
-
 <div class="flex items-center gap-2">
 	<a
 		href="/"

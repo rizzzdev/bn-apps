@@ -24,7 +24,8 @@ export const majorHeadApi = {
 		updateItem<UpdateMajorHeadRequest, MajorHead>('/academic/major-heads', id, data),
 	delete: (id: string) => deleteItem('/academic/major-heads', id),
 	bulkDelete: (ids: string[]) => bulkDelete('/academic/major-heads', ids),
-	bulkStatus: (ids: string[], status: string) => bulkUpdateStatus('/academic/major-heads', ids, status),
+	bulkStatus: (ids: string[], status: string) =>
+		bulkUpdateStatus('/academic/major-heads', ids, status),
 	assignHead: (data: { majorId: string; teacherId: string; academicYearId?: string }) =>
 		createItem<{ majorId: string; teacherId: string; academicYearId?: string }, MajorHead>(
 			'/academic/major-heads/assign',

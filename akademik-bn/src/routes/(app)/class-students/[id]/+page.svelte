@@ -12,7 +12,15 @@
 		TooltipIconButton
 	} from '$lib/components/molecules';
 	import { classApi, studentApi, academicYearApi, teacherApi, majorApi } from '$lib/services';
-	import type { Class, ShadowClass, ShadowStudent, ShadowAcademicYear, MajorStudent, ShadowTeacher, HomeroomTeacher } from '$lib/types';
+	import type {
+		Class,
+		ShadowClass,
+		ShadowStudent,
+		ShadowAcademicYear,
+		MajorStudent,
+		ShadowTeacher,
+		HomeroomTeacher
+	} from '$lib/types';
 	import { toast } from '$lib/stores/toast.svelte';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
@@ -39,9 +47,7 @@
 
 	let filteredAddStudents = $derived(
 		classMajorId
-			? availableAddStudents.filter(
-					(s) => majorStudentMap[s.id] === classMajorId
-				)
+			? availableAddStudents.filter((s) => majorStudentMap[s.id] === classMajorId)
 			: availableAddStudents
 	);
 
@@ -336,14 +342,15 @@
 
 <div class="flex flex-col gap-6">
 	{#if isLoading}
-		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">
-			Memuat data...
-		</div>
+		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">Memuat data...</div>
 	{:else if error}
 		<div class="neo-border bg-error-container text-error p-4 text-center font-data-mono text-xs">
 			<h2 class="font-headline-md text-lg text-error">Terjadi Kesalahan</h2>
 			<p class="font-data-mono text-xs text-on-surface-variant mt-2">{error}</p>
-			<a href="/class-students" class="font-data-mono text-xs text-primary underline mt-4 inline-block">
+			<a
+				href="/class-students"
+				class="font-data-mono text-xs text-primary underline mt-4 inline-block"
+			>
 				Kembali ke daftar kelas
 			</a>
 		</div>
@@ -387,12 +394,16 @@
 			<div class="flex flex-col gap-3">
 				<div class="flex items-center gap-3 border-b-2 pb-2">
 					<h3 class="font-headline-md text-lg font-bold">Daftar Murid</h3>
-					<span class="border-2 border-on-background bg-primary-fixed text-on-background px-2 py-0.5 font-bold font-data-mono neo-shadow-xs text-xs">
+					<span
+						class="border-2 border-on-background bg-primary-fixed text-on-background px-2 py-0.5 font-bold font-data-mono neo-shadow-xs text-xs"
+					>
 						{students.length} Murid
 					</span>
 				</div>
 
-				<div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 w-full mb-2">
+				<div
+					class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 w-full mb-2"
+				>
 					<div class="w-full sm:w-64">
 						<SearchBar bind:value={searchQuery} placeholder="Cari NIS/Nama..." class="w-full" />
 					</div>
@@ -403,8 +414,14 @@
 							onclick={() => goto(`/class-students/${id}/alumni`)}
 						/>
 						<TooltipIconButton
-							icon={bulkSelectedStudentIds.length === filteredStudents.length && filteredStudents.length > 0 ? 'deselect' : 'checklist'}
-							tooltip={bulkSelectedStudentIds.length === filteredStudents.length && filteredStudents.length > 0 ? 'Batal Pilih Semua' : 'Pilih Semua'}
+							icon={bulkSelectedStudentIds.length === filteredStudents.length &&
+							filteredStudents.length > 0
+								? 'deselect'
+								: 'checklist'}
+							tooltip={bulkSelectedStudentIds.length === filteredStudents.length &&
+							filteredStudents.length > 0
+								? 'Batal Pilih Semua'
+								: 'Pilih Semua'}
 							onclick={selectAllStudents}
 						/>
 						{#if bulkSelectedStudentIds.length > 0}
@@ -418,7 +435,9 @@
 					</div>
 				</div>
 
-				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 auto-rows-max">
+				<div
+					class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 auto-rows-max"
+				>
 					{#each filteredStudents as student (student.id)}
 						<StudentCard
 							{student}

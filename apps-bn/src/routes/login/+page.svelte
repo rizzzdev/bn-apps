@@ -3,7 +3,9 @@
 	import LoginDecorativeOrnaments from '$lib/features/auth/LoginDecorativeOrnaments.svelte';
 </script>
 
-<div class="bg-background bg-grid-boxes text-on-background min-h-screen flex flex-col justify-center items-center font-body-md text-body-md relative p-4 md:p-12">
+<div
+	class="bg-grid-boxes text-body-md relative flex min-h-dvh flex-col items-center justify-center bg-background p-4 font-body-md text-on-background md:p-12"
+>
 	<LoginDecorativeOrnaments />
 	<LoginForm />
 </div>

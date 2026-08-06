@@ -69,6 +69,8 @@ export class GeneratorService {
         teacherId: r.teacherId || '',
         teacherName: r.teacherId ? formatName(teacherMap.get(r.teacherId)) : 'Unassigned',
         weeklyHours: r.weeklyHours,
+        batchWeeklyHours: r.batchWeeklyHours ?? 0,
+        batchGroupId: r.batchGroupId ?? null,
         maxHoursPerDay: r.maxHoursPerDay,
       })),
       unavailabilities: unavailabilities.map((u) => ({

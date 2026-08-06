@@ -221,8 +221,8 @@
 			toast.success(`${items.length} jadwal berhasil ditambahkan`);
 			isCreateOpen = false;
 			await loadSchedules();
-		} catch (e: any) {
-			const msg = e?.message || 'Gagal menyimpan jadwal';
+		} catch (e) {
+			const msg = e instanceof Error ? e.message : 'Gagal menyimpan jadwal';
 			toast.error(msg);
 		} finally {
 			isSaving = false;
@@ -294,8 +294,8 @@
 			}
 			isEventModalOpen = false;
 			await loadEvents();
-		} catch (e: any) {
-			toast.error(e?.message || 'Gagal menyimpan event');
+		} catch (e) {
+			toast.error(e instanceof Error ? e.message : 'Gagal menyimpan event');
 		} finally {
 			isSavingEvent = false;
 		}
@@ -417,75 +417,80 @@
 	</div>
 
 	{#if activeTab === 'jadwal'}
-	<!-- Filters: Kelas & Guru only -->
-	<div class="neo-border bg-surface p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-		<SearchableSelect
-			id="filter-class"
-			label="Filter Kelas"
-			bind:value={filterClassId}
-			options={[
-				{ value: '', label: 'Semua Kelas' },
-				...allClasses.map((c) => ({ value: c.id, label: c.name }))
-			]}
-			placeholder="Semua Kelas"
-		/>
-		<SearchableSelect
-			id="filter-teacher"
-			label="Filter Guru"
-			bind:value={filterTeacherId}
-			options={[
-				{ value: '', label: 'Semua Guru' },
-				...allTeachers.map((t) => ({ value: t.id, label: formatTeacherName(t) }))
-			]}
-			placeholder="Semua Guru"
-		/>
-	</div>
+		<!-- Filters: Kelas & Guru only -->
+		<div class="neo-border bg-surface p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+			<SearchableSelect
+				id="filter-class"
+				label="Filter Kelas"
+				bind:value={filterClassId}
+				options={[
+					{ value: '', label: 'Semua Kelas' },
+					...allClasses.map((c) => ({ value: c.id, label: c.name }))
+				]}
+				placeholder="Semua Kelas"
+			/>
+			<SearchableSelect
+				id="filter-teacher"
+				label="Filter Guru"
+				bind:value={filterTeacherId}
+				options={[
+					{ value: '', label: 'Semua Guru' },
+					...allTeachers.map((t) => ({ value: t.id, label: formatTeacherName(t) }))
+				]}
+				placeholder="Semua Guru"
+			/>
+		</div>
 
-	<!-- Toolbar -->
-	<div class="flex flex-row items-center justify-end gap-2">
-		<TooltipIconButton icon="print" tooltip="Cetak Jadwal" href="/lesson-schedule/print" />
-		<TooltipIconButton
-			icon="calendar_cog"
-			tooltip="Generator Jadwal (CSP Backtracking)"
-			href="/lesson-schedule/generator"
-			variant="primary"
-		/>
-		<TooltipIconButton
-			icon={allSelected ? 'deselect' : 'checklist'}
-			tooltip={allSelected ? 'Batal Pilih Semua' : 'Pilih Semua'}
-			onclick={selectAll}
-		/>
-		{#if totalSelected > 0}
+		<!-- Toolbar -->
+		<div class="flex flex-row items-center justify-end gap-2">
+			<TooltipIconButton icon="print" tooltip="Cetak Jadwal" href="/lesson-schedule/print" />
 			<TooltipIconButton
-				icon="delete"
-				tooltip={`Hapus (${totalSelected})`}
-				onclick={openBulkDelete}
-				badgeCount={totalSelected}
-				variant="danger"
+				icon="calendar_cog"
+				tooltip="Generator Jadwal (CSP Backtracking)"
+				href="/lesson-schedule/generator"
+				variant="primary"
+			/>
+			<TooltipIconButton
+				icon={allSelected ? 'deselect' : 'checklist'}
+				tooltip={allSelected ? 'Batal Pilih Semua' : 'Pilih Semua'}
+				onclick={selectAll}
+			/>
+			{#if totalSelected > 0}
+				<TooltipIconButton
+					icon="delete"
+					tooltip={`Hapus (${totalSelected})`}
+					onclick={openBulkDelete}
+					badgeCount={totalSelected}
+					variant="danger"
+				/>
+			{/if}
+			<TooltipIconButton
+				icon="add"
+				tooltip="Tambah Jadwal"
+				onclick={openCreate}
+				variant="primary"
+			/>
+		</div>
+
+		<!-- Loading / Error -->
+		{#if isLoading}
+			<div class="neo-border bg-surface p-8 text-center font-data-mono text-data-mono">
+				Memuat data...
+			</div>
+		{:else if error}
+			<div class="neo-border bg-error-container text-error p-4 font-data-mono text-data-mono">
+				{error}
+			</div>
+		{:else}
+			<TimetableGridTable
+				hours={sortedAllHours}
+				days={days as unknown as string[]}
+				slots={gridSlots}
+				{selectedIds}
+				selectable={true}
+				onToggleSelect={toggleSelect}
 			/>
 		{/if}
-		<TooltipIconButton icon="add" tooltip="Tambah Jadwal" onclick={openCreate} variant="primary" />
-	</div>
-
-	<!-- Loading / Error -->
-	{#if isLoading}
-		<div class="neo-border bg-surface p-8 text-center font-data-mono text-data-mono">
-			Memuat data...
-		</div>
-	{:else if error}
-		<div class="neo-border bg-error-container text-error p-4 font-data-mono text-data-mono">
-			{error}
-		</div>
-	{:else}
-		<TimetableGridTable
-			hours={sortedAllHours}
-			days={days as unknown as string[]}
-			slots={gridSlots}
-			{selectedIds}
-			selectable={true}
-			onToggleSelect={toggleSelect}
-		/>
-	{/if}
 	{:else}
 		<!-- EVENT SECTION -->
 		<div class="flex flex-col gap-4">
@@ -525,7 +530,9 @@
 			<div class="neo-border overflow-x-auto bg-surface">
 				<table class="w-full text-left font-data-mono text-data-mono border-collapse">
 					<thead>
-						<tr class="neo-border-b bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">
+						<tr
+							class="neo-border-b bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase"
+						>
 							<th class="p-3 border-r-2 border-on-surface w-10">
 								<Checkbox checked={allEventsSelected} onchange={selectAllEvents} />
 							</th>
@@ -539,7 +546,9 @@
 					</thead>
 					<tbody>
 						{#each allEvents.filter((e) => e.deletedAt === null) as ev}
-							<tr class="neo-border-b last:border-b-0 hover:bg-surface-container-lowest transition-colors">
+							<tr
+								class="neo-border-b last:border-b-0 hover:bg-surface-container-lowest transition-colors"
+							>
 								<td class="p-3 border-r-2 border-on-surface">
 									<Checkbox
 										checked={eventSelectedIds.includes(ev.id)}
@@ -572,8 +581,8 @@
 						{:else}
 							<tr>
 								<td colspan="7" class="p-8 text-center text-on-surface-variant">
-									Belum ada event. Klik <strong>+ Tambah Event</strong> untuk membuat event seperti
-									Upacara Bendera, Senam Pagi, atau Literasi.
+									Belum ada event. Klik <strong>+ Tambah Event</strong> untuk membuat event seperti Upacara
+									Bendera, Senam Pagi, atau Literasi.
 								</td>
 							</tr>
 						{/each}
@@ -586,7 +595,7 @@
 
 <!-- Create Modal (scrollable) -->
 <Modal bind:isOpen={isCreateOpen} title="Tambah Jadwal Pelajaran">
-	<div class="flex flex-col gap-4 overflow-y-auto max-h-[55vh] pr-1">
+	<div class="flex flex-col gap-4 overflow-y-auto max-h-[55dvh] pr-1">
 		<SearchableSelect
 			id="create-subject"
 			label="Mata Pelajaran"
@@ -697,7 +706,7 @@
 
 <!-- Event Modal -->
 <Modal bind:isOpen={isEventModalOpen} title={editingEventId ? 'Edit Event' : 'Tambah Event'}>
-	<div class="flex flex-col gap-4 overflow-y-auto max-h-[55vh] pr-1">
+	<div class="flex flex-col gap-4 overflow-y-auto max-h-[55dvh] pr-1">
 		<div class="flex flex-col gap-1">
 			<label
 				class="font-label-caps text-xs uppercase font-bold text-on-surface-variant"
@@ -762,7 +771,8 @@
 		</div>
 	</div>
 	{#snippet footer()}
-		<Button variant="ghost" onclick={() => (isEventModalOpen = false)} disabled={isSavingEvent}>Batal</Button
+		<Button variant="ghost" onclick={() => (isEventModalOpen = false)} disabled={isSavingEvent}
+			>Batal</Button
 		>
 		<Button variant="primary" onclick={handleSaveEvent} disabled={isSavingEvent}>
 			{isSavingEvent ? 'Menyimpan...' : 'Simpan'}
@@ -773,8 +783,8 @@
 <!-- Event Bulk Delete Confirmation -->
 <Modal bind:isOpen={isEventBulkDeleteOpen} title="Konfirmasi Hapus Event">
 	<p class="font-body-md text-body-md">
-		Yakin ingin menghapus <strong>{eventSelectedIds.length}</strong> event? Slot jamnya akan kembali
-		bisa dipakai oleh jadwal pelajaran.
+		Yakin ingin menghapus <strong>{eventSelectedIds.length}</strong> event? Slot jamnya akan kembali bisa
+		dipakai oleh jadwal pelajaran.
 	</p>
 	{#snippet footer()}
 		<Button variant="ghost" onclick={() => (isEventBulkDeleteOpen = false)}>Batal</Button>

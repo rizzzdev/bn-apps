@@ -1,17 +1,11 @@
 <script lang="ts">
 	import { Icon } from '$lib/components/atoms';
-	import { PUBLIC_API_URL, PUBLIC_PORTAL_URL } from '$env/static/public';
-	import { env as publicEnv } from '$env/dynamic/public';
 	import { toast } from '$lib/stores/toast.svelte';
 	import { page } from '$app/stores';
 	import { formatTeacherName, getInitials } from '$lib/utils/image';
+	import { getApiBaseUrl, getPortalLoginUrl } from '$lib/utils/env';
+	import { clearAllCookies } from '$lib/utils/api';
 	import type { CurrentUser, TeacherProfile } from '$lib/types';
-
-	const cookieDomain = (() => {
-		const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || '';
-		if (!raw) return '';
-		return raw.trim().replace(/^\.+/, '');
-	})();
 
 	let { currentPath = '/', isMobileMenuOpen = $bindable(false) } = $props<{
 		currentPath?: string;
@@ -31,30 +25,18 @@
 	);
 	const initials = $derived(getInitials(displayName));
 
-	const rawApiUrl = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
-	const API_BASE = rawApiUrl.endsWith('/api/v1') ? rawApiUrl : `${rawApiUrl}/api/v1`;
-	const rawPortalUrl = (PUBLIC_PORTAL_URL || 'http://localhost:5173').replace(/\/+$/, '');
-	const PORTAL_LOGIN_URL = `${rawPortalUrl}/login`;
-
 	async function handleLogout() {
 		try {
-			await fetch(`${API_BASE}/auth/logout`, {
+			await fetch(`${getApiBaseUrl()}/auth/logout`, {
 				method: 'POST',
 				credentials: 'include'
 			});
 		} catch {
 			// ignore
 		}
-		document.cookie.split(';').forEach((c) => {
-			document.cookie = c
-				.replace(/^ +/, '')
-				.replace(
-					/=.*/,
-					`=;expires=${new Date().toUTCString()};path=/;SameSite=Lax${cookieDomain ? `;domain=${cookieDomain}` : ''}`
-				);
-		});
+		clearAllCookies();
 		toast.success('Logged out');
-		window.location.href = PORTAL_LOGIN_URL;
+		window.location.href = getPortalLoginUrl();
 	}
 
 	function closeMobile() {
@@ -89,7 +71,7 @@
 <aside
 	class="{isMobileMenuOpen
 		? 'flex'
-		: 'hidden'} md:flex fixed left-0 top-[var(--topnav-h)] h-[calc(100vh-var(--topnav-h))] flex-col z-40 bg-surface-container w-64 neo-border-r shadow-[6px_0px_0px_0px_#1C1B1B]"
+		: 'hidden'} md:flex fixed left-0 top-[var(--topnav-h)] h-[calc(100dvh-var(--topnav-h))] flex-col z-40 bg-surface-container w-full md:w-64 neo-border-r shadow-[6px_0px_0px_0px_#1C1B1B]"
 >
 	<nav class="flex-1 flex flex-col gap-2 px-3 pt-5 pb-5 overflow-y-auto">
 		{#each navItems as item}

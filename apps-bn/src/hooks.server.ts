@@ -3,7 +3,10 @@ import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 
 const getApiUrl = (): string => {
-	const raw = (env.API_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+	const raw = (env.API_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:3000').replace(
+		/\/+$/,
+		''
+	);
 	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
 };
 
@@ -42,7 +45,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 				const refreshRes = await event.fetch(`${apiUrl}/auth/refresh`, {
 					method: 'POST',
 					headers: {
-						'Cookie': `refresh_token=${refreshToken}`
+						Cookie: `refresh_token=${refreshToken}`
 					}
 				});
 
@@ -63,8 +66,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 			try {
 				const userRes = await event.fetch(`${apiUrl}/auth/me`, {
 					headers: {
-						'Authorization': `Bearer ${accessToken}`,
-						'Cookie': `access_token=${accessToken}`
+						Authorization: `Bearer ${accessToken}`,
+						Cookie: `access_token=${accessToken}`
 					}
 				});
 
@@ -74,8 +77,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 					console.log('[Hooks] Authenticated User Session:', event.locals.user);
 				} else if (userRes.status === 401 || userRes.status === 403 || userRes.status === 404) {
 					console.error(`Token invalid (Status: ${userRes.status}). Logging out...`);
-					event.cookies.delete('access_token', { path: '/', ...(getCookieDomain() ? { domain: getCookieDomain() } : {}) });
-					event.cookies.delete('refresh_token', { path: '/', ...(getCookieDomain() ? { domain: getCookieDomain() } : {}) });
+					event.cookies.delete('access_token', {
+						path: '/',
+						...(getCookieDomain() ? { domain: getCookieDomain() } : {})
+					});
+					event.cookies.delete('refresh_token', {
+						path: '/',
+						...(getCookieDomain() ? { domain: getCookieDomain() } : {})
+					});
 					if (!isLoginPage) {
 						throw redirect(303, '/login');
 					}

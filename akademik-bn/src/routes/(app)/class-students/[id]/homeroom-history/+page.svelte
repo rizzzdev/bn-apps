@@ -72,15 +72,15 @@
 </script>
 
 <svelte:head>
-	<title>{cls ? `Riwayat Wali Kelas ${cls.name} - Akademik-BN` : 'Riwayat Wali Kelas - Akademik-BN'}</title>
+	<title
+		>{cls
+			? `Riwayat Wali Kelas ${cls.name} - Akademik-BN`
+			: 'Riwayat Wali Kelas - Akademik-BN'}</title
+	>
 </svelte:head>
 
 <div class="flex flex-col gap-6">
-	<DetailHeader
-		title="Riwayat Wali Kelas"
-		name={cls?.name}
-		backHref={`/class-students/${id}`}
-	/>
+	<DetailHeader title="Riwayat Wali Kelas" name={cls?.name} backHref={`/class-students/${id}`} />
 
 	<HistoryTable
 		items={paginatedItems}

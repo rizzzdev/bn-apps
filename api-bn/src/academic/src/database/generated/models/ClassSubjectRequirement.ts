@@ -28,11 +28,13 @@ export type AggregateClassSubjectRequirement = {
 
 export type ClassSubjectRequirementAvgAggregateOutputType = {
   weeklyHours: number | null
+  batchWeeklyHours: number | null
   maxHoursPerDay: number | null
 }
 
 export type ClassSubjectRequirementSumAggregateOutputType = {
   weeklyHours: number | null
+  batchWeeklyHours: number | null
   maxHoursPerDay: number | null
 }
 
@@ -42,6 +44,8 @@ export type ClassSubjectRequirementMinAggregateOutputType = {
   subjectId: string | null
   teacherId: string | null
   weeklyHours: number | null
+  batchWeeklyHours: number | null
+  batchGroupId: string | null
   maxHoursPerDay: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -54,6 +58,8 @@ export type ClassSubjectRequirementMaxAggregateOutputType = {
   subjectId: string | null
   teacherId: string | null
   weeklyHours: number | null
+  batchWeeklyHours: number | null
+  batchGroupId: string | null
   maxHoursPerDay: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -66,6 +72,8 @@ export type ClassSubjectRequirementCountAggregateOutputType = {
   subjectId: number
   teacherId: number
   weeklyHours: number
+  batchWeeklyHours: number
+  batchGroupId: number
   maxHoursPerDay: number
   createdAt: number
   updatedAt: number
@@ -76,11 +84,13 @@ export type ClassSubjectRequirementCountAggregateOutputType = {
 
 export type ClassSubjectRequirementAvgAggregateInputType = {
   weeklyHours?: true
+  batchWeeklyHours?: true
   maxHoursPerDay?: true
 }
 
 export type ClassSubjectRequirementSumAggregateInputType = {
   weeklyHours?: true
+  batchWeeklyHours?: true
   maxHoursPerDay?: true
 }
 
@@ -90,6 +100,8 @@ export type ClassSubjectRequirementMinAggregateInputType = {
   subjectId?: true
   teacherId?: true
   weeklyHours?: true
+  batchWeeklyHours?: true
+  batchGroupId?: true
   maxHoursPerDay?: true
   createdAt?: true
   updatedAt?: true
@@ -102,6 +114,8 @@ export type ClassSubjectRequirementMaxAggregateInputType = {
   subjectId?: true
   teacherId?: true
   weeklyHours?: true
+  batchWeeklyHours?: true
+  batchGroupId?: true
   maxHoursPerDay?: true
   createdAt?: true
   updatedAt?: true
@@ -114,6 +128,8 @@ export type ClassSubjectRequirementCountAggregateInputType = {
   subjectId?: true
   teacherId?: true
   weeklyHours?: true
+  batchWeeklyHours?: true
+  batchGroupId?: true
   maxHoursPerDay?: true
   createdAt?: true
   updatedAt?: true
@@ -213,6 +229,8 @@ export type ClassSubjectRequirementGroupByOutputType = {
   subjectId: string
   teacherId: string | null
   weeklyHours: number
+  batchWeeklyHours: number
+  batchGroupId: string | null
   maxHoursPerDay: number
   createdAt: Date
   updatedAt: Date
@@ -248,6 +266,8 @@ export type ClassSubjectRequirementWhereInput = {
   subjectId?: Prisma.StringFilter<"ClassSubjectRequirement"> | string
   teacherId?: Prisma.StringNullableFilter<"ClassSubjectRequirement"> | string | null
   weeklyHours?: Prisma.IntFilter<"ClassSubjectRequirement"> | number
+  batchWeeklyHours?: Prisma.IntFilter<"ClassSubjectRequirement"> | number
+  batchGroupId?: Prisma.StringNullableFilter<"ClassSubjectRequirement"> | string | null
   maxHoursPerDay?: Prisma.IntFilter<"ClassSubjectRequirement"> | number
   createdAt?: Prisma.DateTimeFilter<"ClassSubjectRequirement"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ClassSubjectRequirement"> | Date | string
@@ -260,6 +280,8 @@ export type ClassSubjectRequirementOrderByWithRelationInput = {
   subjectId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrderInput | Prisma.SortOrder
   weeklyHours?: Prisma.SortOrder
+  batchWeeklyHours?: Prisma.SortOrder
+  batchGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
   maxHoursPerDay?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -275,6 +297,8 @@ export type ClassSubjectRequirementWhereUniqueInput = Prisma.AtLeast<{
   subjectId?: Prisma.StringFilter<"ClassSubjectRequirement"> | string
   teacherId?: Prisma.StringNullableFilter<"ClassSubjectRequirement"> | string | null
   weeklyHours?: Prisma.IntFilter<"ClassSubjectRequirement"> | number
+  batchWeeklyHours?: Prisma.IntFilter<"ClassSubjectRequirement"> | number
+  batchGroupId?: Prisma.StringNullableFilter<"ClassSubjectRequirement"> | string | null
   maxHoursPerDay?: Prisma.IntFilter<"ClassSubjectRequirement"> | number
   createdAt?: Prisma.DateTimeFilter<"ClassSubjectRequirement"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ClassSubjectRequirement"> | Date | string
@@ -287,6 +311,8 @@ export type ClassSubjectRequirementOrderByWithAggregationInput = {
   subjectId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrderInput | Prisma.SortOrder
   weeklyHours?: Prisma.SortOrder
+  batchWeeklyHours?: Prisma.SortOrder
+  batchGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
   maxHoursPerDay?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -307,6 +333,8 @@ export type ClassSubjectRequirementScalarWhereWithAggregatesInput = {
   subjectId?: Prisma.StringWithAggregatesFilter<"ClassSubjectRequirement"> | string
   teacherId?: Prisma.StringNullableWithAggregatesFilter<"ClassSubjectRequirement"> | string | null
   weeklyHours?: Prisma.IntWithAggregatesFilter<"ClassSubjectRequirement"> | number
+  batchWeeklyHours?: Prisma.IntWithAggregatesFilter<"ClassSubjectRequirement"> | number
+  batchGroupId?: Prisma.StringNullableWithAggregatesFilter<"ClassSubjectRequirement"> | string | null
   maxHoursPerDay?: Prisma.IntWithAggregatesFilter<"ClassSubjectRequirement"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ClassSubjectRequirement"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ClassSubjectRequirement"> | Date | string
@@ -319,6 +347,8 @@ export type ClassSubjectRequirementCreateInput = {
   subjectId: string
   teacherId?: string | null
   weeklyHours?: number
+  batchWeeklyHours?: number
+  batchGroupId?: string | null
   maxHoursPerDay?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -331,6 +361,8 @@ export type ClassSubjectRequirementUncheckedCreateInput = {
   subjectId: string
   teacherId?: string | null
   weeklyHours?: number
+  batchWeeklyHours?: number
+  batchGroupId?: string | null
   maxHoursPerDay?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -343,6 +375,8 @@ export type ClassSubjectRequirementUpdateInput = {
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   weeklyHours?: Prisma.IntFieldUpdateOperationsInput | number
+  batchWeeklyHours?: Prisma.IntFieldUpdateOperationsInput | number
+  batchGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   maxHoursPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -355,6 +389,8 @@ export type ClassSubjectRequirementUncheckedUpdateInput = {
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   weeklyHours?: Prisma.IntFieldUpdateOperationsInput | number
+  batchWeeklyHours?: Prisma.IntFieldUpdateOperationsInput | number
+  batchGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   maxHoursPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -367,6 +403,8 @@ export type ClassSubjectRequirementCreateManyInput = {
   subjectId: string
   teacherId?: string | null
   weeklyHours?: number
+  batchWeeklyHours?: number
+  batchGroupId?: string | null
   maxHoursPerDay?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -379,6 +417,8 @@ export type ClassSubjectRequirementUpdateManyMutationInput = {
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   weeklyHours?: Prisma.IntFieldUpdateOperationsInput | number
+  batchWeeklyHours?: Prisma.IntFieldUpdateOperationsInput | number
+  batchGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   maxHoursPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -391,6 +431,8 @@ export type ClassSubjectRequirementUncheckedUpdateManyInput = {
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   weeklyHours?: Prisma.IntFieldUpdateOperationsInput | number
+  batchWeeklyHours?: Prisma.IntFieldUpdateOperationsInput | number
+  batchGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   maxHoursPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -403,6 +445,8 @@ export type ClassSubjectRequirementCountOrderByAggregateInput = {
   subjectId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   weeklyHours?: Prisma.SortOrder
+  batchWeeklyHours?: Prisma.SortOrder
+  batchGroupId?: Prisma.SortOrder
   maxHoursPerDay?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -411,6 +455,7 @@ export type ClassSubjectRequirementCountOrderByAggregateInput = {
 
 export type ClassSubjectRequirementAvgOrderByAggregateInput = {
   weeklyHours?: Prisma.SortOrder
+  batchWeeklyHours?: Prisma.SortOrder
   maxHoursPerDay?: Prisma.SortOrder
 }
 
@@ -420,6 +465,8 @@ export type ClassSubjectRequirementMaxOrderByAggregateInput = {
   subjectId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   weeklyHours?: Prisma.SortOrder
+  batchWeeklyHours?: Prisma.SortOrder
+  batchGroupId?: Prisma.SortOrder
   maxHoursPerDay?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -432,6 +479,8 @@ export type ClassSubjectRequirementMinOrderByAggregateInput = {
   subjectId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   weeklyHours?: Prisma.SortOrder
+  batchWeeklyHours?: Prisma.SortOrder
+  batchGroupId?: Prisma.SortOrder
   maxHoursPerDay?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -440,6 +489,7 @@ export type ClassSubjectRequirementMinOrderByAggregateInput = {
 
 export type ClassSubjectRequirementSumOrderByAggregateInput = {
   weeklyHours?: Prisma.SortOrder
+  batchWeeklyHours?: Prisma.SortOrder
   maxHoursPerDay?: Prisma.SortOrder
 }
 
@@ -451,6 +501,8 @@ export type ClassSubjectRequirementSelect<ExtArgs extends runtime.Types.Extensio
   subjectId?: boolean
   teacherId?: boolean
   weeklyHours?: boolean
+  batchWeeklyHours?: boolean
+  batchGroupId?: boolean
   maxHoursPerDay?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -463,6 +515,8 @@ export type ClassSubjectRequirementSelectCreateManyAndReturn<ExtArgs extends run
   subjectId?: boolean
   teacherId?: boolean
   weeklyHours?: boolean
+  batchWeeklyHours?: boolean
+  batchGroupId?: boolean
   maxHoursPerDay?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -475,6 +529,8 @@ export type ClassSubjectRequirementSelectUpdateManyAndReturn<ExtArgs extends run
   subjectId?: boolean
   teacherId?: boolean
   weeklyHours?: boolean
+  batchWeeklyHours?: boolean
+  batchGroupId?: boolean
   maxHoursPerDay?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -487,13 +543,15 @@ export type ClassSubjectRequirementSelectScalar = {
   subjectId?: boolean
   teacherId?: boolean
   weeklyHours?: boolean
+  batchWeeklyHours?: boolean
+  batchGroupId?: boolean
   maxHoursPerDay?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type ClassSubjectRequirementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "classId" | "subjectId" | "teacherId" | "weeklyHours" | "maxHoursPerDay" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["classSubjectRequirement"]>
+export type ClassSubjectRequirementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "classId" | "subjectId" | "teacherId" | "weeklyHours" | "batchWeeklyHours" | "batchGroupId" | "maxHoursPerDay" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["classSubjectRequirement"]>
 
 export type $ClassSubjectRequirementPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ClassSubjectRequirement"
@@ -504,6 +562,8 @@ export type $ClassSubjectRequirementPayload<ExtArgs extends runtime.Types.Extens
     subjectId: string
     teacherId: string | null
     weeklyHours: number
+    batchWeeklyHours: number
+    batchGroupId: string | null
     maxHoursPerDay: number
     createdAt: Date
     updatedAt: Date
@@ -936,6 +996,8 @@ export interface ClassSubjectRequirementFieldRefs {
   readonly subjectId: Prisma.FieldRef<"ClassSubjectRequirement", 'String'>
   readonly teacherId: Prisma.FieldRef<"ClassSubjectRequirement", 'String'>
   readonly weeklyHours: Prisma.FieldRef<"ClassSubjectRequirement", 'Int'>
+  readonly batchWeeklyHours: Prisma.FieldRef<"ClassSubjectRequirement", 'Int'>
+  readonly batchGroupId: Prisma.FieldRef<"ClassSubjectRequirement", 'String'>
   readonly maxHoursPerDay: Prisma.FieldRef<"ClassSubjectRequirement", 'Int'>
   readonly createdAt: Prisma.FieldRef<"ClassSubjectRequirement", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ClassSubjectRequirement", 'DateTime'>

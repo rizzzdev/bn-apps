@@ -37,16 +37,18 @@
 {#if isLink}
 	<a
 		href={resolveRoute(href as Parameters<typeof resolveRoute>[0])}
-		class="relative inline-block {textSize} font-extrabold font-headline-lg {textColor} uppercase tracking-tighter z-10 hover:opacity-95 transition-opacity px-1 {className}"
+		class="relative inline-block {textSize} font-headline-lg font-extrabold {textColor} z-10 px-1 tracking-tighter uppercase transition-opacity hover:opacity-95 {className}"
 	>
-		<span class="absolute bottom-1 left-0 right-0 h-3.5 {lineColor} -z-10 transform -rotate-1"></span>
+		<span class="absolute right-0 bottom-1 left-0 h-3.5 {lineColor} -z-10 -rotate-1 transform"
+		></span>
 		{text}
 	</a>
 {:else}
 	<div
-		class="relative inline-block {textSize} font-extrabold font-headline-lg {textColor} uppercase tracking-tighter z-10 px-1 select-none {className}"
+		class="relative inline-block {textSize} font-headline-lg font-extrabold {textColor} z-10 px-1 tracking-tighter uppercase select-none {className}"
 	>
-		<span class="absolute bottom-1 left-0 right-0 h-3.5 {lineColor} -z-10 transform -rotate-1"></span>
+		<span class="absolute right-0 bottom-1 left-0 h-3.5 {lineColor} -z-10 -rotate-1 transform"
+		></span>
 		{text}
 	</div>
 {/if}

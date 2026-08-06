@@ -45,7 +45,11 @@
 		Sparkles,
 		Ban,
 		RefreshCw,
-		Trash
+		Trash,
+		Download,
+		Upload,
+		FileDown,
+		FileUp
 	} from 'lucide-svelte';
 
 	let {
@@ -116,7 +120,11 @@
 		deselect: Square,
 		refresh: RefreshCw,
 		block: Ban,
-		delete_sweep: Trash
+		delete_sweep: Trash,
+		download: Download,
+		upload: Upload,
+		file_download: FileDown,
+		file_upload: FileUp
 	};
 
 	const IconComponent = $derived(iconMap[name]);

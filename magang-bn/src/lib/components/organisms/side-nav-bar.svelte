@@ -194,7 +194,7 @@
 </script>
 
 <aside
-	class="bg-surface flex flex-col h-screen w-44 fixed left-0 top-0 border-r-2 border-on-background shadow-[4px_0px_0px_0px_#0f172a] z-40 py-4 px-2 gap-2 transition-transform duration-300 md:translate-x-0 {isOpen
+	class="bg-surface flex flex-col h-dvh w-44 fixed left-0 top-0 border-r-2 border-on-background shadow-[4px_0px_0px_0px_#0f172a] z-40 py-4 px-2 gap-2 transition-transform duration-300 md:translate-x-0 {isOpen
 		? 'translate-x-0'
 		: '-translate-x-full'}"
 >

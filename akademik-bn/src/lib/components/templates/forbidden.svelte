@@ -1,17 +1,12 @@
 <script lang="ts">
 	import { Icon, Button } from '$lib/components/atoms';
 	import { clearAllCookies } from '$lib/utils/api';
-	import { PUBLIC_API_URL, PUBLIC_PORTAL_URL } from '$env/static/public';
+	import { getApiBaseUrl, getPortalLoginUrl, getPortalUrl } from '$lib/utils/env';
 	import { toast } from '$lib/stores/toast.svelte';
-
-	const rawApiUrl = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
-	const API_BASE = rawApiUrl.endsWith('/api/v1') ? rawApiUrl : `${rawApiUrl}/api/v1`;
-	const PORTAL_URL = (PUBLIC_PORTAL_URL || 'http://localhost:5173').replace(/\/+$/, '');
-	const PORTAL_LOGIN_URL = `${PORTAL_URL}/login`;
 
 	async function handleLogout() {
 		try {
-			await fetch(`${API_BASE}/auth/logout`, {
+			await fetch(`${getApiBaseUrl()}/auth/logout`, {
 				method: 'POST',
 				credentials: 'include'
 			});
@@ -20,7 +15,7 @@
 		}
 		clearAllCookies();
 		toast.success('Logged out');
-		window.location.href = PORTAL_LOGIN_URL;
+		window.location.href = getPortalLoginUrl();
 	}
 </script>
 
@@ -28,7 +23,7 @@
 	<title>403 - Akses Ditolak</title>
 </svelte:head>
 
-<div class="min-h-screen bg-surface flex flex-col items-center justify-center p-4">
+<div class="min-h-dvh bg-surface flex flex-col items-center justify-center p-4">
 	<div
 		class="max-w-sm w-full bg-surface border-2 border-on-background shadow-neo-sm p-5 flex flex-col items-center text-center gap-4"
 	>
@@ -54,7 +49,7 @@
 		</div>
 
 		<div class="w-full flex flex-col gap-2 mt-3">
-			<Button variant="secondary" class="w-full" href={PORTAL_URL}>
+			<Button variant="secondary" class="w-full" href={getPortalUrl()}>
 				<Icon name="dashboard" class="text-[10px]" />
 				Kembali ke Portal
 			</Button>

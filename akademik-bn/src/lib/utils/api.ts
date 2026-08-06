@@ -1,18 +1,9 @@
-import { PUBLIC_API_URL, PUBLIC_PORTAL_URL } from '$env/static/public';
-import { env as publicEnv } from '$env/dynamic/public';
+import { getApiBaseUrl, getCookieDomain, getPortalLoginUrl } from '$lib/utils/env';
 import { toast } from '$lib/stores/toast.svelte';
 import { browser } from '$app/environment';
 
-function getCookieDomain(): string {
-	const raw = (publicEnv as Record<string, string | undefined>).PUBLIC_COOKIE_DOMAIN || '';
-	if (!raw) return '';
-	return raw.trim().replace(/^\.+/, '');
-}
-
-const rawApiUrl = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
-const BASE_URL = rawApiUrl.endsWith('/api/v1') ? rawApiUrl : `${rawApiUrl}/api/v1`;
-const rawPortalUrl = (PUBLIC_PORTAL_URL || 'http://localhost:5173').replace(/\/+$/, '');
-const PORTAL_LOGIN_URL = `${rawPortalUrl}/login`;
+const BASE_URL = getApiBaseUrl();
+const PORTAL_LOGIN_URL = getPortalLoginUrl();
 
 function getCookie(name: string): string | null {
 	if (!browser) return null;

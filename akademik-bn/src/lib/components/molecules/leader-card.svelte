@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Icon, Button } from '$lib/components/atoms';
-	import { TooltipIconButton } from '$lib/components/molecules';
 	import { formatTeacherName, getPictureUrl } from '$lib/utils/image';
 	import type { ShadowTeacher } from '$lib/types';
 

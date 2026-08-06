@@ -18,3 +18,4 @@ export { default as AssignTeacherModal } from './assign-teacher-modal.svelte';
 export { default as AssignStudentModal } from './assign-student-modal.svelte';
 export { default as HistoryTable } from './history-table.svelte';
 export type { HistoryItem } from './history-table.svelte';
+export { default as ExcelImport } from './excel-import.svelte';

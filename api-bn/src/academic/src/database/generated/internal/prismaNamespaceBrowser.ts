@@ -228,6 +228,8 @@ export const ClassSubjectRequirementScalarFieldEnum = {
   subjectId: 'subjectId',
   teacherId: 'teacherId',
   weeklyHours: 'weeklyHours',
+  batchWeeklyHours: 'batchWeeklyHours',
+  batchGroupId: 'batchGroupId',
   maxHoursPerDay: 'maxHoursPerDay',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

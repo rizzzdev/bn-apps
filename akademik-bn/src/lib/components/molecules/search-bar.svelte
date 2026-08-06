@@ -15,22 +15,16 @@
 		class?: string;
 	}>();
 
-	let internalValue = $state(value);
 	let timer: ReturnType<typeof setTimeout> | undefined;
-
-	$effect(() => {
-		internalValue = value;
-	});
 
 	function handleInput(e: Event) {
 		const target = e.target as HTMLInputElement;
-		internalValue = target.value;
+		value = target.value;
 
-		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => {
-			value = internalValue;
-			if (onSearch) onSearch(internalValue);
-		}, debounceMs);
+		if (onSearch) {
+			if (timer) clearTimeout(timer);
+			timer = setTimeout(() => onSearch(value), debounceMs);
+		}
 	}
 </script>
 
@@ -39,7 +33,7 @@
 >
 	<Icon name="search" size="20px" />
 	<input
-		value={internalValue}
+		{value}
 		oninput={handleInput}
 		{placeholder}
 		class="bg-transparent border-none focus:ring-0 font-data-mono text-xs outline-none w-full placeholder:text-on-surface-variant"

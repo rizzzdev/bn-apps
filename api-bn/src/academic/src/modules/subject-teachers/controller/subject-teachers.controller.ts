@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { SubjectTeacherService, subjectTeachersService } from '#academic/modules/subject-teachers/service';
-import { sendResponse } from '#app';
+import { sendResponse, createDownloadTemplateHandler, createUploadExcelHandler } from '#app';
 
 export class SubjectTeacherController {
   constructor(private service: SubjectTeacherService) {}
@@ -89,6 +89,30 @@ export class SubjectTeacherController {
       next(error);
     }
   };
+
+  createBulk = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Konvensi body: { data: SubjectTeacherDto[] }
+      const result = await this.service.bulkCreate(req.body.data);
+      sendResponse(res, 201, `Berhasil membuat ${result.created} data`, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  bulkCreateFromExcel = createUploadExcelHandler(
+    (buffer) => subjectTeachersService.bulkCreateFromExcel(buffer),
+  );
+
+  downloadExcelTemplate = createDownloadTemplateHandler(
+    'subject_teachers_template.xlsx',
+    () => subjectTeachersService.getExcelTemplate(),
+  );
+
+  downloadExcelExport = createDownloadTemplateHandler(
+    'subject_teachers_export.xlsx',
+    () => subjectTeachersService.getExcelExport(),
+  );
 }
 
 export const subjectTeacherController = new SubjectTeacherController(subjectTeachersService);

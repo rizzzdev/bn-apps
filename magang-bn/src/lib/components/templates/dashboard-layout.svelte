@@ -12,7 +12,7 @@
 	let isSidebarOpen = $state(false);
 </script>
 
-<div class="bg-surface text-on-background font-body min-h-screen flex overflow-x-hidden bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
+<div class="bg-surface text-on-background font-body min-h-dvh flex overflow-x-hidden bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
 	<SideNavBar bind:isOpen={isSidebarOpen} />
 	
 	<!-- Overlay for mobile when sidebar is open -->
@@ -28,7 +28,7 @@
 	{/if}
 	
 	<!-- Main Content Area -->
-	<div class="flex-1 md:ml-44 flex flex-col min-h-screen w-full relative">
+	<div class="flex-1 md:ml-44 flex flex-col min-h-dvh w-full relative">
 		<TopNavBar bind:isSidebarOpen />
 		
 		<!-- Main Canvas -->

@@ -19,7 +19,9 @@
 	} = $props();
 </script>
 
-<div class="border-b-3 pb-4 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 {className}">
+<div
+	class="border-b-3 pb-4 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 {className}"
+>
 	<div>
 		{#if backHref}
 			<div class="mb-2">
@@ -31,7 +33,9 @@
 		</h2>
 		{#if code}
 			<div class="flex items-center gap-2 mt-2">
-				<span class="bg-secondary text-on-secondary text-xs px-1.5 py-0.5 font-bold font-data-mono neo-border-xs">
+				<span
+					class="bg-secondary text-on-secondary text-xs px-1.5 py-0.5 font-bold font-data-mono neo-border-xs"
+				>
 					{code}
 				</span>
 			</div>

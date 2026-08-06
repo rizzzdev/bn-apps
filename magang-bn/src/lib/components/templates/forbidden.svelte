@@ -13,7 +13,7 @@
 	<title>403 - Akses Ditolak</title>
 </svelte:head>
 
-<div class="min-h-screen bg-surface flex flex-col items-center justify-center p-4">
+<div class="min-h-dvh bg-surface flex flex-col items-center justify-center p-4">
 	<div class="max-w-sm w-full bg-surface border-2 border-on-background shadow-neo-sm p-5 flex flex-col items-center text-center gap-4">
 		<div class="w-16 h-16 bg-error border-2 border-on-background rounded-full shadow-neo-sm flex items-center justify-center -mt-10 mb-1">
 			<Icon name="block" class="text-lg text-surface" />

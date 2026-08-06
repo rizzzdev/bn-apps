@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { Label, Icon } from '$lib/components/atoms';
 
+	type SelectOption = { value: string; label: string };
+
 	let {
 		id,
 		label,
 		value = $bindable(),
-		options = [] as { value: string; label: string }[],
+		options = [] as SelectOption[],
 		placeholder = 'Pilih...',
 		searchThreshold = 10,
 		multiple = false,
@@ -14,7 +16,7 @@
 		id: string;
 		label?: string;
 		value?: string | string[] | null;
-		options?: { value: string; label: string }[];
+		options?: SelectOption[];
 		placeholder?: string;
 		searchThreshold?: number;
 		multiple?: boolean;
@@ -32,9 +34,7 @@
 	let containerRef: HTMLDivElement;
 
 	let filteredOptions = $derived(
-		options.filter((o: { value: string; label: string }) =>
-			o.label.toLowerCase().includes(searchQuery.toLowerCase())
-		)
+		options.filter((o: SelectOption) => o.label.toLowerCase().includes(searchQuery.toLowerCase()))
 	);
 
 	let showSearch = $derived(options.length >= searchThreshold);
@@ -45,7 +45,7 @@
 			if (arr.length === 0) return placeholder;
 			return `${arr.length} terpilih`;
 		} else {
-			const selected = options.find((o: { value: string; label: string }) => o.value === value);
+			const selected = options.find((o: SelectOption) => o.value === value);
 			return selected ? selected.label : placeholder;
 		}
 	});
@@ -126,7 +126,7 @@
 						class="flex-1 py-1 font-data-mono text-xs font-bold text-center border-r-2 border-on-surface bg-surface text-primary hover:bg-primary hover:text-on-primary transition-colors"
 						onclick={(e) => {
 							e.stopPropagation();
-							value = options.map((o: any) => o.value);
+							value = options.map((o: SelectOption) => o.value);
 						}}
 					>
 						PILIH SEMUA
@@ -147,7 +147,7 @@
 						class="p-2 bg-surface-container-highest max-h-32 overflow-y-auto flex flex-wrap gap-1 neo-border-b shrink-0"
 					>
 						{#each value as v}
-							{@const opt = options.find((o: any) => o.value === v)}
+							{@const opt = options.find((o: SelectOption) => o.value === v)}
 							{#if opt}
 								<span
 									class="bg-secondary text-on-secondary text-[10px] px-1 py-0.5 neo-border-xs whitespace-nowrap"

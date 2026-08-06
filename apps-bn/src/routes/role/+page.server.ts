@@ -3,7 +3,10 @@ import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 
 const getApiUrl = (): string => {
-	const raw = (env.API_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+	const raw = (env.API_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:3000').replace(
+		/\/+$/,
+		''
+	);
 	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
 };
 
@@ -35,34 +38,41 @@ export const load: PageServerLoad = async ({ fetch, cookies, parent, url }) => {
 	try {
 		const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
 		const res = await fetch(`${apiUrl}/auth/users?page=${page}&limit=${limit}${searchParam}`, {
-			headers: { 
+			headers: {
 				Authorization: token ? `Bearer ${token}` : ''
 			}
 		});
-		
+
 		const rolesRes = await fetch(`${apiUrl}/auth/users/roles`, {
-			headers: { 
+			headers: {
 				Authorization: token ? `Bearer ${token}` : ''
 			}
 		});
 
 		if (!res.ok || !rolesRes.ok) {
-			console.warn(`Users or Roles API returned non-ok status (users: ${res.status}, roles: ${rolesRes.status})`);
+			console.warn(
+				`Users or Roles API returned non-ok status (users: ${res.status}, roles: ${rolesRes.status})`
+			);
 			return {
 				users: [],
 				roles: [],
 				pagination: { currentPage: 1, totalPage: 1, totalData: 0, dataPerPage: 10 }
 			};
 		}
-		
+
 		const data = await res.json();
 		const rolesData = await rolesRes.json();
-		
+
 		return {
 			isSuperAdmin: true,
 			users: data.data || [],
 			roles: rolesData.data || [],
-			pagination: data.pagination || { currentPage: Number(page), totalPage: 1, totalData: (data.data || []).length, dataPerPage: Number(limit) }
+			pagination: data.pagination || {
+				currentPage: Number(page),
+				totalPage: 1,
+				totalData: (data.data || []).length,
+				dataPerPage: Number(limit)
+			}
 		};
 	} catch (err) {
 		console.error('Failed to load users:', err);

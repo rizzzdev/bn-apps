@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { classSubjectRequirementService } from '../service';
-import { sendResponse } from '#app';
+import { sendResponse, createDownloadTemplateHandler, createUploadExcelHandler } from '#app';
 
 export class ClassSubjectRequirementController {
   async getAll(req: Request, res: Response, next: NextFunction) {
@@ -83,6 +83,20 @@ export class ClassSubjectRequirementController {
       next(err);
     }
   }
+
+  bulkCreateFromExcel = createUploadExcelHandler(
+    (buffer) => classSubjectRequirementService.bulkCreateFromExcel(buffer),
+  );
+
+  downloadExcelTemplate = createDownloadTemplateHandler(
+    'class_subject_requirements_template.xlsx',
+    () => classSubjectRequirementService.getExcelTemplate(),
+  );
+
+  downloadExcelExport = createDownloadTemplateHandler(
+    'class_subject_requirements_export.xlsx',
+    () => classSubjectRequirementService.getExcelExport(),
+  );
 }
 
 export const classSubjectRequirementController = new ClassSubjectRequirementController();

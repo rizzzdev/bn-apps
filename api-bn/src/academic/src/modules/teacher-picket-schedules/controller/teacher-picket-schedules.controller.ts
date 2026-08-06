@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { TeacherPicketScheduleService, teacherPicketSchedulesService } from '#academic/modules/teacher-picket-schedules/service';
-import { sendResponse } from '#app';
+import { sendResponse, createDownloadTemplateHandler, createUploadExcelHandler } from '#app';
 
 export class TeacherPicketScheduleController {
   constructor(private service: TeacherPicketScheduleService) {}
@@ -87,6 +87,20 @@ export class TeacherPicketScheduleController {
       next(error);
     }
   };
+
+  bulkCreateFromExcel = createUploadExcelHandler(
+    (buffer) => teacherPicketSchedulesService.bulkCreateFromExcel(buffer),
+  );
+
+  downloadExcelTemplate = createDownloadTemplateHandler(
+    'teacher_picket_schedules_template.xlsx',
+    () => teacherPicketSchedulesService.getExcelTemplate(),
+  );
+
+  downloadExcelExport = createDownloadTemplateHandler(
+    'teacher-picket-schedules.xlsx',
+    () => this.service.getExcelExport(),
+  );
 }
 
 export const teacherPicketScheduleController = new TeacherPicketScheduleController(teacherPicketSchedulesService);

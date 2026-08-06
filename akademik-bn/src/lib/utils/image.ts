@@ -1,13 +1,11 @@
-import { PUBLIC_API_URL } from '$env/static/public';
+import { getApiBaseUrl } from '$lib/utils/env';
 
 export function getPictureUrl(path: string | null | undefined): string | null {
 	if (!path) return null;
 	if (path.startsWith('http://') || path.startsWith('https://')) {
 		return path;
 	}
-	const rawApiUrl = (PUBLIC_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
-	const API_BASE = rawApiUrl.endsWith('/api/v1') ? rawApiUrl : `${rawApiUrl}/api/v1`;
-	return `${API_BASE}/master/attachments/file/${path}`;
+	return `${getApiBaseUrl()}/master/attachments/file/${path}`;
 }
 
 export function getInitials(name: string | null | undefined): string {

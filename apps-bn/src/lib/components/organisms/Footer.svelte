@@ -2,11 +2,17 @@
 	import Title from '$lib/components/atoms/Title.svelte';
 </script>
 
-<footer class="bg-primary dark:bg-primary-container w-full border-t-2 md:border-t-3 border-black mt-4 md:mt-6 relative z-40 box-border">
-	<div class="flex flex-col md:flex-row justify-between items-center w-full px-4 sm:px-6 lg:px-8 py-3 md:py-4.5 mx-auto box-border">
+<footer
+	class="relative z-40 mt-4 box-border w-full border-t-2 border-black bg-primary md:mt-6 md:border-t-3 dark:bg-primary-container"
+>
+	<div
+		class="mx-auto box-border flex w-full flex-col items-center justify-between px-4 py-3 sm:px-6 md:flex-row md:py-4.5 lg:px-8"
+	>
 		<Title size="sm" variant="white" className="mb-2 md:mb-0" />
-		
-		<div class="font-label-bold text-[10px] md:text-xs text-on-primary dark:text-on-primary-container opacity-50 text-center md:text-right">
+
+		<div
+			class="text-center font-label-bold text-[10px] text-on-primary opacity-50 md:text-right md:text-xs dark:text-on-primary-container"
+		>
 			© 2026 APPS-BN SCHOOL SYSTEM. ALL RIGHTS RESERVED.
 		</div>
 	</div>

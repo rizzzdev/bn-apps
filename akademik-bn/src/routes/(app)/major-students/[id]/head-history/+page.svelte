@@ -72,7 +72,11 @@
 </script>
 
 <svelte:head>
-	<title>{major ? `Riwayat Kepala Jurusan ${major.name} - Akademik-BN` : 'Riwayat Kepala Jurusan - Akademik-BN'}</title>
+	<title
+		>{major
+			? `Riwayat Kepala Jurusan ${major.name} - Akademik-BN`
+			: 'Riwayat Kepala Jurusan - Akademik-BN'}</title
+	>
 </svelte:head>
 
 <div class="flex flex-col gap-6">

@@ -113,6 +113,14 @@ export async function parseExcel<T = Record<string, unknown>>(
 }
 
 /**
+ * Batas panjang formula inline data-validation Excel. Formula daftar inline
+ * (`"a,b,c"`) tidak boleh melebihi 255 karakter; daftar yang lebih panjang
+ * (mis. puluhan nama kelas) dipindahkan ke sheet tersembunyi dan direferensikan
+ * (`='validasi_enum'!$A$2:$A$N`).
+ */
+const EXCEL_LIST_INLINE_LIMIT = 255;
+
+/**
  * Generate an Excel template file buffer with the given headers and an optional sample row.
  *
  * @param headers      - Either a plain `string[]` (label == key, backwards compat)
@@ -125,6 +133,8 @@ export async function parseExcel<T = Record<string, unknown>>(
  * @param validations  - Optional data validation rules keyed by canonical `key`
  *                       (e.g. `validations['gender'] = ['L', 'P']` will be applied
  *                        on the column whose HeaderSpec.key === 'gender').
+ *                       Dropdown bersifat strict: nilai di luar daftar ditolak
+ *                       Excel (error dialog); sel kosong tetap diizinkan.
  *
  * Couple with the SAME `HeaderSpec[]` passed to `buildHeaderLabelMap()` when
  * parsed by `parseExcel(buffer, [...], headerMap)` so the upload roundtrip
@@ -154,20 +164,108 @@ export async function generateExcelTemplate(
   }
 
   if (validations) {
+    let hiddenSheet: ExcelJS.Worksheet | null = null;
+    let hiddenSheetName = '';
+    let hiddenCol = 1;
+    // Buat nama sheet unik agar tidak bentrok dengan nama sheet utama caller
+    // (util ini dipakai bersama semua modul).
+    const ensureHiddenSheet = () => {
+      if (!hiddenSheet) {
+        let name = 'validasi_enum';
+        let i = 1;
+        while (workbook.getWorksheet(name)) {
+          name = `validasi_enum_${i}`;
+          i++;
+        }
+        hiddenSheetName = name;
+        hiddenSheet = workbook.addWorksheet(name, { state: 'hidden' });
+      }
+      return hiddenSheet;
+    };
+
     specs.forEach((spec, index) => {
       const allowedValues = validations[spec.key];
       if (allowedValues && allowedValues.length > 0) {
         const colLetter = sheet.getColumn(index + 1).letter;
+        const inline = allowedValues.join(',');
+
+        let formula: string;
+        if (inline.length <= EXCEL_LIST_INLINE_LIMIT) {
+          formula = `"${inline}"`;
+        } else {
+          const hSheet = ensureHiddenSheet();
+          const hLetter = hSheet.getColumn(hiddenCol).letter;
+          hSheet.getColumn(hiddenCol).values = ['', ...allowedValues];
+          formula = `='${hiddenSheetName}'!$${hLetter}$2:$${hLetter}$${allowedValues.length + 1}`;
+          hiddenCol++;
+        }
+
         for (let i = 2; i <= 1000; i++) {
           sheet.getCell(`${colLetter}${i}`).dataValidation = {
             type: 'list',
             allowBlank: true,
-            formulae: [`"${allowedValues.join(',')}"`],
+            formulae: [formula],
+            // Strict: Excel menolak nilai di luar daftar dropdown.
+            showErrorMessage: true,
+            errorTitle: 'Nilai tidak valid',
+            error: `Pilih salah satu nilai yang tersedia pada kolom "${spec.label}".`,
           };
         }
       }
     });
   }
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  return Buffer.from(buffer);
+}
+
+/**
+ * Generate an Excel export file buffer with the given headers and data rows.
+ *
+ * Berbeda dari `generateExcelTemplate` (yang menambahkan sample row + dropdown
+ * validasi untuk keperluan import), fungsi ini menghasilkan workbook **murni data**:
+ * header (baris 1) dicetak tebal dengan fill terang + freeze row, lalu seluruh
+ * `rows` ditulis sebagai data. Label header memakai `HeaderSpec[].label` sehingga
+ * file export **kompatibel untuk di-import ulang** via `parseExcel` + 
+ * `buildHeaderLabelMap` (kolom referensi seperti "Email Guru", "Kode Mapel", dst.
+ * identik dengan template import).
+ *
+ * @param sheetName - Nama sheet Excel
+ * @param specs     - Spesifikasi kolom `{ label, key, width }` (sama seperti template)
+ * @param rows      - Baris data, di-key oleh `HeaderSpec[].key`
+ */
+export async function buildExcelExport(
+  sheetName: string,
+  specs: HeaderSpec[],
+  rows: Record<string, unknown>[],
+): Promise<Buffer> {
+  const normalized = specs.map(normalize);
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet(sheetName);
+
+  sheet.columns = normalized.map((s) => ({
+    header: s.label,
+    key: s.key,
+    width: s.width,
+  }));
+
+  for (const row of rows) {
+    const clean: Record<string, unknown> = {};
+    for (const spec of normalized) {
+      const v = row[spec.key];
+      clean[spec.key] = v === null || v === undefined ? '' : v;
+    }
+    sheet.addRow(clean);
+  }
+
+  // Header styling: bold + light fill + frozen first row.
+  const headerRow = sheet.getRow(1);
+  headerRow.eachCell((cell) => {
+    cell.font = { bold: true };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8E8E8' } };
+  });
+  sheet.views = [{ state: 'frozen', ySplit: 1 }];
 
   const buffer = await workbook.xlsx.writeBuffer();
   return Buffer.from(buffer);

@@ -9,10 +9,12 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
-<div class="bg-background bg-grid-boxes text-on-background min-h-screen flex flex-col font-body-md text-body-md relative overflow-x-hidden w-full box-border pt-14 md:pt-16">
+<div
+	class="bg-grid-boxes text-body-md relative box-border flex min-h-dvh w-full flex-col overflow-x-hidden bg-background pt-14 font-body-md text-on-background md:pt-16"
+>
 	<DashboardDecorativeOrnaments />
 	<Navbar currentPath="/" />
-	<main class="flex-grow w-full px-4 sm:px-6 lg:px-8 py-3 md:py-5 relative z-10 box-border">
+	<main class="relative z-10 box-border w-full flex-grow px-4 py-3 sm:px-6 md:py-5 lg:px-8">
 		<DashboardHero user={data?.user} />
 		<AppGrid initialApplications={data?.applications} />
 	</main>

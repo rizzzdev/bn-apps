@@ -3,7 +3,11 @@ import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 
 const getApiUrl = (): string => {
-	return env.API_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:3000';
+	const raw = (env.API_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:3000').replace(
+		/\/+$/,
+		''
+	);
+	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
 };
 
 export const load: PageServerLoad = async ({ fetch, cookies, parent }) => {

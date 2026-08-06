@@ -2,8 +2,17 @@ import { env as publicEnv } from '$env/dynamic/public';
 
 export const getApiUrl = (): string => {
 	const pub = publicEnv as Record<string, string | undefined>;
-	const metaEnv = typeof import.meta !== 'undefined' && import.meta.env ? (import.meta.env as Record<string, string | undefined>) : {};
-	const raw = (pub.API_URL || pub.PUBLIC_API_URL || metaEnv.API_URL || metaEnv.VITE_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+	const metaEnv =
+		typeof import.meta !== 'undefined' && import.meta.env
+			? (import.meta.env as Record<string, string | undefined>)
+			: {};
+	const raw = (
+		pub.API_URL ||
+		pub.PUBLIC_API_URL ||
+		metaEnv.API_URL ||
+		metaEnv.VITE_API_URL ||
+		'http://localhost:3000'
+	).replace(/\/+$/, '');
 	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
 };
 
@@ -27,7 +36,8 @@ function getCookieDomain(): string {
 
 function cookieAttrs(): string {
 	const domain = getCookieDomain();
-	const secure = typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; Secure' : '';
+	const secure =
+		typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; Secure' : '';
 	return `; SameSite=Lax${secure}${domain ? `; domain=${domain}` : ''}`;
 }
 
@@ -44,9 +54,10 @@ export function deleteCookie(name: string): void {
 
 export async function apiClient(endpoint: string, options: RequestInit = {}): Promise<Response> {
 	const baseUrl = getApiUrl();
-	const url = endpoint.startsWith('http://') || endpoint.startsWith('https://') 
-		? endpoint 
-		: `${baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+	const url =
+		endpoint.startsWith('http://') || endpoint.startsWith('https://')
+			? endpoint
+			: `${baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
 
 	const headers = new Headers(options.headers || {});
 	const accessToken = getCookie('access_token');

@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { Button, Icon } from '$lib/components/atoms';
-	import { DetailHeader, SearchBar, Modal, SearchableSelect, TooltipIconButton } from '$lib/components/molecules';
+	import {
+		DetailHeader,
+		SearchBar,
+		Modal,
+		SearchableSelect,
+		TooltipIconButton
+	} from '$lib/components/molecules';
 	import { TeacherCard } from '$lib/features/subject';
 	import { subjectApi, teacherApi } from '$lib/services';
 	import type { ShadowSubject, SubjectTeacher, ShadowTeacher } from '$lib/types';
@@ -135,9 +141,7 @@
 	async function handleBulkAction() {
 		if (bulkSelectedTeacherIds.length === 0) return;
 		try {
-			const stIds = bulkSelectedTeacherIds
-				.map((tId) => subjectTeacherMap[tId])
-				.filter(Boolean);
+			const stIds = bulkSelectedTeacherIds.map((tId) => subjectTeacherMap[tId]).filter(Boolean);
 			if (stIds.length === 0) {
 				toast.error('Tidak ada data yang bisa diproses');
 				return;
@@ -149,7 +153,9 @@
 				toast.success(`${res?.data?.updated ?? stIds.length} guru berhasil dinonaktifkan`);
 			} else if (bulkActionType === 'targetHours') {
 				res = await teacherApi.subjectTeachers.bulkTargetHours(stIds, bulkTargetHours);
-				toast.success(`Target beban JP ${res?.data?.updated ?? stIds.length} guru berhasil diperbarui!`);
+				toast.success(
+					`Target beban JP ${res?.data?.updated ?? stIds.length} guru berhasil diperbarui!`
+				);
 			} else if (bulkActionType === 'delete') {
 				res = await teacherApi.subjectTeachers.bulkDelete(stIds);
 				toast.success(`${res?.data?.deleted ?? stIds.length} guru berhasil dihapus`);
@@ -239,9 +245,7 @@
 
 <div class="flex flex-col gap-6">
 	{#if isLoading}
-		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">
-			Memuat data...
-		</div>
+		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">Memuat data...</div>
 	{:else if error}
 		<div class="neo-border bg-error-container text-error p-4 text-center font-data-mono text-xs">
 			<h2 class="font-headline-md text-lg text-error">Terjadi Kesalahan</h2>
@@ -261,12 +265,16 @@
 		<div class="flex flex-col gap-3">
 			<div class="flex items-center gap-3 border-b-2 pb-2">
 				<h3 class="font-headline-md text-lg font-bold">Daftar Guru</h3>
-				<span class="border-2 border-on-background bg-primary-fixed text-on-background px-2 py-0.5 font-bold font-data-mono neo-shadow-xs text-xs">
+				<span
+					class="border-2 border-on-background bg-primary-fixed text-on-background px-2 py-0.5 font-bold font-data-mono neo-shadow-xs text-xs"
+				>
 					{teachers.length} Guru Aktif
 				</span>
 			</div>
 
-			<div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 w-full mb-2">
+			<div
+				class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 w-full mb-2"
+			>
 				<div class="w-full sm:w-64">
 					<SearchBar bind:value={searchQuery} placeholder="Cari NIP/Nama..." class="w-full" />
 				</div>
@@ -277,8 +285,14 @@
 						onclick={() => goto(`/subject/${id}/teacher-history`)}
 					/>
 					<TooltipIconButton
-						icon={bulkSelectedTeacherIds.length === filteredTeachers.length && filteredTeachers.length > 0 ? 'deselect' : 'checklist'}
-						tooltip={bulkSelectedTeacherIds.length === filteredTeachers.length && filteredTeachers.length > 0 ? 'Batal Pilih Semua Guru' : 'Pilih Semua Guru'}
+						icon={bulkSelectedTeacherIds.length === filteredTeachers.length &&
+						filteredTeachers.length > 0
+							? 'deselect'
+							: 'checklist'}
+						tooltip={bulkSelectedTeacherIds.length === filteredTeachers.length &&
+						filteredTeachers.length > 0
+							? 'Batal Pilih Semua Guru'
+							: 'Pilih Semua Guru'}
 						onclick={selectAllTeachers}
 					/>
 					{#if bulkSelectedTeacherIds.length > 0}
@@ -289,22 +303,22 @@
 							badgeCount={bulkSelectedTeacherIds.length}
 						/>
 					{/if}
-					<TooltipIconButton
-						icon="person_add"
-						tooltip="Tambah Guru"
-						onclick={openAddTeacher}
-					/>
+					<TooltipIconButton icon="person_add" tooltip="Tambah Guru" onclick={openAddTeacher} />
 				</div>
 			</div>
 
 			{#if filteredTeachers.length === 0}
-				<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs text-on-surface-variant">
+				<div
+					class="neo-border bg-surface p-8 text-center font-data-mono text-xs text-on-surface-variant"
+				>
 					{searchQuery
 						? 'Tidak ada guru yang cocok dengan pencarian.'
 						: 'Belum ada guru yang ditambahkan ke mata pelajaran ini.'}
 				</div>
 			{:else}
-				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 auto-rows-max">
+				<div
+					class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 auto-rows-max"
+				>
 					{#each filteredTeachers as teacher, i (teacher.id)}
 						<TeacherCard
 							{teacher}
@@ -343,7 +357,10 @@
 		/>
 
 		<div>
-			<label for="addTargetHours" class="block text-xs font-label-caps uppercase font-bold text-on-surface mb-1">
+			<label
+				for="addTargetHours"
+				class="block text-xs font-label-caps uppercase font-bold text-on-surface mb-1"
+			>
 				Target Beban Jam Pelajaran (JP/minggu):
 			</label>
 			<input
@@ -369,7 +386,10 @@
 				{editingTeacher.fullname}
 			</p>
 			<div>
-				<label for="editTargetHours" class="block text-xs font-label-caps uppercase font-bold text-on-surface mb-1">
+				<label
+					for="editTargetHours"
+					class="block text-xs font-label-caps uppercase font-bold text-on-surface mb-1"
+				>
 					Target Beban Jam Pelajaran (JP/minggu):
 				</label>
 				<input
@@ -418,7 +438,10 @@
 
 		{#if bulkActionType === 'targetHours'}
 			<div>
-				<label for="bulkTargetHoursInput" class="block text-xs font-label-caps uppercase font-bold text-on-surface mb-1">
+				<label
+					for="bulkTargetHoursInput"
+					class="block text-xs font-label-caps uppercase font-bold text-on-surface mb-1"
+				>
 					Target Beban Jam Pelajaran Baru (JP/minggu):
 				</label>
 				<input

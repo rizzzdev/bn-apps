@@ -20,6 +20,8 @@ export interface EngineRequirementInput {
   teacherId: string;
   teacherName: string;
   weeklyHours: number;
+  batchWeeklyHours?: number;
+  batchGroupId?: string | null;
   maxHoursPerDay: number;
 }
 
@@ -88,6 +90,8 @@ export class BacktrackingEngine {
       teacherIds: string[];
       teacherNames: string[];
       weeklyHours: number;
+      batchWeeklyHours: number;
+      batchGroupId: string | null;
       maxHoursPerDay: number;
     }
 
@@ -114,18 +118,27 @@ export class BacktrackingEngine {
         teacherNames: teacherList.map((r) => r.teacherName),
         // Team teaching: semua guru pada (class, subject) yang sama berbagi total jam yang sama.
         weeklyHours: Math.max(...teacherList.map((r) => r.weeklyHours)),
+        batchWeeklyHours: Math.max(...teacherList.map((r) => r.batchWeeklyHours ?? 0)),
+        batchGroupId: teacherList.find((r) => (r.batchWeeklyHours ?? 0) > 0)?.batchGroupId ?? null,
         maxHoursPerDay: Math.min(...teacherList.map((r) => r.maxHoursPerDay || 2)),
       });
     }
 
-    // Batch merge: combine groups with same (subjectId, teacherIds, weeklyHours, maxHoursPerDay)
-    // across different classes into one unit that occupies all classes simultaneously
+    // Batch merge: gabungkan hanya kelas yang ditandai grup batch EKSPLISIT (batchGroupId)
+    // dengan subject, guru, total JP, JP batch, dan max JP/hari identik ke dalam satu unit
+    // yang menempati semua kelas tersebut bersamaan. Non-batch tetap individual.
     const enableBatch = input.options?.enableBatchTeaching ?? true;
     if (enableBatch) {
       const batchMap = new Map<string, MergedGroup>();
+      const nonBatch: MergedGroup[] = [];
       for (const g of mergedGroups) {
+        const batchHours = g.batchWeeklyHours ?? 0;
+        if (batchHours <= 0 || !g.batchGroupId) {
+          nonBatch.push(g);
+          continue;
+        }
         const sortedTIds = [...g.teacherIds].sort();
-        const key = `${g.subjectId}|${sortedTIds.join(',')}|${g.weeklyHours}|${g.maxHoursPerDay}`;
+        const key = `${g.subjectId}|${sortedTIds.join(',')}|${g.weeklyHours}|${batchHours}|${g.maxHoursPerDay}|${g.batchGroupId}`;
         if (batchMap.has(key)) {
           const existing = batchMap.get(key)!;
           existing.classIds = [...new Set([...existing.classIds, ...g.classIds])];
@@ -135,29 +148,60 @@ export class BacktrackingEngine {
         }
       }
       mergedGroups.length = 0;
-      mergedGroups.push(...batchMap.values());
+      mergedGroups.push(...nonBatch, ...batchMap.values());
     }
 
     const units: LessonUnit[] = [];
     let unitCounter = 1;
 
-    // Split each (possibly batch-merged) group into units by maxHoursPerDay
+    // Split each (possibly batch-merged) group into units:
+    // - porsi batch (batchWeeklyHours) -> unit yang menempati SEMUA kelas grup bersamaan
+    // - sisa jam (weeklyHours - batchWeeklyHours) -> unit individual per kelas
     for (const g of mergedGroups) {
-      let hoursLeft = g.weeklyHours;
-      while (hoursLeft > 0) {
-        const duration = Math.min(hoursLeft, g.maxHoursPerDay);
-        units.push({
-          id: `unit_${unitCounter++}`,
-          classIds: g.classIds,
-          classNames: g.classNames,
-          subjectId: g.subjectId,
-          subjectName: g.subjectName,
-          teacherIds: g.teacherIds,
-          teacherNames: g.teacherNames,
-          duration,
-          maxHoursPerDay: g.maxHoursPerDay,
+      const batchHours =
+        enableBatch && g.classIds.length > 1
+          ? Math.min(g.batchWeeklyHours ?? 0, g.weeklyHours)
+          : 0;
+
+      if (batchHours > 0) {
+        let batchLeft = batchHours;
+        while (batchLeft > 0) {
+          const duration = Math.min(batchLeft, g.maxHoursPerDay);
+          units.push({
+            id: `unit_${unitCounter++}`,
+            classIds: g.classIds,
+            classNames: g.classNames,
+            subjectId: g.subjectId,
+            subjectName: g.subjectName,
+            teacherIds: g.teacherIds,
+            teacherNames: g.teacherNames,
+            duration,
+            maxHoursPerDay: g.maxHoursPerDay,
+          });
+          batchLeft -= duration;
+        }
+      }
+
+      const individualHours = g.weeklyHours - batchHours;
+      if (individualHours > 0) {
+        g.classIds.forEach((classId, i) => {
+          let hoursLeft = individualHours;
+          while (hoursLeft > 0) {
+            const duration = Math.min(hoursLeft, g.maxHoursPerDay);
+            units.push({
+              id: `unit_${unitCounter++}`,
+              classIds: [classId],
+              classNames: [g.classNames[i]!],
+              subjectId: g.subjectId,
+              subjectName: g.subjectName,
+              teacherIds: g.teacherIds,
+              teacherNames: g.teacherNames,
+              duration,
+              maxHoursPerDay: g.maxHoursPerDay,
+            });
+            hoursLeft -= duration;
+          }
         });
-        hoursLeft -= duration;
       }
     }
 

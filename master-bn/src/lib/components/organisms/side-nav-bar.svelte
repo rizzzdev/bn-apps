@@ -178,7 +178,7 @@
 {/if}
 
 <aside
-	class="bg-surface border-on-background fixed top-0 left-0 z-40 flex h-screen w-full flex-col border-r-3 transition-transform duration-300 md:w-48 md:translate-x-0 {isOpen
+	class="bg-surface border-on-background fixed top-0 left-0 z-40 flex h-dvh w-full flex-col border-r-3 transition-transform duration-300 md:w-48 md:translate-x-0 {isOpen
 		? 'translate-x-0'
 		: '-translate-x-full'}"
 >

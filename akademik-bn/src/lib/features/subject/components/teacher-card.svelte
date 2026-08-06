@@ -75,7 +75,9 @@
 		</div>
 
 		<!-- Target Hours Badge & Edit Action -->
-		<div class="pt-2 border-t border-on-surface/20 flex items-center justify-between font-data-mono text-xs">
+		<div
+			class="pt-2 border-t border-on-surface/20 flex items-center justify-between font-data-mono text-xs"
+		>
 			<span class="font-bold text-on-surface bg-tertiary-fixed border neo-border-xs px-2 py-1">
 				Beban: {teacher.targetHours ?? 0} JP/minggu
 			</span>

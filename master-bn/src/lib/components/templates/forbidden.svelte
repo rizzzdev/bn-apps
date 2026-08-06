@@ -36,7 +36,7 @@
 </svelte:head>
 
 <div
-	class="flex min-h-screen w-full flex-col items-center justify-center bg-[#FCD34D] p-md sm:p-lg md:p-xl"
+	class="flex min-h-dvh w-full flex-col items-center justify-center bg-[#FCD34D] p-md sm:p-lg md:p-xl"
 >
 	<div class="mb-lg rounded-xl border-3 border-on-background bg-surface px-lg py-sm shadow-neo-sm">
 		<Title class="!text-3xl sm:!text-4xl" />

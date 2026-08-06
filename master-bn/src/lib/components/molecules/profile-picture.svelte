@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_API_URL } from '$env/static/public';
-	import { apiClient } from '$lib/utils/api';
+	import { apiClient, getApiBaseUrl } from '$lib/utils/api';
 	import { toast } from '$lib/stores/toast.svelte';
 	import { Avatar, Button, Icon } from '$lib/components/atoms';
 

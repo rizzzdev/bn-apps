@@ -39,36 +39,42 @@
 	);
 </script>
 
-<div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-4 border-t-2 border-black">
-	<div class="font-label-bold text-xs text-secondary">
-		Menampilkan <span class="text-on-surface font-black">{startItem} - {endItem}</span> dari <span class="text-on-surface font-black">{totalItems}</span> data
+<div
+	class="mt-8 flex flex-col items-center justify-between gap-4 border-t-2 border-black pt-4 sm:flex-row"
+>
+	<div class="text-center font-label-bold text-xs text-secondary sm:text-left">
+		Menampilkan <span class="font-black text-on-surface">{startItem} - {endItem}</span> dari
+		<span class="font-black text-on-surface">{totalItems}</span> data
 	</div>
 
 	<!-- Pagination Controls (Sistem Truncation Otomatis untuk Halaman Banyak) -->
-	<div class="flex items-center gap-1.5 flex-wrap">
+	<div class="flex flex-wrap items-center justify-center gap-1.5 sm:justify-end">
 		<!-- Previous Button -->
 		<button
 			type="button"
 			disabled={currentPage <= 1}
 			onclick={() => onPageChange(currentPage - 1)}
-			class="px-2.5 py-1.5 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-surface-container-high disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold"
+			class="flex items-center justify-center border-2 border-black bg-white px-2.5 py-1.5 font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-40 md:px-3 md:py-2"
 			title="Halaman Sebelumnya"
 		>
-			<span class="material-symbols-outlined text-sm">chevron_left</span>
+			<span class="material-symbols-outlined text-sm md:text-base">chevron_left</span>
 		</button>
 
 		<!-- Page Numbers / Ellipsis -->
 		{#each visiblePages as item}
 			{#if item === '...'}
-				<span class="min-w-[32px] h-[32px] px-2 py-1 border-2 border-black bg-surface-container font-label-bold text-xs flex items-center justify-center select-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+				<span
+					class="flex h-[32px] min-w-[32px] items-center justify-center border-2 border-black bg-surface-container px-2 py-1 font-label-bold text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] select-none md:h-[40px] md:min-w-[40px] md:text-sm"
+				>
 					...
 				</span>
 			{:else}
 				<button
 					type="button"
 					onclick={() => onPageChange(item)}
-					class="min-w-[32px] h-[32px] px-2 py-1 border-2 border-black font-label-bold text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center {currentPage === item
-						? 'bg-primary text-on-primary font-black scale-105'
+					class="flex h-[32px] min-w-[32px] items-center justify-center border-2 border-black px-2 py-1 font-label-bold text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all md:h-[40px] md:min-w-[40px] md:text-sm {currentPage ===
+					item
+						? 'scale-105 bg-primary font-black text-on-primary'
 						: 'bg-white text-on-surface hover:bg-surface-container-high'}"
 				>
 					{item}
@@ -81,10 +87,10 @@
 			type="button"
 			disabled={currentPage >= totalPages}
 			onclick={() => onPageChange(currentPage + 1)}
-			class="px-2.5 py-1.5 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-surface-container-high disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center font-bold"
+			class="flex items-center justify-center border-2 border-black bg-white px-2.5 py-1.5 font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-40 md:px-3 md:py-2"
 			title="Halaman Selanjutnya"
 		>
-			<span class="material-symbols-outlined text-sm">chevron_right</span>
+			<span class="material-symbols-outlined text-sm md:text-base">chevron_right</span>
 		</button>
 	</div>
 </div>

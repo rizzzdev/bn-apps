@@ -10,7 +10,7 @@
 	let isMobileMenuOpen = $state(false);
 </script>
 
-<div class="min-h-screen bg-background flex flex-col" style="--topnav-h: 64px;">
+<div class="min-h-dvh bg-background flex flex-col" style="--topnav-h: 64px;">
 	<TopNavBar bind:isMobileMenuOpen />
 	<div class="flex flex-1 min-h-0">
 		<SideNavBar currentPath={$page.url.pathname} bind:isMobileMenuOpen />

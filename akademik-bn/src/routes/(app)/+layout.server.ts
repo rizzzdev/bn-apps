@@ -1,13 +1,6 @@
 import type { LayoutServerLoad } from './$types';
-import { env as publicEnv } from '$env/dynamic/public';
+import { getApiBaseUrl } from '$lib/utils/env';
 import type { CurrentUser, TeacherProfile } from '$lib/types';
-
-const getApiUrl = (): string => {
-	const raw = (
-		(publicEnv as Record<string, string | undefined>).PUBLIC_API_URL || 'http://localhost:3000'
-	).replace(/\/+$/, '');
-	return raw.endsWith('/api/v1') ? raw : `${raw}/api/v1`;
-};
 
 export const load: LayoutServerLoad = async ({ locals, cookies, fetch }) => {
 	const user = (locals.user as CurrentUser | undefined) ?? null;
@@ -20,7 +13,7 @@ export const load: LayoutServerLoad = async ({ locals, cookies, fetch }) => {
 		if (token) {
 			try {
 				const res = await fetch(
-					`${getApiUrl()}/master/teachers?userId=${encodeURIComponent(user.id)}&limit=1`,
+					`${getApiBaseUrl()}/master/teachers?userId=${encodeURIComponent(user.id)}&limit=1`,
 					{
 						headers: {
 							Authorization: `Bearer ${token}`

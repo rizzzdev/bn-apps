@@ -13,11 +13,11 @@ services:
       - proxy
       - backend
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.apps-bn.rule=Host(`apps-bn.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.apps-bn.entrypoints=websecure"
-      - "traefik.http.routers.apps-bn.tls.certresolver=myresolver"
-      - "traefik.http.services.apps-bn.loadbalancer.server.port=${PORT:3001}"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.apps-bn.rule=Host(`apps-bn.${DOMAIN_NAME}`)'
+      - 'traefik.http.routers.apps-bn.entrypoints=websecure'
+      - 'traefik.http.routers.apps-bn.tls.certresolver=myresolver'
+      - 'traefik.http.services.apps-bn.loadbalancer.server.port=${PORT:3001}'
 
 networks:
   proxy:

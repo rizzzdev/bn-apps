@@ -27,24 +27,28 @@
 </script>
 
 {#if totalPages > 1}
-	<div class="flex items-center justify-center gap-1.5 mt-4 flex-wrap">
-		<!-- Prev -->
-		<button onclick={() => go(page - 1)} disabled={page === 1} class="nb-page-btn"> ‹ </button>
+	<div class="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
+		<span class="text-xs font-bold text-(--text-secondary)">
+			Halaman {page} dari {totalPages}
+		</span>
 
-		{#each visiblePages as p, i}
-			{#if i > 0 && p - visiblePages[i - 1] > 1}
-				<span class="px-1 font-black text-(--text-secondary) text-sm">…</span>
-			{/if}
-			<button onclick={() => go(p)} class={p === page ? 'nb-page-btn-active' : 'nb-page-btn'}>
-				{p}
+		<div class="flex items-center justify-center gap-1.5 flex-wrap">
+			<!-- Prev -->
+			<button onclick={() => go(page - 1)} disabled={page === 1} class="nb-page-btn"> ‹ </button>
+
+			{#each visiblePages as p, i}
+				{#if i > 0 && p - visiblePages[i - 1] > 1}
+					<span class="px-1 font-black text-(--text-secondary) text-sm">…</span>
+				{/if}
+				<button onclick={() => go(p)} class={p === page ? 'nb-page-btn-active' : 'nb-page-btn'}>
+					{p}
+				</button>
+			{/each}
+
+			<!-- Next -->
+			<button onclick={() => go(page + 1)} disabled={page === totalPages} class="nb-page-btn">
+				›
 			</button>
-		{/each}
-
-		<!-- Next -->
-		<button onclick={() => go(page + 1)} disabled={page === totalPages} class="nb-page-btn">
-			›
-		</button>
-
-		<span class="ml-1 text-xs font-bold text-(--text-secondary)">{page} / {totalPages}</span>
+		</div>
 	</div>
 {/if}

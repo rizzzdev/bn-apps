@@ -25,12 +25,12 @@
 
 {#if authState.user || data.user}
 	<SideNavBar isMobileOpen={isSidebarOpen} onClose={closeSidebar} />
-	<div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+	<div class="flex-1 md:ml-64 flex flex-col min-h-dvh">
 		<TopAppBar onToggleSidebar={toggleSidebar} />
 		<main class="flex-1 p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto w-full relative">
 			{@render children()}
 		</main>
 	</div>
 {:else}
-	<div class="min-h-screen flex items-center justify-center font-bold text-xl">Loading...</div>
+	<div class="min-h-dvh flex items-center justify-center font-bold text-xl">Loading...</div>
 {/if}

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { Icon } from '../atoms';
 
-	let { 
-		currentPage = $bindable(1), 
-		totalPages = 1, 
-		onPageChange 
-	} = $props<{ 
-		currentPage?: number; 
-		totalPages: number; 
+	let {
+		currentPage = $bindable(1),
+		totalPages = 1,
+		onPageChange
+	} = $props<{
+		currentPage?: number;
+		totalPages: number;
 		onPageChange?: (page: number) => void;
 	}>();
 
@@ -37,25 +37,36 @@
 </script>
 
 {#if totalPages > 0}
-	<div class="flex items-center gap-1">
-		<!-- Prev Button -->
-		<button
-			class="p-1 border border-on-background shadow-[1px_1px_0px_0px_#0f172a] hover:translate-x-px hover:translate-y-px hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[1px_1px_0px_0px_#0f172a] bg-surface text-on-background"
-			disabled={currentPage === 1}
-			onclick={() => handlePageChange(currentPage - 1)}
-			aria-label="Previous Page"
+	<div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+		<!-- Info -->
+		<span
+			class="self-start bg-surface border border-on-background shadow-[1px_1px_0px_0px_#0f172a] px-2.5 py-1 text-[11px] md:self-auto md:text-sm"
 		>
-			<Icon name="chevron_left" class="text-[10px]" />
-		</button>
-		
-		<!-- Page Numbers -->
-<div class="flex items-center gap-0.5">
+			Halaman {currentPage} dari {totalPages}
+		</span>
+
+		<!-- Controls -->
+		<div class="flex flex-wrap items-center justify-center gap-1.5 md:gap-2">
+			<!-- Prev Button -->
+			<button
+				class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border border-on-background shadow-[1px_1px_0px_0px_#0f172a] hover:translate-x-px hover:translate-y-px hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[1px_1px_0px_0px_#0f172a] bg-surface text-on-background"
+				disabled={currentPage === 1}
+				onclick={() => handlePageChange(currentPage - 1)}
+				aria-label="Halaman sebelumnya"
+			>
+				<Icon name="chevron_left" class="text-sm md:text-base" />
+			</button>
+
+			<!-- Page Numbers -->
 			{#each pages as page, i (i)}
 				{#if page === '...'}
-					<span class="w-5 flex items-center justify-center font-bold text-on-background opacity-50 px-0.5">...</span>
+					<span
+						class="w-8 md:w-10 h-8 md:h-10 flex items-center justify-center font-bold text-on-background opacity-50 text-sm md:text-base"
+						>...</span
+					>
 				{:else}
 					<button
-						class="min-w-[24px] h-[24px] px-1 flex items-center justify-center border border-on-background shadow-[1px_1px_0px_0px_#0f172a] hover:translate-x-px hover:translate-y-px hover:shadow-none transition-all font-bold font-mono text-[10px] leading-none
+						class="min-w-[32px] md:min-w-[40px] h-8 md:h-10 px-1.5 flex items-center justify-center border border-on-background shadow-[1px_1px_0px_0px_#0f172a] hover:translate-x-px hover:translate-y-px hover:shadow-none transition-all font-bold font-mono text-xs md:text-sm leading-none
 						{currentPage === page ? 'bg-primary text-surface' : 'bg-surface text-on-background'}"
 						onclick={() => handlePageChange(page as number)}
 					>
@@ -63,16 +74,16 @@
 					</button>
 				{/if}
 			{/each}
-		</div>
 
-		<!-- Next Button -->
-		<button
-			class="p-1 border border-on-background shadow-[1px_1px_0px_0px_#0f172a] hover:translate-x-px hover:translate-y-px hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[1px_1px_0px_0px_#0f172a] bg-surface text-on-background"
-			disabled={currentPage === totalPages}
-			onclick={() => handlePageChange(currentPage + 1)}
-			aria-label="Next Page"
-		>
-			<Icon name="chevron_right" class="text-[10px]" />
-		</button>
+			<!-- Next Button -->
+			<button
+				class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border border-on-background shadow-[1px_1px_0px_0px_#0f172a] hover:translate-x-px hover:translate-y-px hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[1px_1px_0px_0px_#0f172a] bg-surface text-on-background"
+				disabled={currentPage === totalPages}
+				onclick={() => handlePageChange(currentPage + 1)}
+				aria-label="Halaman berikutnya"
+			>
+				<Icon name="chevron_right" class="text-sm md:text-base" />
+			</button>
+		</div>
 	</div>
 {/if}

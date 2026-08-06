@@ -4,10 +4,13 @@
 		Pagination,
 		SearchBar,
 		AssignStudentModal,
-		AssignTeacherModal
+		AssignTeacherModal,
+		TooltipIconButton,
+		ExcelImport
 	} from '$lib/components/molecules';
 	import { MajorTable } from '$lib/features/major';
 	import { majorApi, academicYearApi, studentApi, teacherApi, majorHeadApi } from '$lib/services';
+	import { downloadExcel } from '$lib/services/base';
 	import type {
 		Major,
 		ShadowMajor,
@@ -197,6 +200,16 @@
 			toast.error('Gagal memperbarui kepala jurusan');
 		}
 	}
+
+	async function handleExport() {
+		try {
+			const date = new Date().toISOString().slice(0, 10);
+			await downloadExcel('/academic/major-students/export', `jurusan-murid_${date}.xlsx`);
+			toast.success('Data jurusan murid berhasil diunduh');
+		} catch {
+			toast.error('Gagal mengunduh data jurusan murid');
+		}
+	}
 </script>
 
 <svelte:head>
@@ -208,6 +221,18 @@
 		title="Pemetaan Murid Jurusan"
 		description="MANAJEMEN PEMETAAN MURID DAFTAR JURUSAN AKADEMIK"
 	/>
+
+	<!-- Toolbar upload — di luar #if agar modal tetap terbuka saat data di-refresh -->
+	<div class="flex items-center justify-end gap-2">
+		<TooltipIconButton icon="download" tooltip="Export Excel" onclick={handleExport} />
+		<ExcelImport
+			templateEndpoint="/academic/major-students/template"
+			templateFilename="major_students_template.xlsx"
+			uploadEndpoint="/academic/major-students/batch/excel"
+			serviceLabel="Jurusan Murid"
+			onSuccess={loadMajors}
+		/>
+	</div>
 
 	{#if isLoading}
 		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">Memuat data...</div>

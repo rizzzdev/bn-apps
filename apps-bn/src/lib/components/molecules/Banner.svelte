@@ -26,47 +26,55 @@
 	};
 </script>
 
-<div class="w-full flex flex-col gap-3 mb-4 md:mb-6 {className}">
+<div class="mb-4 flex w-full flex-col gap-3 md:mb-6 {className}">
 	<!-- Optional Action Buttons Slot (Top Right Row) -->
 	{#if actionButtons}
-		<div class="flex justify-end items-center gap-2 w-full">
+		<div class="flex w-full items-center justify-end gap-2">
 			{@render actionButtons()}
 		</div>
 	{/if}
 
 	<!-- Beautiful Neobrutal Banner Container -->
 	<div
-		class="relative overflow-hidden bg-surface-container neo-border neo-shadow p-5 md:p-6 lg:p-7 rounded-xl md:rounded-2xl transition-all duration-300 w-full box-border"
+		class="neo-border neo-shadow relative box-border w-full overflow-hidden rounded-xl bg-surface-container p-5 transition-all duration-300 md:rounded-2xl md:p-6 lg:p-7"
 	>
 		<!-- Decorative Top Accent Stripe -->
-		<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r {variantAccents[variant]}"></div>
+		<div class="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r {variantAccents[variant]}"></div>
 
 		<!-- Main Banner Content -->
 		<div class="relative z-10 max-w-3xl">
 			{#if badgeText}
 				<div
-					class="inline-flex items-center gap-2 px-2.5 py-1 bg-secondary-fixed text-black border-2 border-black rounded-lg text-[10px] md:text-xs font-label-bold mb-2.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase tracking-wider"
+					class="mb-2.5 inline-flex items-center gap-2 rounded-lg border-2 border-black bg-secondary-fixed px-2.5 py-1 font-label-bold text-[10px] tracking-wider text-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:text-xs"
 				>
 					<span class="relative flex h-2 w-2">
-						<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-75"></span>
-						<span class="relative inline-flex rounded-full h-2 w-2 bg-black"></span>
+						<span
+							class="absolute inline-flex h-full w-full animate-ping rounded-full bg-black opacity-75"
+						></span>
+						<span class="relative inline-flex h-2 w-2 rounded-full bg-black"></span>
 					</span>
 					{badgeText}
 				</div>
 			{/if}
 
-			<h1 class="font-headline-lg text-on-surface mb-2 uppercase tracking-tight text-xl md:text-2xl lg:text-3xl leading-tight font-extrabold break-words">
+			<h1
+				class="mb-2 font-headline-lg text-xl leading-tight font-extrabold tracking-tight break-words text-on-surface uppercase md:text-2xl lg:text-3xl"
+			>
 				{title}
 			</h1>
 
-			<p class="font-body-md text-on-surface-variant text-xs md:text-sm leading-relaxed max-w-2xl">
+			<p class="max-w-2xl font-body-md text-xs leading-relaxed text-on-surface-variant md:text-sm">
 				{description}
 			</p>
 		</div>
 
 		<!-- Decorative Material Icon Watermark Background -->
-		<div class="absolute -right-3 -bottom-3 opacity-10 pointer-events-none hidden sm:block z-0 mix-blend-multiply select-none">
-			<span class="material-symbols-outlined text-[100px] md:text-[130px] lg:text-[150px] text-black">
+		<div
+			class="pointer-events-none absolute -right-3 -bottom-3 z-0 hidden opacity-10 mix-blend-multiply select-none sm:block"
+		>
+			<span
+				class="material-symbols-outlined text-[100px] text-black md:text-[130px] lg:text-[150px]"
+			>
 				{icon}
 			</span>
 		</div>

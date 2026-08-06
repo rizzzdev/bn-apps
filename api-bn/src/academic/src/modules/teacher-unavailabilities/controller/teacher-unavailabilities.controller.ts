@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { teacherUnavailabilityService } from '../service';
-import { sendResponse } from '#app';
+import { sendResponse, createDownloadTemplateHandler, createUploadExcelHandler } from '#app';
 
 export class TeacherUnavailabilityController {
   async getAll(req: Request, res: Response, next: NextFunction) {
@@ -57,6 +57,20 @@ export class TeacherUnavailabilityController {
       next(err);
     }
   }
+
+  bulkCreateFromExcel = createUploadExcelHandler(
+    (buffer) => teacherUnavailabilityService.bulkCreateFromExcel(buffer),
+  );
+
+  downloadExcelTemplate = createDownloadTemplateHandler(
+    'teacher_unavailabilities_template.xlsx',
+    () => teacherUnavailabilityService.getExcelTemplate(),
+  );
+
+  downloadExcelExport = createDownloadTemplateHandler(
+    'teacher_unavailabilities_export.xlsx',
+    () => teacherUnavailabilityService.getExcelExport(),
+  );
 }
 
 export const teacherUnavailabilityController = new TeacherUnavailabilityController();

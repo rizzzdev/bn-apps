@@ -34,14 +34,14 @@
 </script>
 
 <div
-	class="bg-surface-container p-md flex items-center justify-between border-3 border-on-background rounded-xl mt-md"
+	class="bg-surface-container p-md flex flex-col gap-3 border-3 border-on-background rounded-xl mt-md md:flex-row md:items-center md:justify-between"
 >
-	<p class="font-body-base text-body-base text-on-surface-variant">
+	<p class="font-body-base text-body-base text-on-surface-variant text-center md:text-left">
 		Menampilkan {startItem}-{endItem} dari {totalItems} data
 	</p>
-	<div class="flex gap-xs">
+	<div class="flex flex-wrap items-center justify-center gap-xs md:gap-sm">
 		<button
-			class="h-8 px-sm bg-surface-container-lowest font-label-sm text-xs uppercase hover:bg-secondary hover:text-on-secondary transition-colors border-3 rounded-lg border-on-background shadow-neo-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-neo-xs active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+			class="h-8 px-sm bg-surface-container-lowest font-label-sm text-xs uppercase hover:bg-secondary hover:text-on-secondary transition-colors border-3 rounded-lg border-on-background shadow-neo-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-neo-xs active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed md:h-10 md:px-md md:text-sm"
 			disabled={currentPage === 1}
 			onclick={() => onPageChange?.(currentPage - 1)}
 		>
@@ -50,10 +50,10 @@
 
 		{#each visiblePages as page (typeof page === 'string' ? page : page)}
 			{#if typeof page === 'string'}
-				<span class="h-8 w-8 flex items-end justify-center pb-1">...</span>
+				<span class="h-8 w-8 md:h-10 md:w-10 flex items-end justify-center pb-1">...</span>
 			{:else}
 				<button
-					class="h-8 w-8 font-label-sm text-xs border-3 rounded-lg border-on-background transition-colors {currentPage ===
+					class="h-8 w-8 md:h-10 md:w-10 font-label-sm text-xs border-3 rounded-lg border-on-background transition-colors md:text-sm {currentPage ===
 					page
 						? 'bg-secondary text-on-secondary'
 						: 'bg-surface-container-lowest hover:bg-surface-container-highest'} shadow-neo-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-neo-xs active:translate-x-1 active:translate-y-1 active:shadow-none"
@@ -65,7 +65,7 @@
 		{/each}
 
 		<button
-			class="h-8 px-sm bg-surface-container-lowest font-label-sm text-xs uppercase hover:bg-secondary hover:text-on-secondary transition-colors border-3 rounded-lg border-on-background shadow-neo-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-neo-xs active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+			class="h-8 px-sm bg-surface-container-lowest font-label-sm text-xs uppercase hover:bg-secondary hover:text-on-secondary transition-colors border-3 rounded-lg border-on-background shadow-neo-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-neo-xs active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed md:h-10 md:px-md md:text-sm"
 			disabled={currentPage === totalPages}
 			onclick={() => onPageChange?.(currentPage + 1)}
 		>

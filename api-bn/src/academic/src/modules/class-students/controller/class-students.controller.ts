@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ClassStudentService, classStudentsService } from '#academic/modules/class-students/service';
-import { sendResponse } from '#app';
+import { sendResponse, createDownloadTemplateHandler, createUploadExcelHandler } from '#app';
 import { BaseController } from '#academic/utils/index.js';
 
 export class ClassStudentController extends BaseController<any, any, any> {
@@ -49,6 +49,20 @@ export class ClassStudentController extends BaseController<any, any, any> {
       next(error);
     }
   };
+
+  bulkCreateFromExcel = createUploadExcelHandler(
+    (buffer) => this.service.bulkCreateFromExcel(buffer),
+  );
+
+  downloadExcelTemplate = createDownloadTemplateHandler(
+    'class_students_template.xlsx',
+    () => this.service.getExcelTemplate(),
+  );
+
+  downloadExcelExport = createDownloadTemplateHandler(
+    'class_students_export.xlsx',
+    () => this.service.getExcelExport(),
+  );
 }
 
 export const classStudentController = new ClassStudentController(classStudentsService);

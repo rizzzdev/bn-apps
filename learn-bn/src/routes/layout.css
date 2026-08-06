@@ -118,7 +118,7 @@
 }
 
 body {
-  @apply bg-background text-on-surface font-body-md min-h-screen antialiased selection:bg-primary-container selection:text-on-primary-container;
+  @apply bg-background text-on-surface font-body-md min-h-dvh antialiased selection:bg-primary-container selection:text-on-primary-container;
 }
 
 /* Neo-brutalism Custom Scrollbar */

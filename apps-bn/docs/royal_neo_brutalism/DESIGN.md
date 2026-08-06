@@ -109,15 +109,18 @@ spacing:
 ---
 
 ## Brand & Style
+
 This design system embraces a **Neobrutalist** aesthetic, prioritizing raw energy, structural honesty, and high-impact visual hierarchy. It is designed for products that want to stand out in a sea of soft, "safe" SaaS interfaces. The personality is unapologetically bold, disruptive, and professional yet playful.
 
 The style is characterized by:
+
 - **Architectural Rigidity:** Elements are defined by heavy strokes and clear boundaries.
 - **High Contrast:** A stark juxtaposition between deep Royal Blue, vibrant accents, and pure black.
 - **Intentional "Roughness":** Using hard shadows and thick borders to create a tactile, physical presence on the screen.
 - **Modern Energy:** Moving away from traditional corporate minimalism toward a more expressive, graphic design-led interface.
 
 ## Colors
+
 The palette is built on a foundation of high-contrast pairings to ensure maximum legibility and visual punch.
 
 - **Primary (Royal Blue):** The anchor of the system. Used for headers, primary actions, and structural elements. It provides a sense of authority and depth.
@@ -126,6 +129,7 @@ The palette is built on a foundation of high-contrast pairings to ensure maximum
 - **Black & White:** Pure `#000000` is used for all borders, shadows, and body text. Pure `#FFFFFF` is used for primary surface backgrounds to maintain the "stark" look.
 
 ## Typography
+
 The typography strategy utilizes three distinct families to create a functional yet expressive hierarchy.
 
 - **Headlines:** `Bricolage Grotesque` provides a quirky, variable-width character that feels contemporary and custom. It should be used for all major titles.
@@ -133,6 +137,7 @@ The typography strategy utilizes three distinct families to create a functional 
 - **Labels & Data:** `Space Mono` is used for metadata, buttons, and small labels to lean into the "technical/brutalist" vibe of the system.
 
 ## Layout & Spacing
+
 This design system utilizes a **Fixed Grid** model on desktop and a **Fluid Grid** on mobile.
 
 - **Grid:** A 12-column grid with a fixed max-width of 1280px. Columns are separated by heavy 4px vertical lines in specific layouts to emphasize the "blueprint" feel.
@@ -143,6 +148,7 @@ This design system utilizes a **Fixed Grid** model on desktop and a **Fluid Grid
   - **Mobile:** <767px (4 columns, 16px margins)
 
 ## Elevation & Depth
+
 Depth in this design system is not achieved through light and shadow simulation, but through **Hard Offsets**.
 
 - **Hard Shadows:** All "elevated" elements (cards, buttons, inputs) must feature a solid black `#000000` shadow with 0px blur. The shadow should be offset to the bottom-right (typically 6px).
@@ -150,6 +156,7 @@ Depth in this design system is not achieved through light and shadow simulation,
 - **No Blurs:** The use of Gaussian blurs, backdrop filters, or soft glows is strictly prohibited to maintain the Neobrutalist aesthetic.
 
 ## Shapes
+
 The shape language is primarily rectangular but uses a subtle `0.25rem` (4px) corner radius to prevent the UI from feeling dangerously sharp while maintaining its aggressive posture.
 
 - **Standard Elements:** Buttons, cards, and input fields use a consistent 4px radius.
@@ -159,23 +166,29 @@ The shape language is primarily rectangular but uses a subtle `0.25rem` (4px) co
 ## Components
 
 ### Buttons
+
 - **Primary:** Royal Blue background, white text, 4px black border, 6px black hard shadow.
 - **Secondary:** Vibrant Yellow background, black text, 4px black border, 6px black hard shadow.
 - **Hover State:** Shadow offset reduces to 2px; element moves 4px down and right.
 
 ### Input Fields
+
 - **Default:** White background, 4px black border, 0px shadow.
 - **Focus State:** 4px black border, 4px hard shadow in Hot Pink to denote active status. Text uses `Space Mono`.
 
 ### Cards
+
 - White or very light gray background, 4px black border, 8px black hard shadow.
 - Header area of the card should be separated by a 4px horizontal black line.
 
 ### Chips/Tags
+
 - Small, `Space Mono` text, 2px black border, no shadow. Used for categorization.
 
 ### Checkboxes & Radios
+
 - Square-edged (even for radios), 3px black border. When checked, the inner fill should be the Tertiary Hot Pink.
 
 ### Navigation Rails
+
 - Sidebars should be separated from the main content by a vertical 4px black border. Active links should use the Secondary Yellow as a background "highlight" box behind the text.

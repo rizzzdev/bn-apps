@@ -77,6 +77,8 @@ export class ClassSubjectRequirementRepository {
         data: {
           teacherId: data.teacherId || null,
           weeklyHours: data.weeklyHours,
+          batchWeeklyHours: data.batchWeeklyHours ?? 0,
+          batchGroupId: data.batchGroupId || null,
           maxHoursPerDay: data.maxHoursPerDay,
         },
       });
@@ -87,6 +89,8 @@ export class ClassSubjectRequirementRepository {
           subjectId: data.subjectId,
           teacherId: data.teacherId || null,
           weeklyHours: data.weeklyHours,
+          batchWeeklyHours: data.batchWeeklyHours ?? 0,
+          batchGroupId: data.batchGroupId || null,
           maxHoursPerDay: data.maxHoursPerDay,
         },
       });
@@ -96,12 +100,14 @@ export class ClassSubjectRequirementRepository {
   }
 
   async update(id: string, data: UpdateClassSubjectRequirementDto) {
-    const normalized = putOptionalToNull({ ...data }, ['teacherId']);
+    const normalized = putOptionalToNull({ ...data }, ['teacherId', 'batchGroupId']);
     const item = await prisma.classSubjectRequirement.update({
       where: { id },
       data: {
         ...(normalized.teacherId !== undefined && { teacherId: normalized.teacherId }),
         ...(normalized.weeklyHours !== undefined && { weeklyHours: normalized.weeklyHours }),
+        ...(normalized.batchWeeklyHours !== undefined && { batchWeeklyHours: normalized.batchWeeklyHours }),
+        ...(normalized.batchGroupId !== undefined && { batchGroupId: normalized.batchGroupId }),
         ...(normalized.maxHoursPerDay !== undefined && { maxHoursPerDay: normalized.maxHoursPerDay }),
       },
     });

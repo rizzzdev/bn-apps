@@ -30,7 +30,10 @@
 		<p class="font-body-md text-body-md text-center text-on-surface">{message}</p>
 	</div>
 	{#snippet footer()}
-		<Button variant="ghost" onclick={() => (isOpen = false)} class="min-w-[100px]">{cancelText}</Button>
-		<Button variant={confirmVariant} onclick={onConfirm} class="min-w-[100px]">{confirmText}</Button>
+		<Button variant="ghost" onclick={() => (isOpen = false)} class="min-w-[100px]"
+			>{cancelText}</Button
+		>
+		<Button variant={confirmVariant} onclick={onConfirm} class="min-w-[100px]">{confirmText}</Button
+		>
 	{/snippet}
 </Modal>

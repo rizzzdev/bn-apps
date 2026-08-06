@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { Icon, Button } from '$lib/components/atoms';
-	import { PageHeader, Modal, SearchableSelect, TooltipIconButton } from '$lib/components/molecules';
+	import {
+		PageHeader,
+		Modal,
+		SearchableSelect,
+		TooltipIconButton,
+		ExcelImport
+	} from '$lib/components/molecules';
 	import { scheduleApi, teacherApi } from '$lib/services';
-	import type {
-		TeacherPicketSchedule,
-		ShadowTeacher
-	} from '$lib/types';
+	import { downloadExcel } from '$lib/services/base';
+	import type { TeacherPicketSchedule, ShadowTeacher } from '$lib/types';
 	import { onMount } from 'svelte';
 	import { toast } from '$lib/stores/toast.svelte';
 	import { formatTeacherName } from '$lib/utils/image';
@@ -39,9 +43,7 @@
 		return day - 1; // 0=Senin..4=Jumat, -1=other
 	});
 
-	let activeTeachers = $derived(
-		allTeachers.filter((t) => t.status === 'Aktif')
-	);
+	let activeTeachers = $derived(allTeachers.filter((t) => t.status === 'Aktif'));
 
 	// Map day → schedules (non-deleted)
 	let schedulesByDay = $derived.by<Map<string, TeacherPicketSchedule[]>>(() => {
@@ -66,24 +68,9 @@
 	});
 
 	// Unassigned teachers (active but no schedule)
-	let unassignedTeachers = $derived(
-		activeTeachers.filter((t) => !assignedTeacherIds.has(t.id))
-	);
+	let unassignedTeachers = $derived(activeTeachers.filter((t) => !assignedTeacherIds.has(t.id)));
 
-	// Day totals
-	let dayTotals = $derived.by<Record<string, number>>(() => {
-		const totals: Record<string, number> = {};
-		days.forEach((d) => (totals[d] = 0));
-		for (const s of schedules) {
-			if (s.deletedAt !== null) continue;
-			totals[s.day] = (totals[s.day] || 0) + 1;
-		}
-		return totals;
-	});
-
-	let assignedTeachers = $derived(
-		activeTeachers.filter((t) => assignedTeacherIds.has(t.id))
-	);
+	let assignedTeachers = $derived(activeTeachers.filter((t) => assignedTeacherIds.has(t.id)));
 
 	let totalSelected = $derived(selectedTeacherIds.length);
 	let allSelected = $derived(
@@ -111,6 +98,16 @@
 			selectedTeacherIds = [];
 		} else {
 			selectedTeacherIds = assignedTeachers.map((t) => t.id);
+		}
+	}
+
+	async function handleExport() {
+		try {
+			const date = new Date().toISOString().slice(0, 10);
+			await downloadExcel('/academic/teacher-picket-schedules/export', `jadwal-piket_${date}.xlsx`);
+			toast.success('Data jadwal piket berhasil diunduh');
+		} catch {
+			toast.error('Gagal mengunduh data jadwal piket');
 		}
 	}
 
@@ -214,10 +211,11 @@
 <div class="flex flex-col gap-6">
 	<PageHeader title="Jadwal Piket Guru" description="MANAJEMEN JADWAL PIKET GURU" />
 
+	<!-- Toolbar upload — di luar #if agar modal tetap terbuka saat data di-refresh -->
+	<div class="flex items-center justify-end"></div>
+
 	{#if isLoading}
-		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">
-			Memuat data...
-		</div>
+		<div class="neo-border bg-surface p-8 text-center font-data-mono text-xs">Memuat data...</div>
 	{:else if error}
 		<div class="neo-border bg-error-container text-error p-4 text-center font-data-mono text-xs">
 			{error}
@@ -229,6 +227,14 @@
 				icon={allSelected ? 'deselect' : 'checklist'}
 				tooltip={allSelected ? 'Batal Pilih Semua' : 'Pilih Semua Guru'}
 				onclick={selectAll}
+			/>
+			<TooltipIconButton icon="download" tooltip="Export Excel" onclick={handleExport} />
+			<ExcelImport
+				templateEndpoint="/academic/teacher-picket-schedules/template"
+				templateFilename="teacher_picket_schedules_template.xlsx"
+				uploadEndpoint="/academic/teacher-picket-schedules/batch/excel"
+				serviceLabel="Jadwal Piket"
+				onSuccess={loadSchedule}
 			/>
 			{#if totalSelected > 0}
 				<TooltipIconButton
@@ -248,7 +254,9 @@
 		</div>
 
 		{#if activeTeachers.length === 0}
-			<div class="neo-border bg-surface p-10 text-center font-data-mono text-data-mono text-on-surface-variant">
+			<div
+				class="neo-border bg-surface p-10 text-center font-data-mono text-data-mono text-on-surface-variant"
+			>
 				<Icon name="calendar_today" size="32px" class="mb-3 opacity-40 mx-auto" />
 				<p>Tidak ada guru aktif</p>
 			</div>
@@ -264,7 +272,11 @@
 							: 'bg-surface'} overflow-hidden"
 					>
 						<!-- Day Header -->
-						<div class="neo-border-b p-4 pb-3 {i === todayIndex ? 'bg-secondary-fixed-dim' : 'bg-surface-container'}">
+						<div
+							class="neo-border-b p-4 pb-3 {i === todayIndex
+								? 'bg-secondary-fixed-dim'
+								: 'bg-surface-container'}"
+						>
 							<div class="mb-1">
 								<h3 class="font-headline-sm text-headline-sm uppercase">{day}</h3>
 							</div>
@@ -298,11 +310,15 @@
 										{/if}
 									</button>
 									<!-- Name -->
-									<span class="font-body-md text-body-md font-bold flex-1 truncate">{teacherName}</span>
+									<span class="font-body-md text-body-md font-bold flex-1 truncate"
+										>{teacherName}</span
+									>
 								</div>
 							{/each}
 							{#if count === 0}
-								<div class="flex-1 flex flex-col items-center justify-center text-center font-data-mono text-data-mono text-on-surface-variant py-4">
+								<div
+									class="flex-1 flex flex-col items-center justify-center text-center font-data-mono text-data-mono text-on-surface-variant py-4"
+								>
 									<Icon name="calendar_today" size="18px" class="mb-1 opacity-40" />
 									<p>Belum ada piket</p>
 								</div>
@@ -318,12 +334,15 @@
 					<div class="neo-border-b pb-3 mb-4 flex items-center gap-2">
 						<Icon name="person" size="18px" class="text-on-surface-variant" />
 						<h3 class="font-label-caps text-label-caps uppercase">Guru Belum Bertugas</h3>
-						<span class="font-data-mono text-data-mono text-on-surface-variant">({unassignedTeachers.length})</span>
+						<span class="font-data-mono text-data-mono text-on-surface-variant"
+							>({unassignedTeachers.length})</span
+						>
 					</div>
 					<div class="flex flex-wrap gap-3">
 						{#each unassignedTeachers as teacher}
 							<div class="neo-border-sm bg-surface-container px-3 py-2">
-								<span class="font-body-md text-body-md font-bold">{formatTeacherName(teacher)}</span>
+								<span class="font-body-md text-body-md font-bold">{formatTeacherName(teacher)}</span
+								>
 							</div>
 						{/each}
 					</div>
@@ -344,7 +363,9 @@
 			placeholder="Pilih Hari"
 		/>
 		{#if unassignedTeachers.length === 0}
-			<div class="neo-border bg-surface-container p-4 text-center font-data-mono text-data-mono text-on-surface-variant">
+			<div
+				class="neo-border bg-surface-container p-4 text-center font-data-mono text-data-mono text-on-surface-variant"
+			>
 				<p>Semua guru sudah memiliki jadwal piket.</p>
 			</div>
 		{:else}
@@ -363,11 +384,9 @@
 	</div>
 	{#snippet footer()}
 		<Button variant="ghost" onclick={() => (isAssignOpen = false)}>Batal</Button>
-		<Button
-			variant="primary"
-			onclick={handleAssign}
-			disabled={unassignedTeachers.length === 0}
-		>Simpan</Button>
+		<Button variant="primary" onclick={handleAssign} disabled={unassignedTeachers.length === 0}
+			>Simpan</Button
+		>
 	{/snippet}
 </Modal>
 
