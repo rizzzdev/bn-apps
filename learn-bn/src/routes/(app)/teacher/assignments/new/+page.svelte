@@ -46,7 +46,7 @@
 			try {
 				classes = await lmsStore.getTeacherClasses();
 				const urlClassId = $page.url.searchParams.get('classId');
-				if (urlClassId && classes.some((c) => c.id === urlClassId)) {
+				if (urlClassId && classes.some((classItem) => classItem.id === urlClassId)) {
 					selectedClassIds = [urlClassId];
 				}
 				if (!deadline) {
@@ -100,7 +100,7 @@
 
 	// Derived: selected class names for chip display
 	let selectedClassNames = $derived(
-		selectedClassIds.map((id) => classes.find((c) => c.id === id)?.name ?? id)
+		selectedClassIds.map((id) => classes.find((classItem) => classItem.id === id)?.name ?? id)
 	);
 </script>
 

@@ -53,7 +53,7 @@
 
 	const formatBirthdate = (date: Date | string | null | undefined) => {
 		if (!date) return null;
-		const d = new Date(date);
+		const parsedDate = new Date(date);
 		const months = [
 			'Januari',
 			'Februari',

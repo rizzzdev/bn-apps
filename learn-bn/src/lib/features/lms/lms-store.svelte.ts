@@ -299,6 +299,68 @@ export interface StudentPendingItems {
   quizzes: StudentPendingQuiz[];
 }
 
+// ─── Curriculum (Waka Kurikulum) Types ──────────────────
+
+export interface CurriculumStats {
+  totalTeachers: number; totalStudents: number; totalClasses: number;
+  totalMaterials: number; totalAssignments: number; totalQuizzes: number;
+  submissionRate: number; materialReadRate: number; quizCompletionRate: number;
+  ungradedBacklog: number;
+}
+
+export interface CurriculumTopTeacher {
+  id: string; fullname: string; email: string | null; nip: string | null;
+  materialsCount: number; assignmentCount: number; quizCount: number; gradedRate: number;
+}
+
+export interface CurriculumLowActivityTeacher {
+  id: string; fullname: string; lastActivityDays: number | null;
+}
+
+export interface CurriculumUnderperformingClass {
+  classId: string; className: string; submissionRate: number;
+}
+
+export interface CurriculumRecentActivity {
+  type: 'material' | 'assignment' | 'quiz'; title: string; teacherName: string; createdAt: string;
+}
+
+export interface CurriculumOverview {
+  stats: CurriculumStats; topTeachers: CurriculumTopTeacher[];
+  lowActivityTeachers: CurriculumLowActivityTeacher[];
+  underperformingClasses: CurriculumUnderperformingClass[];
+  recentActivity: CurriculumRecentActivity[];
+}
+
+export interface CurriculumTeacher {
+  id: string; fullname: string; email: string | null; nip: string | null;
+  classCount: number; materialsPublished: number; assignmentsPublished: number; quizzesPublished: number;
+  totalSubmissions: number; gradedCount: number; ungradedCount: number; gradedRate: number;
+  lastActivity: string | null; lastGrading: string | null;
+}
+
+export interface CurriculumTeachersData { data: CurriculumTeacher[]; total: number; }
+
+export interface CurriculumAtRiskStudent {
+  id: string; fullname: string; nis: string | null; nisn: string | null; className: string;
+  flags: string[]; severity: 'warning' | 'critical';
+  stats: { submissionRate: number; materialReadRate: number; quizCompletionRate: number; averageGrade: number | null };
+  lastActive: string | null;
+}
+
+export interface CurriculumStudentsAtRiskData {
+  summary: { totalStudents: number; totalAtRisk: number; totalCritical: number; byClass: Array<{ classId: string; className: string; atRiskCount: number; totalStudents: number }> };
+  data: CurriculumAtRiskStudent[]; total: number;
+}
+
+export interface CurriculumClassEval {
+  classId: string; className: string; studentCount: number;
+  submissionRate: number; materialReadRate: number; quizCompletionRate: number;
+  averageGrade: number | null; ungradedCount: number; lastActivity: string | null;
+}
+
+export interface CurriculumClassesData { data: CurriculumClassEval[]; total: number; }
+
 // ─── Store ───────────────────────────────────────────────
 
 class LmsStore {
@@ -370,23 +432,23 @@ class LmsStore {
     const masterStudents = Array.isArray(masterStudentsRes) ? masterStudentsRes : ((masterStudentsRes as any)?.data ?? []);
 
     const countMap = new Map<string, Set<string>>();
-    for (const cs of classStudents) {
-      if (cs.classId && (cs.status === 'Aktif' || !cs.status)) {
-        if (!countMap.has(cs.classId)) countMap.set(cs.classId, new Set());
-        countMap.get(cs.classId)!.add(cs.studentId);
+    for (const classStudent of classStudents) {
+      if (classStudent.classId && (classStudent.status === 'Aktif' || !classStudent.status)) {
+        if (!countMap.has(classStudent.classId)) countMap.set(classStudent.classId, new Set());
+        countMap.get(classStudent.classId)!.add(classStudent.studentId);
       }
     }
-    for (const st of masterStudents) {
-      const cId = st.currentClass?.id || st.currentClassId;
-      if (cId) {
-        if (!countMap.has(cId)) countMap.set(cId, new Set());
-        countMap.get(cId)!.add(st.id);
+    for (const student of masterStudents) {
+      const currentClassId = student.currentClass?.id || student.currentClassId;
+      if (currentClassId) {
+        if (!countMap.has(currentClassId)) countMap.set(currentClassId, new Set());
+        countMap.get(currentClassId)!.add(student.id);
       }
     }
 
-    const allClasses = allClassesRaw.map((cls) => ({
-      ...cls,
-      studentCount: countMap.get(cls.id)?.size ?? 0
+    const allClasses = allClassesRaw.map((classItem) => ({
+      ...classItem,
+      studentCount: countMap.get(classItem.id)?.size ?? 0
     }));
 
     if (authState.user?.role && authState.user.role !== 'teacher') {
@@ -418,13 +480,13 @@ class LmsStore {
         }
       }
 
-      for (const st of subjectTeachers) {
-        if (st.classId) taughtClassIds.add(st.classId);
-        if (st.class?.id) taughtClassIds.add(st.class.id);
+      for (const subjectTeacher of subjectTeachers) {
+        if (subjectTeacher.classId) taughtClassIds.add(subjectTeacher.classId);
+        if (subjectTeacher.class?.id) taughtClassIds.add(subjectTeacher.class.id);
       }
 
       if (taughtClassIds.size > 0) {
-        return allClasses.filter((cls) => taughtClassIds.has(cls.id));
+        return allClasses.filter((classItem) => taughtClassIds.has(classItem.id));
       }
     } catch {
       // Fallback
@@ -445,39 +507,39 @@ class LmsStore {
       const masterStudents = Array.isArray(masterStudentsRes) ? masterStudentsRes : ((masterStudentsRes as any)?.data ?? []);
 
       const studentMap = new Map<string, any>();
-      for (const st of masterStudents) {
-        if (!studentMap.has(st.id)) studentMap.set(st.id, st);
+      for (const studentRecord of masterStudents) {
+        if (!studentMap.has(studentRecord.id)) studentMap.set(studentRecord.id, studentRecord);
       }
 
       const classMemberStudentIds = new Set<string>();
 
-      for (const cs of classStudents) {
-        if (cs.classId === classId && (cs.status === 'Aktif' || !cs.status)) {
-          classMemberStudentIds.add(cs.studentId);
+      for (const classStudent of classStudents) {
+        if (classStudent.classId === classId && (classStudent.status === 'Aktif' || !classStudent.status)) {
+          classMemberStudentIds.add(classStudent.studentId);
         }
       }
 
-      for (const st of masterStudents) {
-        const cId = st.currentClass?.id || st.currentClassId;
-        if (cId === classId) {
-          classMemberStudentIds.add(st.id);
+      for (const student of masterStudents) {
+        const currentClassId = student.currentClass?.id || student.currentClassId;
+        if (currentClassId === classId) {
+          classMemberStudentIds.add(student.id);
         }
       }
 
       const members: ClassStudent[] = [];
       for (const studentId of classMemberStudentIds) {
-        const st = studentMap.get(studentId);
-        const cs = classStudents.find((c: any) => c.studentId === studentId && c.classId === classId);
+        const studentRecord = studentMap.get(studentId);
+        const classStudentRecord = classStudents.find((c: any) => c.studentId === studentId && c.classId === classId);
         members.push({
-          id: cs?.id || studentId,
+          id: classStudentRecord?.id || studentId,
           classId: classId,
           studentId: studentId,
           student: {
             id: studentId,
-            fullname: st?.fullname || 'Siswa',
-            nis: st?.nis || null,
-            nisn: st?.nisn || null,
-            pictureUrl: st?.pictureUrl || null,
+            fullname: studentRecord?.fullname || 'Siswa',
+            nis: studentRecord?.nis || null,
+            nisn: studentRecord?.nisn || null,
+            pictureUrl: studentRecord?.pictureUrl || null,
           }
         });
       }
@@ -700,6 +762,33 @@ class LmsStore {
     return res.data;
   }
 
+  // ─── Curriculum (Waka Kurikulum) ──────────────────
+
+  async getCurriculumOverview(): Promise<CurriculumOverview | null> {
+    const res = await api.get<ApiResponse<CurriculumOverview>>('/learn/dashboard/curriculum/overview');
+    return res.data;
+  }
+
+  async getCurriculumTeachers(page: number, limit: number, search?: string): Promise<CurriculumTeachersData | null> {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (search) params.set('search', search);
+    const res = await api.get<ApiResponse<CurriculumTeachersData>>(`/learn/dashboard/curriculum/teachers?${params.toString()}`);
+    return res.data;
+  }
+
+  async getCurriculumStudentsAtRisk(page: number, limit: number, threshold: number, classId?: string): Promise<CurriculumStudentsAtRiskData | null> {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit), threshold: String(threshold) });
+    if (classId) params.set('classId', classId);
+    const res = await api.get<ApiResponse<CurriculumStudentsAtRiskData>>(`/learn/dashboard/curriculum/students/at-risk?${params.toString()}`);
+    return res.data;
+  }
+
+  async getCurriculumClasses(page: number, limit: number): Promise<CurriculumClassesData | null> {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    const res = await api.get<ApiResponse<CurriculumClassesData>>(`/learn/dashboard/curriculum/classes?${params.toString()}`);
+    return res.data;
+  }
+
   // ─── Student: Classes (Filtered for Logged-In Student)
   async getStudentClasses(studentId?: string): Promise<TeacherClass[]> {
     const [res, classStudentsRes, masterStudentsRes] = await Promise.all([
@@ -713,23 +802,23 @@ class LmsStore {
     const masterStudents = Array.isArray(masterStudentsRes) ? masterStudentsRes : ((masterStudentsRes as any)?.data ?? []);
 
     const countMap = new Map<string, Set<string>>();
-    for (const cs of classStudents) {
-      if (cs.classId && (cs.status === 'Aktif' || !cs.status)) {
-        if (!countMap.has(cs.classId)) countMap.set(cs.classId, new Set());
-        countMap.get(cs.classId)!.add(cs.studentId);
+    for (const classStudent of classStudents) {
+      if (classStudent.classId && (classStudent.status === 'Aktif' || !classStudent.status)) {
+        if (!countMap.has(classStudent.classId)) countMap.set(classStudent.classId, new Set());
+        countMap.get(classStudent.classId)!.add(classStudent.studentId);
       }
     }
-    for (const st of masterStudents) {
-      const cId = st.currentClass?.id || st.currentClassId;
-      if (cId) {
-        if (!countMap.has(cId)) countMap.set(cId, new Set());
-        countMap.get(cId)!.add(st.id);
+    for (const student of masterStudents) {
+      const currentClassId = student.currentClass?.id || student.currentClassId;
+      if (currentClassId) {
+        if (!countMap.has(currentClassId)) countMap.set(currentClassId, new Set());
+        countMap.get(currentClassId)!.add(student.id);
       }
     }
 
-    const allClasses = allClassesRaw.map((cls) => ({
-      ...cls,
-      studentCount: countMap.get(cls.id)?.size ?? 0
+    const allClasses = allClassesRaw.map((classItem) => ({
+      ...classItem,
+      studentCount: countMap.get(classItem.id)?.size ?? 0
     }));
 
     const targetStudentId = studentId || (await this.getStudentId());
@@ -743,10 +832,10 @@ class LmsStore {
 
       const enrolledClassIds = new Set<string>();
 
-      for (const cs of classStudents) {
-        if (cs.studentId === targetStudentId && (cs.status === 'Aktif' || !cs.status)) {
-          if (cs.classId) enrolledClassIds.add(cs.classId);
-          if (cs.class?.id) enrolledClassIds.add(cs.class.id);
+      for (const classStudent of classStudents) {
+        if (classStudent.studentId === targetStudentId && (classStudent.status === 'Aktif' || !classStudent.status)) {
+          if (classStudent.classId) enrolledClassIds.add(classStudent.classId);
+          if (classStudent.class?.id) enrolledClassIds.add(classStudent.class.id);
         }
       }
 
@@ -757,7 +846,7 @@ class LmsStore {
       }
 
       if (enrolledClassIds.size > 0) {
-        return allClasses.filter((cls) => enrolledClassIds.has(cls.id));
+        return allClasses.filter((classItem) => enrolledClassIds.has(classItem.id));
       }
     } catch {
       // Fallback

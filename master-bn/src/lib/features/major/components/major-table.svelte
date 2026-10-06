@@ -79,7 +79,7 @@
 			if (!res.ok) throw new Error('Gagal mengunduh template');
 			const blob = await res.blob();
 			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement('a');
+			const anchor = document.createElement('a');
 			a.href = url;
 			a.download = 'template-jurusan.xlsx';
 			document.body.appendChild(a);
@@ -252,7 +252,7 @@
 
 	function toggleAll(e: Event) {
 		const checked = (e.target as HTMLInputElement).checked;
-		selectedIds = checked ? filteredMajors.map((m) => m.id) : [];
+		selectedIds = checked ? filteredMajors.map((major) => major.id) : [];
 	}
 
 	let majors = $state<import('$lib/types').Major[]>([]);

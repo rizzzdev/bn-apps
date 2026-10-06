@@ -47,7 +47,7 @@
 					title = quiz.title;
 					timeLimit = quiz.timeLimit ?? undefined;
 					status = quiz.status || 'Draft';
-					selectedClassIds = quiz.classes && quiz.classes.length > 0 ? quiz.classes.map((c) => c.classId) : (quiz.classId ? [quiz.classId] : []);
+					selectedClassIds = quiz.classes && quiz.classes.length > 0 ? quiz.classes.map((classItem) => classItem.classId) : (quiz.classId ? [quiz.classId] : []);
 					if (quiz.questions) {
 						questions = quiz.questions.map((q) => ({
 							question: q.question,

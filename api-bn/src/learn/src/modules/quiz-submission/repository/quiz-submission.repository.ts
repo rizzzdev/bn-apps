@@ -51,7 +51,7 @@ export class QuizSubmissionRepository {
       }));
     }
 
-    const classIds = quiz.classes.map((c) => c.classId);
+    const classIds = quiz.classes.map((classItem) => classItem.classId);
     const [csRecords, shadowClasses] = await Promise.all([
       prisma.shadowClassStudent.findMany({
         where: { classId: { in: classIds }, status: 'Aktif', deletedAt: null },

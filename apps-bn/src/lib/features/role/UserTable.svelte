@@ -116,7 +116,7 @@
 		const targetUser = editingUser;
 		editingUser = null; // Close modal
 
-		const index = users.findIndex((u) => u.id === targetUser.id);
+		const index = users.findIndex((user) => user.id === targetUser.id);
 		if (index === -1) return;
 
 		const previousRoles = users[index].roles;
@@ -177,7 +177,7 @@
 			const apiUrl = getApiUrl();
 			await Promise.all(
 				selectedIds.map(async (id) => {
-					const u = allUserUpdates.find((user) => user.id === id);
+					const foundUpdate = allUserUpdates.find((user) => user.id === id);
 					const res = await fetch(`${apiUrl}/auth/users/${id}/roles`, {
 						method: 'PUT',
 						headers: { 'Content-Type': 'application/json' },
@@ -213,10 +213,10 @@
 
 	function toggleSelectAll() {
 		if (isAllSelected) {
-			const userIds = users.map((u) => u.id);
+			const userIds = users.map((user) => user.id);
 			selectedIds = selectedIds.filter((id) => !userIds.includes(id));
 		} else {
-			const userIds = users.map((u) => u.id);
+			const userIds = users.map((user) => user.id);
 			selectedIds = [...new Set([...selectedIds, ...userIds])];
 		}
 	}

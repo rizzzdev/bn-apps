@@ -18,7 +18,7 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 	const examMap = new Map(exams.map((e) => [e.id, e]));
 	const roomMap = new Map(rooms.map((r) => [r.id, r]));
 
-	const examRoomIds = participants.map((p) => p.examRoomId);
+	const examRoomIds = participants.map((participant) => participant.examRoomId);
 	const scores = await Promise.all(
 		examRoomIds.map((erId) =>
 			api

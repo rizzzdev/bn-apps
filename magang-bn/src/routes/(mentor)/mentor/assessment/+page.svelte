@@ -132,7 +132,7 @@
 	}
 
 	async function deleteCertificate() {
-		const p = placementToDelete;
+		const placement = placementToDelete;
 		if (!p) return;
 
 		const assessmentId = getMentorAssessment(p)?.id;

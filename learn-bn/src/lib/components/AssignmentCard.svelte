@@ -42,7 +42,7 @@
 
 	let targetClassName = $derived(
 		assignment.classes && assignment.classes.length > 0
-			? assignment.classes.map((c) => c.class?.name).filter(Boolean).join(', ')
+			? assignment.classes.map((classItem) => classItem.class?.name).filter(Boolean).join(', ')
 			: 'Kelas'
 	);
 

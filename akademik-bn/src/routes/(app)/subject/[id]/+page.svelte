@@ -67,7 +67,7 @@
 		if (bulkSelectedTeacherIds.length === filteredTeachers.length && filteredTeachers.length > 0) {
 			bulkSelectedTeacherIds = [];
 		} else {
-			bulkSelectedTeacherIds = filteredTeachers.map((t) => t.id);
+			bulkSelectedTeacherIds = filteredTeachers.map((teacher) => teacher.id);
 		}
 	}
 
@@ -186,7 +186,7 @@
 			);
 
 			teachers = activeSubjectTeachers.map((st: SubjectTeacher) => {
-				const teacher = allTeachers.find((t) => t.id === st.teacherId);
+				const teacher = allTeachers.find((teacher) => teacher.id === st.teacherId);
 				return {
 					id: st.teacherId,
 					fullname: teacher ? formatTeacherName(teacher) : st.teacherId,
@@ -221,11 +221,11 @@
 			}
 
 			if (subjRes.data) {
-				const s = subjRes.data as ShadowSubject;
+				const subjectData = subjRes.data as ShadowSubject;
 				subject = {
-					id: s.id,
-					name: s.name,
-					code: s.code,
+					id: subjectData.id,
+					name: subjectData.name,
+					code: subjectData.code,
 					totalTeachers: 0
 				};
 			}
@@ -418,7 +418,7 @@
 			<div class="neo-border bg-surface-container p-3 max-h-40 overflow-y-auto">
 				<ul class="list-disc list-inside font-data-mono text-xs">
 					{#each bulkSelectedTeacherIds as tid}
-						<li>{teachers.find((t) => t.id === tid)?.fullname || tid}</li>
+						<li>{teachers.find((teacher) => teacher.id === tid)?.fullname || tid}</li>
 					{/each}
 				</ul>
 			</div>

@@ -43,7 +43,7 @@
 			totalAcademicYears = academicYearsRes.pagination?.totalData ?? 0;
 			if (academicYearsRes.data) {
 				const years = academicYearsRes.data as ShadowAcademicYear[];
-				const active = years.find((y) => y.status === 'Aktif');
+				const active = years.find((year) => year.status === 'Aktif');
 				activeAcademicYearCode = active ? `${active.code}` : '';
 			}
 		} catch {

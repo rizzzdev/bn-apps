@@ -1,4 +1,4 @@
-import { validate } from '#master/middlewares';
+import { validate } from '#app';
 import { Router } from "express";
 import { academicyearController } from '#master/modules/academic-year/controller';
 import { sentriAuth } from '#auth';

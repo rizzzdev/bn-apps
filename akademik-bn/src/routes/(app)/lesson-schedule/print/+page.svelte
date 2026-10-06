@@ -50,9 +50,9 @@
 	let filteredSchedules = $derived.by(() => {
 		let result = schedules.filter((s) => s.deletedAt === null && s.status === 'Aktif');
 		if (mode === 'kelas' && filterClassId)
-			result = result.filter((s) => s.classes.some((c) => c.class.id === filterClassId));
+			result = result.filter((s) => s.classes.some((classItem) => classItem.class.id === filterClassId));
 		if (mode === 'guru' && filterTeacherId)
-			result = result.filter((s) => s.teachers.some((t) => t.teacher.id === filterTeacherId));
+			result = result.filter((s) => s.teachers.some((teacher) => teacher.teacher.id === filterTeacherId));
 		return result;
 	});
 
@@ -79,9 +79,9 @@
 
 	let sortedAllHours = $derived([...allLessonHours].sort((a, b) => a.order - b.order));
 
-	let selectedClassName = $derived(allClasses.find((c) => c.id === filterClassId)?.name ?? '');
+	let selectedClassName = $derived(allClasses.find((classItem) => classItem.id === filterClassId)?.name ?? '');
 	let selectedTeacherName = $derived(
-		filterTeacherId ? formatTeacherName(allTeachers.find((t) => t.id === filterTeacherId)) : ''
+		filterTeacherId ? formatTeacherName(allTeachers.find((teacher) => teacher.id === filterTeacherId)) : ''
 	);
 	let printSubtitle = $derived.by(() => {
 		if (mode === 'kelas') {
@@ -91,7 +91,7 @@
 	});
 
 	function getSubjectName(id: string): string {
-		return allSubjects.find((s) => s.id === id)?.name ?? id;
+		return allSubjects.find((subject) => subject.id === id)?.name ?? id;
 	}
 
 	async function loadData() {

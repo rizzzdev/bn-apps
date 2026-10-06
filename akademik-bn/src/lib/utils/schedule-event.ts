@@ -23,8 +23,8 @@ export function expandEventsToSlots(events: ScheduleEvent[], hours: LessonHour[]
 		if (e.deletedAt !== null) continue;
 		const start = sorted.find((h) => h.id === e.startHourId);
 		if (!start) continue;
-		for (let o = start.order; o < start.order + e.durationHours; o++) {
-			const hour = byOrder.get(o);
+		for (let order = start.order; order < start.order + e.durationHours; order++) {
+			const hour = byOrder.get(order);
 			if (!hour) break;
 			result.push({
 				id: `${e.id}_${hour.id}`,

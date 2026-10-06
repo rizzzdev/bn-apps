@@ -36,6 +36,12 @@ export default defineConfig(
 	{
 		// Override or add rule settings here, such as:
 		// 'svelte/button-has-type': 'error'
-		rules: {}
+		rules: {
+			// Convention: names prefixed with `_` are intentionally unused (e.g. `{#each Array(3) as _, i (i)}`)
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{ argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }
+			]
+		}
 	}
 );

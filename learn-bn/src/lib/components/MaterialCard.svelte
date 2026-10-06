@@ -31,7 +31,7 @@
 
 	let targetClasses = $derived(
 		material.classes && material.classes.length > 0
-			? material.classes.map((c) => c.class?.name).filter(Boolean).join(', ')
+			? material.classes.map((classItem) => classItem.class?.name).filter(Boolean).join(', ')
 			: '-'
 	);
 

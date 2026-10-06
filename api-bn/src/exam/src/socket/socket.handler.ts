@@ -81,7 +81,7 @@ async function saveRoomNotifications(
       prisma.examSupervisor.findMany({ where: { examRoomId }, select: { userId: true } }),
     ]);
     const userIds = [
-      ...new Set([...participants.map((p) => p.userId), ...supervisors.map((s) => s.userId)]),
+      ...new Set([...participants.map((participant) => participant.userId), ...supervisors.map((s) => s.userId)]),
     ];
     await notifyUsers(prisma, userIds, type, title, message, meta);
   } catch {
@@ -217,7 +217,7 @@ export const getRoomParticipantStatuses = async (
   examRoomId: string,
 ): Promise<ParticipantStatus[]> => {
   const participants = await prisma.examParticipant.findMany({ where: { examRoomId } });
-  const infoMap = await resolveUserInfos(participants.map((p) => p.userId));
+  const infoMap = await resolveUserInfos(participants.map((participant) => participant.userId));
 
   const statuses: ParticipantStatus[] = await Promise.all(
     participants.map(async (p) => {

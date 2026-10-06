@@ -13,9 +13,9 @@ type HydratedRequirement = Prisma.ClassSubjectRequirementGetPayload<{}> & {
 async function hydrate(items: Prisma.ClassSubjectRequirementGetPayload<{}>[]): Promise<HydratedRequirement[]> {
   if (items.length === 0) return items as any;
 
-  const classIds = [...new Set(items.map((i) => i.classId))];
-  const subjectIds = [...new Set(items.map((i) => i.subjectId))];
-  const teacherIds = [...new Set(items.map((i) => i.teacherId).filter(Boolean))] as string[];
+  const classIds = [...new Set(items.map((item) => item.classId))];
+  const subjectIds = [...new Set(items.map((item) => item.subjectId))];
+  const teacherIds = [...new Set(items.map((item) => item.teacherId).filter(Boolean))] as string[];
 
   const [classes, subjects, teachers] = await Promise.all([
     classIds.length ? getOrchestrator().masterClass.findByIds(classIds) : Promise.resolve([]),

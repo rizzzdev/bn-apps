@@ -99,7 +99,7 @@ export class TeacherPicketScheduleService {
   async getExcelExport() {
     const items = await this.repository.findAll(0, 100000);
 
-    const teacherIds = [...new Set(items.map((i) => i.teacherId))];
+    const teacherIds = [...new Set(items.map((item) => item.teacherId))];
     const masterTeachers = teacherIds.length
       ? await getOrchestrator().masterTeacher.findByIds(teacherIds)
       : [];

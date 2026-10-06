@@ -86,7 +86,7 @@
 			if (!res.ok) throw new Error('Gagal mengunduh template');
 			const blob = await res.blob();
 			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement('a');
+			const anchor = document.createElement('a');
 			a.href = url;
 			a.download = 'template-kelas.xlsx';
 			document.body.appendChild(a);
@@ -257,7 +257,7 @@
 
 	function toggleAll(e: Event) {
 		const checked = (e.target as HTMLInputElement).checked;
-		selectedIds = checked ? filteredClasses.map((c) => c.id) : [];
+		selectedIds = checked ? filteredClasses.map((classItem) => classItem.id) : [];
 	}
 
 	let classes = $state<import('$lib/types').Class[]>([]);

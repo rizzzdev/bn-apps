@@ -69,9 +69,9 @@
 	let filteredSchedules = $derived.by(() => {
 		let result = schedules;
 		if (filterClassId)
-			result = result.filter((s) => s.classes.some((c) => c.class.id === filterClassId));
+			result = result.filter((s) => s.classes.some((classItem) => classItem.class.id === filterClassId));
 		if (filterTeacherId)
-			result = result.filter((s) => s.teachers.some((t) => t.teacher.id === filterTeacherId));
+			result = result.filter((s) => s.teachers.some((teacher) => teacher.teacher.id === filterTeacherId));
 		return result;
 	});
 
@@ -110,7 +110,7 @@
 	});
 
 	function getSubjectName(id: string): string {
-		const s = allSubjects.find((s) => s.id === id);
+		const s = allSubjects.find((subject) => subject.id === id);
 		return s ? s.name : id;
 	}
 

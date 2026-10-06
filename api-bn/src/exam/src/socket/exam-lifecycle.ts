@@ -39,7 +39,7 @@ async function saveRoomNotifications(
       prisma.examSupervisor.findMany({ where: { examRoomId }, select: { userId: true } }),
     ]);
     const userIds = [
-      ...new Set([...participants.map((p) => p.userId), ...supervisors.map((s) => s.userId)]),
+      ...new Set([...participants.map((participant) => participant.userId), ...supervisors.map((s) => s.userId)]),
     ];
     await notifyUsers(prisma, userIds, type, title, message, meta);
   } catch {

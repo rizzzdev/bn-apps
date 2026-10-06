@@ -1,5 +1,8 @@
 import { prisma } from '#auth/database/index.js';
-import { sentriAuth } from '#auth';
+// PENTING: import LANGSUNG dari file (bukan barrel `#auth`) — barrel ikut
+// memuat user.route -> user.service -> orchestrator, yang balik meng-import
+// authDataService ini sehingga terjadi circular import.
+import { sentriAuth } from '#auth/lib/sentri.js';
 import type { IAuthDataRepository, Role, AuthUser, AuthUserIdentifier } from '#app/ports/auth-data.port.js';
 
 export class AuthDataService implements IAuthDataRepository {

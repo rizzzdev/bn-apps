@@ -134,7 +134,7 @@ export class UserDirectoryService {
           where: { deletedAt: null },
           orderBy: { fullname: 'asc' },
         });
-        await this.loadEmails(teachers.map((t) => t.userId));
+        await this.loadEmails(teachers.map((teacher) => teacher.userId));
         for (const t of teachers) {
           supervisors.push(
             await this.toDirectoryUser(t.userId, t.fullname, 'teacher', t.email, t.userId, t.pictureUrl),
@@ -182,7 +182,7 @@ export class UserDirectoryService {
             orderBy: { fullname: 'asc' },
           });
 
-          const studentIds = students.map((s) => s.id);
+          const studentIds = students.map((student) => student.id);
           const studentClassMap = new Map<string, string>();
           if (studentIds.length > 0) {
             const classStudents = await prisma.shadowClassStudent.findMany({
@@ -203,7 +203,7 @@ export class UserDirectoryService {
             }
           }
 
-          await this.loadEmails(students.map((s) => s.userId));
+          await this.loadEmails(students.map((student) => student.userId));
           for (const s of students) {
             const className = studentClassMap.get(s.id) ?? null;
             participants.push(
@@ -226,7 +226,7 @@ export class UserDirectoryService {
   async getById(userId: string): Promise<DirectoryUser | null> {
     try {
       const users = await this.getAll();
-      return users.find((u) => u.id === userId) ?? null;
+      return users.find((user) => user.id === userId) ?? null;
     } catch {
       return null;
     }

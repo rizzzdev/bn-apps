@@ -38,7 +38,7 @@ export class LessonScheduleService {
     );
 
     for (let i = 0; i < data.length; i++) {
-      const d = data[i]!;
+            const entry = data[i]!;
       const lh = lessonHours[i]!;
       await this.#validateNoConflicts(d.teacherIds, d.classIds, d.day, lh.startTime, lh.endTime);
     }
@@ -209,7 +209,7 @@ export class LessonScheduleService {
     const classMap = new Map(masterClasses.map((c) => [c.id, c]));
 
     if (teacherConflicts.length > 0 && teacherConflicts[0]) {
-      const s = teacherConflicts[0].schedule;
+            const conflictSchedule = teacherConflicts[0].schedule;
       const subject = subjectMap.get(s.subjectId);
       const teacherName = s.teachers
         .filter((t) => !t.deletedAt)
@@ -225,8 +225,8 @@ export class LessonScheduleService {
     }
 
     if (classConflicts.length > 0 && classConflicts[0]) {
-      const c = classConflicts[0];
-      const s = c.schedule;
+            const conflict = classConflicts[0];
+            const conflictSchedule = conflict.schedule;
       const subject = subjectMap.get(s.subjectId);
       const classNames = s.classes
         .filter((cl) => !cl.deletedAt)

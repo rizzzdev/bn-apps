@@ -78,7 +78,7 @@
 			if (!res.ok) throw new Error('Gagal mengunduh template');
 			const blob = await res.blob();
 			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement('a');
+			const anchor = document.createElement('a');
 			a.href = url;
 			a.download = 'template-mapel.xlsx';
 			document.body.appendChild(a);
@@ -250,7 +250,7 @@
 
 	function toggleAll(e: Event) {
 		const checked = (e.target as HTMLInputElement).checked;
-		selectedIds = checked ? filteredSubjects.map((s) => s.id) : [];
+		selectedIds = checked ? filteredSubjects.map((subject) => subject.id) : [];
 	}
 
 	let subjects = $state<import('$lib/types').Subject[]>([]);

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { userController } from '../controller/user.controller.js';
 import { sentriAuth } from '#auth';
 import { updateRoleSchema, bulkUpdateRoleSchema } from '../domain/index.js';
-import { validate } from '#master/middlewares/index.js';
+import { validate } from '#app';
 
 export const userRoute = Router();
 

@@ -387,7 +387,7 @@ export class StudentService {
       if (items.length !== ids.length)
         throw new NotFoundError("Beberapa data tidak ditemukan");
 
-      const userIds = items.map((i) => i.userId).filter((id) => id) as string[];
+      const userIds = items.map((item) => item.userId).filter((id) => id) as string[];
       if (userIds.length > 0) {
         await getOrchestrator().authData.bulkDeleteUsers(userIds);
       }

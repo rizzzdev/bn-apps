@@ -31,9 +31,9 @@ type HydratedLessonSchedule = Omit<LessonScheduleBase, 'teachers' | 'classes'> &
 async function hydrate(items: LessonScheduleBase[]): Promise<HydratedLessonSchedule[]> {
   if (items.length === 0) return items as any;
 
-  const subjectIds = [...new Set(items.map((i) => i.subjectId))];
-  const teacherIds = [...new Set(items.flatMap((i) => i.teachers.filter((t) => !t.deletedAt).map((t) => t.teacherId)))];
-  const classIds = [...new Set(items.flatMap((i) => i.classes.filter((c) => !c.deletedAt).map((c) => c.classId)))];
+  const subjectIds = [...new Set(items.map((item) => item.subjectId))];
+  const teacherIds = [...new Set(items.flatMap((item) => item.teachers.filter((t) => !t.deletedAt).map((t) => t.teacherId)))];
+  const classIds = [...new Set(items.flatMap((item) => item.classes.filter((c) => !c.deletedAt).map((c) => c.classId)))];
 
   const [subjects, teachers, classes] = await Promise.all([
     subjectIds.length ? getOrchestrator().masterSubject.findByIds(subjectIds) : Promise.resolve([]),

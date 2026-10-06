@@ -1,6 +1,30 @@
 import express, { type Request, type Response, type NextFunction, type CookieOptions } from "express";
 import cors from "cors";
 import { env } from "./configs/env.js";
+
+export * from "./configs/env.js"
+export * from "./errors/index.js"
+export * from "./utils/response.js"
+export * from "./utils/excel.js"
+export * from "./utils/excel-controller-helpers.js"
+export * from "./middlewares/upload-excel.middleware.js"
+export * from "./middlewares/validate.middleware.js"
+export * from "./utils/batch-schemas.js"
+export * from "./utils/cache.js"
+export * from "./utils/storage.js"
+export * from "./utils/zod-error-map.js"
+export * from "./utils/put-update.js"
+
+// `./routes/index.js` diimpor PALING TERAKHIR (di bawah semua `export *` di
+// atas) dengan sengaja: file itu memuat seluruh router module (termasuk auth,
+// yang balik mengimpor barrel `#app` ini untuk util seperti `validate`).
+// Beberapa tool ESM (mis. transform Vite/Vitest) memproses `export *` secara
+// posisional, jadi taruh re-export util SEBELUM import siklis ini supaya
+// bindingnya sudah terisi saat siklusnya balik ke sini — urutan ini tidak
+// mengubah semantik Node ESM asli (import di-hoist, `export *` tidak
+// bergantung posisi tekstual) tapi menghindari kelas bug circular-import yang
+// sama seperti yang sudah diantisipasi di beberapa file lain (lihat komentar
+// di master/upload.middleware.ts & auth/auth-data.service.ts).
 import { appRouter } from "./routes/index.js"
 
 interface AppError {
@@ -70,14 +94,3 @@ const createApp = () => {
 }
 
 export { createApp }
-export * from "./configs/env.js"
-export * from "./errors/index.js"
-export * from "./utils/response.js"
-export * from "./utils/excel.js"
-export * from "./utils/excel-controller-helpers.js"
-export * from "./middlewares/upload-excel.middleware.js"
-export * from "./utils/batch-schemas.js"
-export * from "./utils/cache.js"
-export * from "./utils/storage.js"
-export * from "./utils/zod-error-map.js"
-export * from "./utils/put-update.js"

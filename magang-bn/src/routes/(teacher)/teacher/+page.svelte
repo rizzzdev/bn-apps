@@ -55,7 +55,7 @@
 		fetchDashboard();
 	});
 
-	const s = $derived(stats ?? DEFAULT_STATS);
+	const derivedStats = $derived(stats ?? DEFAULT_STATS);
 	const fmt = (m: Metric) => `${m.current}/${m.total}`;
 </script>
 

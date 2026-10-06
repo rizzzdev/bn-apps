@@ -260,7 +260,7 @@
 			if (res.ok) {
 				const blob = await res.blob();
 				const url = window.URL.createObjectURL(blob);
-				const a = document.createElement("a");
+				const anchor = document.createElement("a");
 				a.href = url;
 				a.download = "template-company.xlsx";
 				document.body.appendChild(a);

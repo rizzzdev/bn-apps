@@ -15,14 +15,9 @@ export class DashboardService {
       this.repository.countTeacherTotalSubmissions(teacherId),
     ]);
 
-    const totalPending = assignments.reduce((sum, a) => sum + a.ungradedCount, 0);
+    const totalPending = assignments.reduce((sum, assignment) => sum + assignment.ungradedCount, 0);
 
-    return {
-      totalPending,
-      totalGraded,
-      totalSubmissions,
-      assignments,
-    };
+    return { totalPending, totalGraded, totalSubmissions, assignments };
   }
 
   async getStudentPendingItems(studentId: string) {
@@ -31,17 +26,8 @@ export class DashboardService {
     }
 
     const classIds = await this.repository.findStudentClassIds(studentId);
-
     if (classIds.length === 0) {
-      return {
-        totalUnreadMaterials: 0,
-        totalPendingAssignments: 0,
-        totalPendingQuizzes: 0,
-        pendingClassIds: 0,
-        materials: [],
-        assignments: [],
-        quizzes: [],
-      };
+      return { totalUnreadMaterials: 0, totalPendingAssignments: 0, totalPendingQuizzes: 0, pendingClassIds: 0, materials: [], assignments: [], quizzes: [] };
     }
 
     const [materials, assignments, quizzes, unreadCount, assignCount, quizCount,
@@ -63,39 +49,39 @@ export class DashboardService {
       ]);
 
     return {
-      totalSubmittedAssignments: submittedAssignments,
-      totalAssignments,
-      totalReadMaterials: readMaterials,
-      totalMaterials,
-      totalDoneQuizzes: doneQuizzes,
-      totalQuizzes,
-      totalUnreadMaterials: unreadCount,
-      totalPendingAssignments: assignCount,
-      totalPendingQuizzes: quizCount,
+      totalSubmittedAssignments: submittedAssignments, totalAssignments, totalReadMaterials: readMaterials,
+      totalMaterials, totalDoneQuizzes: doneQuizzes, totalQuizzes,
+      totalUnreadMaterials: unreadCount, totalPendingAssignments: assignCount, totalPendingQuizzes: quizCount,
       pendingClassIds: classIds.length,
-      materials: materials.map((m: { id: string; title: string; classes?: Array<{ class?: { name: string } }>; createdAt: Date }) => ({
-        id: m.id,
-        title: m.title,
-        className:
-          m.classes?.map((c) => c.class?.name).filter(Boolean).join(', ') || 'Kelas',
-        createdAt: m.createdAt,
-      })),
-      assignments: assignments.map((a: { id: string; title: string; classes?: Array<{ class?: { name: string } }>; deadline: Date; teacher?: { fullname: string } }) => ({
-        id: a.id,
-        title: a.title,
-        className:
-          a.classes?.map((c) => c.class?.name).filter(Boolean).join(', ') || 'Kelas',
-        deadline: a.deadline,
-        teacherName: a.teacher?.fullname || '',
-      })),
-      quizzes: quizzes.map((q: { id: string; title: string; classes?: Array<{ class?: { name: string } }>; _count?: { questions?: number } }) => ({
-        id: q.id,
-        title: q.title,
-        className:
-          q.classes?.map((c) => c.class?.name).filter(Boolean).join(', ') || 'Kelas',
-        questionCount: q._count?.questions ?? 0,
-      })),
+      materials: materials.map((material) => ({ id: material.id, title: material.title, className: material.classes?.map((classRef) => classRef.class?.name).filter(Boolean).join(', ') || 'Kelas', createdAt: material.createdAt })),
+      assignments: assignments.map((assignment) => ({ id: assignment.id, title: assignment.title, className: assignment.classes?.map((classRef) => classRef.class?.name).filter(Boolean).join(', ') || 'Kelas', deadline: assignment.deadline, teacherName: assignment.teacher?.fullname || '' })),
+      quizzes: quizzes.map((quiz) => ({ id: quiz.id, title: quiz.title, className: quiz.classes?.map((classRef) => classRef.class?.name).filter(Boolean).join(', ') || 'Kelas', questionCount: quiz._count?.questions ?? 0 })),
     };
+  }
+
+  // ─── Curriculum (Waka Kurikulum) ──────────────────────────────────────
+
+  async getCurriculumOverview() {
+    return this.repository.findCurriculumOverview();
+  }
+
+  async getCurriculumTeachers(page: number, limit: number, search?: string) {
+    const safePage = Math.max(1, page);
+    const safeLimit = Math.min(100, Math.max(1, limit));
+    return this.repository.findCurriculumTeachers(safePage, safeLimit, search);
+  }
+
+  async getCurriculumStudentsAtRisk(page: number, limit: number, threshold: number, classId?: string) {
+    const safePage = Math.max(1, page);
+    const safeLimit = Math.min(100, Math.max(1, limit));
+    const safeThreshold = Math.min(100, Math.max(0, threshold));
+    return this.repository.findCurriculumStudentsAtRisk(safePage, safeLimit, safeThreshold, classId);
+  }
+
+  async getCurriculumClasses(page: number, limit: number) {
+    const safePage = Math.max(1, page);
+    const safeLimit = Math.min(100, Math.max(1, limit));
+    return this.repository.findCurriculumClasses(safePage, safeLimit);
   }
 }
 

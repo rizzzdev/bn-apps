@@ -12,7 +12,7 @@ export class ShadowSyncService {
     try {
       const orchestrator = getOrchestrator();
       const masterStudents = await orchestrator.masterStudent.findAllActive();
-      const activeIds = masterStudents.map((s) => s.id);
+      const activeIds = masterStudents.map((student) => student.id);
       const now = new Date();
 
       let count = 0;
@@ -64,7 +64,7 @@ export class ShadowSyncService {
     try {
       const orchestrator = getOrchestrator();
       const masterTeachers = await orchestrator.masterTeacher.findAllActive();
-      const activeIds = masterTeachers.map((t) => t.id);
+      const activeIds = masterTeachers.map((teacher) => teacher.id);
       const now = new Date();
 
       let count = 0;

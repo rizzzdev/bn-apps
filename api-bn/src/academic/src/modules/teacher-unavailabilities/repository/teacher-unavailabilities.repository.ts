@@ -12,7 +12,7 @@ type Hydrated = Base & {
 
 async function hydrate(items: Base[]): Promise<Hydrated[]> {
   if (items.length === 0) return items as any;
-  const teacherIds = [...new Set(items.map((i) => i.teacherId))];
+  const teacherIds = [...new Set(items.map((item) => item.teacherId))];
   const teachers = teacherIds.length
     ? await getOrchestrator().masterTeacher.findByIds(teacherIds)
     : [];

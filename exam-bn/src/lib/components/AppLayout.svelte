@@ -55,7 +55,7 @@
 	let sidebarOpen = $state(false);
 
 	function isActive(item: { path: string; matchPrefix?: string }): boolean {
-		const p = $page.url.pathname;
+		const pathname = $page.url.pathname;
 		if (item.matchPrefix) return p === item.path || p.startsWith(item.matchPrefix);
 		return p === item.path;
 	}

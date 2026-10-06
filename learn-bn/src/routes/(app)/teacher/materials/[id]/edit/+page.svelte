@@ -53,7 +53,7 @@
 				status = material.status || 'Draft';
 				attachments = (material.attachments || []).map((a) => ({ url: a.fileUrl, name: a.fileName }));
 				if (material.classes && material.classes.length > 0) {
-					selectedClassIds = material.classes.map((c) => c.classId);
+					selectedClassIds = material.classes.map((classItem) => classItem.classId);
 				} else if (material.classId) {
 					selectedClassIds = [material.classId];
 				}

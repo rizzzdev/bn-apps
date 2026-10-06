@@ -7,6 +7,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: `${env.DB_URL}/master_bn`,
+    url: `${env.DB_URL}/${env.NODE_ENV === "test" ? "master_bn_test" : "master_bn"}`,
   },
 });

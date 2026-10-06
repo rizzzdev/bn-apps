@@ -195,7 +195,7 @@ export class MajorStudentService extends BaseService<any, CreateMajorStudentDto,
   /** Generate template Excel kosong (label Indonesia + sample row + dropdown kode jurusan & status). */
   async getExcelTemplate(): Promise<Buffer> {
     const majors = await prisma.shadowMajor.findMany({ where: { deletedAt: null } });
-    const majorCodes = majors.map((m) => m.code).filter((c): c is string => Boolean(c));
+    const majorCodes = majors.map((major) => major.code).filter((c): c is string => Boolean(c));
     return generateExcelTemplate(MAJOR_STUDENT_EXCEL_HEADERS, 'Jurusan Murid', {
       email: 'murid@example.com',
       majorCode: majorCodes[0] ?? 'RPL',
@@ -317,7 +317,7 @@ export class MajorStudentService extends BaseService<any, CreateMajorStudentDto,
       prisma.majorStudent.findMany({ where: { deletedAt: null } }),
       prisma.shadowMajor.findMany({ where: { deletedAt: null } }),
     ]);
-    const studentIds = [...new Set(items.map((i) => i.studentId).filter((id): id is string => Boolean(id)))];
+    const studentIds = [...new Set(items.map((item) => item.studentId).filter((id): id is string => Boolean(id)))];
     const masterStudents = studentIds.length ? await getOrchestrator().masterStudent.findByIds(studentIds) : [];
     const emailByStudentId = new Map(masterStudents.map((s) => [s.id, s.email ?? '']));
     const codeByMajorId = new Map(shadowMajors.map((m) => [m.id, m.code ?? '']));

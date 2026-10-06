@@ -37,9 +37,9 @@
 
 	function formatDatetimeLocal(isoString: string) {
 		if (!isoString) return '';
-		const d = new Date(isoString);
-		d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-		return d.toISOString().slice(0, 16);
+		const parsedDate = new Date(isoString);
+		parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset());
+		return parsedDate.toISOString().slice(0, 16);
 	}
 
 	$effect(() => {
@@ -112,7 +112,7 @@
 	}
 
 	let selectedClassNames = $derived(
-		selectedClassIds.map((id) => classes.find((c) => c.id === id)?.name ?? id)
+		selectedClassIds.map((id) => classes.find((classItem) => classItem.id === id)?.name ?? id)
 	);
 </script>
 

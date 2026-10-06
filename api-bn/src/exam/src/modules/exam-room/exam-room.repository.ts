@@ -117,7 +117,7 @@ export class ExamRoomRepository implements IExamRoomRepository {
           select: { userId: true },
         });
 
-        const userIds = shadowStudents.map((s) => s.userId).filter(Boolean);
+        const userIds = shadowStudents.map((student) => student.userId).filter(Boolean);
         if (userIds.length > 0) {
           await this.prisma.examParticipant.updateMany({
             where: {

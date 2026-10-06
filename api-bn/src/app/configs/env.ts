@@ -2,7 +2,7 @@ import "dotenv/config"
 import z from "zod"
 
 const envSchema = z.object({
-    NODE_ENV: z.enum(["development", "production"]).default("development"),
+    NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
     DB_URL: z.string().default("postgresql://postgres:postgres@localhost:5432"),
     PORT: z.string().default("3000"),
     ACCESS_TOKEN_EXPIRES: z.string().default("5m"),

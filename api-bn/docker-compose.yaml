@@ -28,13 +28,14 @@ services:
       - "traefik.http.routers.api-bn.tls.certresolver=myresolver"
       - "traefik.http.services.api-bn.loadbalancer.server.port=${PORT}"
 
-volumes:
-  uploads:
-
 networks:
   proxy:
     external: true
   backend:
     external: true
+
+volumes:
+  uploads:
+
 
 

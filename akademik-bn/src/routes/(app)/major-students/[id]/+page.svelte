@@ -81,7 +81,7 @@
 	let allTeachers = $state<ShadowTeacher[]>([]);
 	let activeMajorHead = $state<MajorHead | null>(null);
 	let activeHeadTeacherData = $derived(
-		allTeachers.find((t) => t.id === activeMajorHead?.teacherId) ?? null
+		allTeachers.find((teacher) => teacher.id === activeMajorHead?.teacherId) ?? null
 	);
 
 	let searchQuery = $state('');
@@ -108,7 +108,7 @@
 		if (bulkSelectedStudentIds.length === filteredStudents.length && filteredStudents.length > 0) {
 			bulkSelectedStudentIds = [];
 		} else {
-			bulkSelectedStudentIds = filteredStudents.map((s) => s.id);
+			bulkSelectedStudentIds = filteredStudents.map((student) => student.id);
 		}
 	}
 
@@ -209,7 +209,7 @@
 			);
 
 			students = activeMajorStudents
-				.map((ms) => allStudents.find((s) => s.id === ms.studentId))
+				.map((ms) => allStudents.find((student) => student.id === ms.studentId))
 				.filter(Boolean) as ShadowStudent[];
 		}
 
@@ -229,7 +229,7 @@
 			const yearsRes = await academicYearApi.list(1, 100);
 			if (yearsRes.data) {
 				allYears = yearsRes.data as ShadowAcademicYear[];
-				const activeYear = allYears.find((y) => y.status === 'Aktif');
+				const activeYear = allYears.find((year) => year.status === 'Aktif');
 				if (activeYear) activeYearId = activeYear.id;
 			}
 
@@ -240,11 +240,11 @@
 			]);
 
 			if (majorRes.data) {
-				const m = majorRes.data as ShadowMajor;
+				const majorData = majorRes.data as ShadowMajor;
 				major = {
-					id: m.id,
-					name: m.name,
-					code: m.code,
+					id: majorData.id,
+					name: majorData.name,
+					code: majorData.code,
 					totalStudents: 0,
 					headOfDepartment: '-',
 					headOfDepartmentNip: '-',
@@ -429,7 +429,7 @@
 			<div class="neo-border bg-surface-container p-3 max-h-40 overflow-y-auto">
 				<ul class="list-disc list-inside font-data-mono text-xs">
 					{#each bulkSelectedStudentIds as studentId}
-						<li>{students.find((s) => s.id === studentId)?.fullname || studentId}</li>
+						<li>{students.find((student) => student.id === studentId)?.fullname || studentId}</li>
 					{/each}
 				</ul>
 			</div>

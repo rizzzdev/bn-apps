@@ -97,7 +97,7 @@ export class SubjectTeacherService {
   /** Generate template Excel kosong (label Indonesia + sample row + dropdown kode mapel & status). */
   async getExcelTemplate(): Promise<Buffer> {
     const subjects = await prisma.shadowSubject.findMany({ where: { deletedAt: null } });
-    const subjectCodes = subjects.map((s) => s.code).filter((c): c is string => Boolean(c));
+    const subjectCodes = subjects.map((subject) => subject.code).filter((c): c is string => Boolean(c));
     return generateExcelTemplate(SUBJECT_TEACHER_EXCEL_HEADERS, 'Guru Mapel', {
       email: 'guru@example.com',
       subjectCode: subjectCodes[0] ?? 'MTK',
@@ -225,7 +225,7 @@ export class SubjectTeacherService {
       prisma.subjectTeacher.findMany({ where: { deletedAt: null } }),
       prisma.shadowSubject.findMany({ where: { deletedAt: null } }),
     ]);
-    const teacherIds = [...new Set(items.map((i) => i.teacherId).filter((id): id is string => Boolean(id)))];
+    const teacherIds = [...new Set(items.map((item) => item.teacherId).filter((id): id is string => Boolean(id)))];
     const masterTeachers = teacherIds.length ? await getOrchestrator().masterTeacher.findByIds(teacherIds) : [];
     const emailByTeacherId = new Map(masterTeachers.map((t) => [t.id, t.email ?? '']));
     const codeBySubjectId = new Map(shadowSubjects.map((s) => [s.id, s.code ?? '']));

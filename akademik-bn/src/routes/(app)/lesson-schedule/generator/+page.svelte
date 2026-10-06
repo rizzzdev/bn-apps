@@ -247,7 +247,7 @@
 		}
 
 		for (const tId of assignedTeacherIds) {
-			const teacherObj = allTeachers.find((t) => t.id === tId);
+			const teacherObj = allTeachers.find((teacher) => teacher.id === tId);
 			if (!teacherObj) continue;
 
 			const stRecords = subjectTeachers.filter(
@@ -397,7 +397,7 @@
 			// Group by subjectId
 			const grouped = new Map<string, { rows: ClassSubjectRequirement[]; sub: ShadowSubject }>();
 			for (const rec of existing) {
-				const sub = allSubjects.find((s) => s.id === rec.subjectId);
+				const sub = allSubjects.find((subject) => subject.id === rec.subjectId);
 				if (!sub) continue;
 				if (!grouped.has(sub.id)) grouped.set(sub.id, { rows: [], sub });
 				grouped.get(sub.id)!.rows.push(rec);
@@ -486,7 +486,7 @@
 				return;
 			}
 			await classSubjectRequirementApi.bulkDelete(reqIds);
-			const className = allClasses.find((c) => c.id === selectedRequirementClassId)?.name || '';
+			const className = allClasses.find((classItem) => classItem.id === selectedRequirementClassId)?.name || '';
 			toast.success(`Semua data alokasi jam pelajaran untuk kelas ${className} berhasil dihapus`);
 			isClearAllReqOpen = false;
 			selectedReqIds = [];
@@ -874,7 +874,7 @@
 								/>
 								<TooltipIconButton
 									icon="delete_sweep"
-									tooltip={`Hapus Semua Alokasi Kelas ${allClasses.find((c) => c.id === selectedRequirementClassId)?.name || ''}`}
+									tooltip={`Hapus Semua Alokasi Kelas ${allClasses.find((classItem) => classItem.id === selectedRequirementClassId)?.name || ''}`}
 									onclick={() => (isClearAllReqOpen = true)}
 									variant="danger"
 								/>
@@ -953,7 +953,7 @@
 											{#if req.teacherIds.length > 0}
 												<div class="flex flex-wrap gap-1.5">
 													{#each req.teacherIds as tId}
-														{@const teacher = allTeachers.find((t) => t.id === tId)}
+														{@const teacher = allTeachers.find((teacher) => teacher.id === tId)}
 														{#if teacher}
 															<span
 																class="px-2 py-0.5 border-2 border-on-background bg-secondary-container text-on-secondary-container text-xs font-bold"
@@ -1432,7 +1432,7 @@
 	<div class="flex flex-col gap-3">
 		<p class="font-body-md text-body-md">
 			Yakin ingin menghapus <strong>SEMUA</strong> data alokasi jam pelajaran untuk kelas
-			<strong>{allClasses.find((c) => c.id === selectedRequirementClassId)?.name || ''}</strong>?
+			<strong>{allClasses.find((classItem) => classItem.id === selectedRequirementClassId)?.name || ''}</strong>?
 		</p>
 		<div class="neo-border p-3 bg-error-container text-error text-xs font-data-mono">
 			<Icon name="warning" size="16px" class="inline mr-1" />Tindakan ini akan menghapus semua data

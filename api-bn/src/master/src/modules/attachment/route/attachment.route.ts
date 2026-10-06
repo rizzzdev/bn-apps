@@ -1,4 +1,4 @@
-import { validate } from '#master/middlewares';
+import { validate } from '#app';
 import { uploadAttachment, uploadAttachments } from '#master/middlewares/upload.middleware';
 import { Router } from 'express';
 import { attachmentController } from '#master/modules/attachment/controller';

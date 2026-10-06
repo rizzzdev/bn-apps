@@ -1,4 +1,4 @@
-import { validate } from '#master/middlewares';
+import { validate } from '#app';
 import { Router } from 'express';
 import { semesterController } from '#master/modules/semester/controller';
 import { batchGetSemesterSchema, createSemesterSchema, updateSemesterSchema } from '#master/modules/semester/domain';

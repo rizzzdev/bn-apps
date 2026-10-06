@@ -328,7 +328,7 @@
   function handleSelectAll(e: Event) {
     const target = e.target as HTMLInputElement;
     if (target.checked) {
-      selectedMentors = users.map((u) => u.id);
+      selectedMentors = users.map((user) => user.id);
     } else {
       selectedMentors = [];
     }
@@ -358,7 +358,7 @@
       if (res.ok) {
         const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
+        const anchor = document.createElement("a");
         a.href = url;
         a.download = "template-mentor.xlsx";
         document.body.appendChild(a);

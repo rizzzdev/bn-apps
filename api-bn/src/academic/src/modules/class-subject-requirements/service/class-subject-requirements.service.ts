@@ -71,7 +71,7 @@ export class ClassSubjectRequirementService {
     }
 
     for (const teacherId of teacherIds) {
-      const teacher = teachers.find((t) => t.id === teacherId);
+      const teacher = teachers.find((teacher) => teacher.id === teacherId);
       const teacherName = teacher ? teacher.fullname : teacherId;
       const stForTeacher = subjectTeachers.filter((st) => st.teacherId === teacherId);
 
@@ -221,8 +221,8 @@ export class ClassSubjectRequirementService {
       prisma.shadowSubject.findMany({ where: { deletedAt: null } }),
       prisma.shadowClass.findMany({ where: { deletedAt: null } }),
     ]);
-    const subjectCodes = subjects.map((s) => s.code).filter((c): c is string => Boolean(c));
-    const classNames = classes.map((c) => c.name).filter((c): c is string => Boolean(c));
+    const subjectCodes = subjects.map((subject) => subject.code).filter((c): c is string => Boolean(c));
+    const classNames = classes.map((classItem) => classItem.name).filter((c): c is string => Boolean(c));
     return generateExcelTemplate(CLASS_SUBJECT_REQUIREMENT_EXCEL_HEADERS, 'Alokasi Jam', {
       className: classNames[0] ?? '10 RPL 1',
       subjectCode: subjectCodes[0] ?? 'MTK',
@@ -278,7 +278,7 @@ export class ClassSubjectRequirementService {
     const autoBatchGroups = new Map<string, string>(); // subjectId|teacherId -> batchGroupId
 
     const toInt = (v: unknown, fallback: number, min: number) => {
-      const n = Number(v);
+            const numericValue = Number(v);
       return Number.isFinite(n) && n >= min ? Math.floor(n) : null;
     };
 
@@ -430,7 +430,7 @@ export class ClassSubjectRequirementService {
       prisma.shadowSubject.findMany({ where: { deletedAt: null } }),
       prisma.shadowClass.findMany({ where: { deletedAt: null } }),
     ]);
-    const teacherIds = [...new Set(items.map((i) => i.teacherId).filter((id): id is string => Boolean(id)))];
+    const teacherIds = [...new Set(items.map((item) => item.teacherId).filter((id): id is string => Boolean(id)))];
     const masterTeachers = teacherIds.length ? await getOrchestrator().masterTeacher.findByIds(teacherIds) : [];
     const emailByTeacherId = new Map(masterTeachers.map((t) => [t.id, t.email ?? '']));
     const codeBySubjectId = new Map(shadowSubjects.map((s) => [s.id, s.code ?? '']));

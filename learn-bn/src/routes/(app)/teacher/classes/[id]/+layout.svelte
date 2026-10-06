@@ -26,7 +26,7 @@
 		<p class="font-bold text-secondary">Memuat data kelas...</p>
 	</div>
 {:then classes}
-	{@const classData = classes.find((c) => c.id === classId)}
+	{@const classData = classes.find((classItem) => classItem.id === classId)}
 	{#if !classData}
 		<div class="flex flex-col items-center justify-center p-12 bg-surface-container-lowest neo-border text-center max-w-lg mx-auto mt-12">
 			<span class="material-symbols-outlined text-6xl text-error mb-4">error</span>

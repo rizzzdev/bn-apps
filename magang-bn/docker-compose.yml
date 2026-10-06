@@ -17,11 +17,11 @@ services:
       - proxy
       - backend
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.magang-bn.rule=Host(`magang-bn.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.magang-bn.entrypoints=websecure"
-      - "traefik.http.routers.magang-bn.tls.certresolver=myresolver"
-      - "traefik.http.services.magang-bn.loadbalancer.server.port=3004"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.magang-bn.rule=Host(`magang-bn.${DOMAIN_NAME}`)'
+      - 'traefik.http.routers.magang-bn.entrypoints=websecure'
+      - 'traefik.http.routers.magang-bn.tls.certresolver=myresolver'
+      - 'traefik.http.services.magang-bn.loadbalancer.server.port=3004'
 
 networks:
   proxy:

@@ -21,11 +21,11 @@ services:
       - proxy
       - backend
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.exam-bn.rule=Host(`exam-bn.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.exam-bn.entrypoints=websecure"
-      - "traefik.http.routers.exam-bn.tls.certresolver=myresolver"
-      - "traefik.http.services.exam-bn.loadbalancer.server.port=3007"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.exam-bn.rule=Host(`exam-bn.${DOMAIN_NAME}`)'
+      - 'traefik.http.routers.exam-bn.entrypoints=websecure'
+      - 'traefik.http.routers.exam-bn.tls.certresolver=myresolver'
+      - 'traefik.http.services.exam-bn.loadbalancer.server.port=3007'
 
 networks:
   proxy:

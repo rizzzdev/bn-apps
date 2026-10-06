@@ -56,7 +56,7 @@
 
 		void loadNotifications(data.token);
 
-		const s = connectSocket(data.token);
+		const socket = connectSocket(data.token);
 		socket = s;
 
 		// exam:started/exam:ended/violation/join/disconnect are also persisted +

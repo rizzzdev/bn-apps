@@ -26,7 +26,7 @@
 	}
 
 	function avg(participants: (typeof data.examResults)[0]['participants']): string {
-		const scored = participants.filter((p) => p.submitted && p.score !== null);
+		const scored = participants.filter((participant) => participant.submitted && p.score !== null);
 		if (scored.length === 0) return '-';
 		const total = scored.reduce((sum, p) => sum + (p.score ?? 0), 0);
 		return (total / scored.length).toFixed(1);
@@ -163,7 +163,7 @@
 									>
 								</div>
 								<div>
-									{exam.participants.filter((p) => p.submitted).length}/{exam.participants.length} mengumpulkan
+									{exam.participants.filter((participant) => participant.submitted).length}/{exam.participants.length} mengumpulkan
 								</div>
 								<div>
 									KKM: <span class="font-black text-(--text-primary)">{exam.passingGrade}</span>

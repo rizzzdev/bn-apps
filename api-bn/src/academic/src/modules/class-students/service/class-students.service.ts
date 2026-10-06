@@ -310,7 +310,7 @@ export class ClassStudentService extends BaseService<any, CreateClassStudentDto,
   /** Generate template Excel kosong (label Indonesia + sample row + dropdown nama kelas & status). */
   async getExcelTemplate(): Promise<Buffer> {
     const classes = await prisma.shadowClass.findMany({ where: { deletedAt: null } });
-    const classNames = classes.map((c) => c.name).filter((c): c is string => Boolean(c));
+    const classNames = classes.map((classItem) => classItem.name).filter((c): c is string => Boolean(c));
     return generateExcelTemplate(CLASS_STUDENT_EXCEL_HEADERS, 'Kelas Murid', {
       email: 'murid@example.com',
       className: classNames[0] ?? '10 RPL 1',
@@ -432,7 +432,7 @@ export class ClassStudentService extends BaseService<any, CreateClassStudentDto,
       prisma.classStudent.findMany({ where: { deletedAt: null } }),
       prisma.shadowClass.findMany({ where: { deletedAt: null } }),
     ]);
-    const studentIds = [...new Set(items.map((i) => i.studentId).filter((id): id is string => Boolean(id)))];
+    const studentIds = [...new Set(items.map((item) => item.studentId).filter((id): id is string => Boolean(id)))];
     const masterStudents = studentIds.length ? await getOrchestrator().masterStudent.findByIds(studentIds) : [];
     const emailByStudentId = new Map(masterStudents.map((s) => [s.id, s.email ?? '']));
     const nameByClassId = new Map(shadowClasses.map((c) => [c.id, c.name ?? '']));

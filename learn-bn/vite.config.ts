@@ -15,6 +15,11 @@ export default defineConfig({
 			adapter: adapter()
 		})
 	],
+	build: {
+		// Main vendor chunk is ~547 kB after minification; keep the limit just above it
+		// so legitimately large shared bundles don't produce noise.
+		chunkSizeWarningLimit: 600
+	},
 	server: {
 		port: 9062,
 		strictPort: true

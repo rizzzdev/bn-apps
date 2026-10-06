@@ -152,7 +152,7 @@ export class TeacherUnavailabilityService {
       where: { deletedAt: null },
       include: { lessonHour: true },
     });
-    const teacherIds = [...new Set(items.map((i) => i.teacherId).filter((id): id is string => Boolean(id)))];
+    const teacherIds = [...new Set(items.map((item) => item.teacherId).filter((id): id is string => Boolean(id)))];
     const masterTeachers = teacherIds.length ? await getOrchestrator().masterTeacher.findByIds(teacherIds) : [];
     const emailByTeacherId = new Map(masterTeachers.map((t) => [t.id, t.email ?? '']));
     return buildExcelExport(

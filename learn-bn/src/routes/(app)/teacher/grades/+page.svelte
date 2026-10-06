@@ -167,7 +167,7 @@
 		</div>
 	{:else if gradeData}
 		{@const gradedStudents = gradeData.students.filter(
-			(s) => s.assignments.some((a) => a.grade !== null) || s.quizzes.some((q) => q.score !== null)
+			(s) => s.assignments.some((assignment) => assignment.grade !== null) || s.quizzes.some((quiz) => quiz.score !== null)
 		)}
 
 		<!-- ═══ Summary Stats ═══ -->

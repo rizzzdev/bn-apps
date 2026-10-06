@@ -28,7 +28,7 @@
 		<span class="material-symbols-outlined animate-spin text-4xl">progress_activity</span>
 	</div>
 {:then classes}
-	{@const cls = classes.find((c) => c.id === classId)}
+	{@const cls = classes.find((classItem) => classItem.id === classId)}
 	{#if !cls}
 		<div class="flex flex-col items-center justify-center p-12 bg-surface-container-lowest neo-border shadow-[8px_8px_0px_0px_rgba(26,28,28,1)] text-center max-w-lg mx-auto mt-12">
 			<span class="material-symbols-outlined text-6xl text-error mb-4" style="font-variation-settings: 'FILL' 1;">error</span>

@@ -33,7 +33,7 @@
 
 	function addQuestion() {
 		if (!currentQuestion.trim()) return;
-		const validOptions = currentOptions.filter((o) => o.trim());
+		const validOptions = currentOptions.filter((option) => option.trim());
 		if (validOptions.length < 2) return;
 
 		questions = [

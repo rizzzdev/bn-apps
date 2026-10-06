@@ -99,7 +99,8 @@ The emotional response should be one of **confidence and momentum**. By using hi
 
 ## Colors
 
-The palette is intentionally restricted to maximize impact. 
+The palette is intentionally restricted to maximize impact.
+
 - **Primary (#ADFF2F):** A high-voltage Neon Green used for primary actions, progress indicators, and "active" states.
 - **Secondary (#000000):** Pure black is used for all borders, hard shadows, and primary text to ensure maximum legibility and structural definition.
 - **Background (#F5F5F5):** An off-white "Ghost White" serves as the canvas, preventing eye strain while allowing the neon green to vibrate against the surface.
@@ -110,7 +111,8 @@ The palette is intentionally restricted to maximize impact.
 This design system uses **Space Grotesk** for headlines and labels to lean into the technical, geometric personality of the brand. Its quirky letterforms (like the lowercase 'a' and 'g') complement the neobrutalist style. **Inter** is used for body copy to ensure that long-form educational content (course descriptions, quiz questions) remains highly readable and professional.
 
 **Bahasa Indonesia implementation:**
-- Use "bold" weights for navigation links (e.g., *Beranda*, *Kursus Saya*).
+
+- Use "bold" weights for navigation links (e.g., _Beranda_, _Kursus Saya_).
 - All labels and buttons use `label-bold` for a punchy, urgent feel.
 - Maintain tight letter-spacing on display headings to emphasize the "blocky" aesthetic.
 
@@ -141,26 +143,31 @@ Exception: Avatars (user photos) may be circular to provide a single point of or
 ## Components
 
 ### Buttons
+
 - **Primary:** Neon Green (#ADFF2F) background, 2px black border, 4px black shadow. Text in `label-bold`.
 - **States:** On hover, the shadow increases to 8px. On click/active, the shadow disappears and the button shifts 4px down-right.
 - **Label Example:** "Mulai Belajar" (Start Learning).
 
 ### Cards (Course Modules)
+
 - White background, 2px black border, 4px black shadow.
 - Header area of the card can have a Neon Green fill to denote "In Progress" status.
 - Content inside follows the `stack-sm` spacing rule.
 
 ### Input Fields
-- White background, 2px black border. 
-- No shadow in default state. 
+
+- White background, 2px black border.
+- No shadow in default state.
 - On focus, add a 4px Neon Green shadow (instead of black) to indicate the active typing area.
 - Placeholder text: `body-md` in a mid-grey (#777777).
 
 ### Progress Bars
+
 - Container: 3px black border, white background.
 - Fill: Solid Neon Green.
 - Height: Minimum 24px to ensure the "blocky" feel is maintained.
 
 ### Chips/Badges
+
 - Small rectangular boxes with 2px black borders.
 - Use Neon Green for "Lulus" (Passed) and White for "Belum Selesai" (Incomplete).

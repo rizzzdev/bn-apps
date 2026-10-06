@@ -18,11 +18,11 @@
 	let filteredTeachers = $derived(
 		teachers.filter((t) => {
 			if (!searchQuery) return true;
-			const q = searchQuery.toLowerCase();
+			const query = searchQuery.toLowerCase();
 			return (
-				t.fullname.toLowerCase().includes(q) ||
-				t.nip.includes(q) ||
-				t.class.toLowerCase().includes(q)
+				t.fullname.toLowerCase().includes(query) ||
+				t.nip.includes(query) ||
+				t.class.toLowerCase().includes(query)
 			);
 		})
 	);

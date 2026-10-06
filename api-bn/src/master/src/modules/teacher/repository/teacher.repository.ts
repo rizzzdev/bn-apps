@@ -26,7 +26,7 @@ export class TeacherRepository {
       return teachers;
     }
 
-    const users = await getOrchestrator().authData.findUsersByIds(teachers.map((t) => t.userId));
+    const users = await getOrchestrator().authData.findUsersByIds(teachers.map((teacher) => teacher.userId));
 
     return teachers.map((teacher) => ({
       ...teacher,

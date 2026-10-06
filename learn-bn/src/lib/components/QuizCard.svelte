@@ -36,7 +36,7 @@
 
 	let targetClasses = $derived(
 		quiz.classes && quiz.classes.length > 0
-			? quiz.classes.map((c) => c.class?.name).filter(Boolean).join(', ')
+			? quiz.classes.map((classItem) => classItem.class?.name).filter(Boolean).join(', ')
 			: quiz.className || 'Kelas'
 	);
 

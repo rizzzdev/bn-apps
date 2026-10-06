@@ -383,7 +383,7 @@
 			if (!res.ok) throw new Error('Gagal mengunduh template');
 			const blob = await res.blob();
 			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement('a');
+			const anchor = document.createElement('a');
 			a.href = url;
 			a.download = 'teachers_template.xlsx';
 			document.body.appendChild(a);
@@ -448,7 +448,7 @@
 
 	function toggleAll(e: Event) {
 		const checked = (e.target as HTMLInputElement).checked;
-		selectedIds = checked ? filteredTeachers.map((t) => t.id as string) : [];
+		selectedIds = checked ? filteredTeachers.map((teacher) => teacher.id as string) : [];
 	}
 
 	let teachers = $state<import('$lib/types').Teacher[]>([]);

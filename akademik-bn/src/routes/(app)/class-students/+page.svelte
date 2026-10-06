@@ -32,10 +32,10 @@
 	let error = $state('');
 
 	let filteredClasses = $derived.by(() => {
-		const q = searchTerm.trim().toLowerCase();
-		if (!q) return classes;
+		const query = searchTerm.trim().toLowerCase();
+		if (!query) return classes;
 		return classes.filter(
-			(c) => c.name.toLowerCase().includes(q) || c.majorCode.toLowerCase().includes(q)
+			(c) => (c.name?.toLowerCase().includes(query) ?? false) || (c.majorCode?.toLowerCase().includes(query) ?? false)
 		);
 	});
 	let totalItems = $derived(filteredClasses.length);
@@ -55,7 +55,7 @@
 	let selectedClassMajorId = $state('');
 
 	$effect(() => {
-		const cls = classes.find((c) => c.id === selectedClassId);
+		const cls = classes.find((classItem) => classItem.id === selectedClassId);
 		selectedClassMajorId = cls?.majorId ?? '';
 		addStudentIds = [];
 	});

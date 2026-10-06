@@ -259,7 +259,7 @@
 			<h2 class="text-base font-black text-(--text-primary)">
 				Status Peserta
 				<span class="ml-2 text-sm font-medium text-(--text-secondary)"
-					>({participants.filter((p) => p.isOnline).length}/{participants.length} online)</span
+					>({participants.filter((participant) => participant.isOnline).length}/{participants.length} online)</span
 				>
 			</h2>
 		</div>

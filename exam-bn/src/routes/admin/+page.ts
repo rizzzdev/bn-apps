@@ -25,9 +25,9 @@ export const load: PageLoad = async ({ parent, fetch }) => {
 	return {
 		stats: {
 			totalUsers: users.length,
-			adminCount: users.filter((u) => u.role === 'super_admin').length,
-			supervisorCount: users.filter((u) => u.role === 'teacher').length,
-			participantCount: users.filter((u) => u.role === 'student').length,
+			adminCount: users.filter((user) => user.role === 'super_admin').length,
+			supervisorCount: users.filter((user) => user.role === 'teacher').length,
+			participantCount: users.filter((user) => user.role === 'student').length,
 			totalExams: exams.length,
 			activeExams: activeExams.length,
 			upcomingExams: upcomingExams.length,

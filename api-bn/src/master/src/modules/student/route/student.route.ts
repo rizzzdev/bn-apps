@@ -1,4 +1,5 @@
-import { validate, uploadExcel } from '#master/middlewares';
+import { validate } from '#app';
+import { uploadExcel } from '#master/middlewares';
 import { Router } from 'express';
 import { studentController } from '#master/modules/student/controller';
 import { batchGetStudentSchema, createStudentSchema, updateStudentSchema, bulkUpdateStudentStatusSchema, changePasswordSchema, updateStudentClassSchema, updateStudentMajorSchema } from '#master/modules/student/domain';

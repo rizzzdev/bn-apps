@@ -1,7 +1,6 @@
 import { userRepository } from '../repository/user.repository.js';
 import { UpdateRoleDto, BulkUpdateRoleDto } from '../domain/index.js';
-import { prisma as masterPrisma } from '#master/database/index.js';
-import { prisma as internshipPrisma } from '#internship/database/index.js';
+import { getOrchestrator } from '#app/orchestrator.js';
 import { BadRequestError, NotFoundError } from '#app';
 
 export class UserService {
@@ -30,47 +29,27 @@ export class UserService {
     const userId = user.id;
     const emailIdentifier = user.sentri_identifiers?.find((i: any) => i.type === 'email');
     const userEmail = emailIdentifier ? emailIdentifier.value : null;
+    const orchestrator = getOrchestrator();
 
     if (newRoles.includes('student')) {
-      const student = await masterPrisma.student.findFirst({
-        where: {
-          deletedAt: null,
-          OR: [
-            { userId: userId },
-            ...(userEmail ? [{ email: userEmail }] : [])
-          ]
-        }
-      });
+      const student = await orchestrator.masterStudent.findByUserId(userId)
+        ?? (userEmail ? await orchestrator.masterStudent.findByEmail(userEmail) : null);
       if (!student) {
         throw new BadRequestError(`Pengguna (${userEmail || userId}) belum terdaftar sebagai data Student`);
       }
     }
 
     if (newRoles.includes('teacher')) {
-      const teacher = await masterPrisma.teacher.findFirst({
-        where: {
-          deletedAt: null,
-          OR: [
-            { userId: userId },
-            ...(userEmail ? [{ email: userEmail }] : [])
-          ]
-        }
-      });
+      const teacher = await orchestrator.masterTeacher.findByUserId(userId)
+        ?? (userEmail ? await orchestrator.masterTeacher.findByEmail(userEmail) : null);
       if (!teacher) {
         throw new BadRequestError(`Pengguna (${userEmail || userId}) belum terdaftar sebagai data Teacher`);
       }
     }
 
     if (newRoles.includes('industry_mentor')) {
-      const mentor = await internshipPrisma.industryMentor.findFirst({
-        where: {
-          deletedAt: null,
-          OR: [
-            { userId: userId },
-            ...(userEmail ? [{ email: userEmail }] : [])
-          ]
-        }
-      });
+      const mentor = await orchestrator.internshipIndustryMentor.findByUserId(userId)
+        ?? (userEmail ? await orchestrator.internshipIndustryMentor.findByEmail(userEmail) : null);
       if (!mentor) {
         throw new BadRequestError(`Pengguna (${userEmail || userId}) belum terdaftar sebagai data Industry Mentor`);
       }

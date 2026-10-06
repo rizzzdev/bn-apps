@@ -71,9 +71,9 @@ export function formatDateRange(start: string, end: string): string {
 	const opts: Intl.DateTimeFormatOptions = {
 		day: "numeric", month: "short", year: "numeric",
 	};
-	const s = new Date(start).toLocaleDateString("id-ID", opts);
-	const e = new Date(end).toLocaleDateString("id-ID", opts);
-	return `${s} - ${e}`;
+	const formattedDate = new Date(start).toLocaleDateString("id-ID", opts);
+	const endDate = new Date(end).toLocaleDateString("id-ID", opts);
+	return `${formattedDate} - ${endDate}`;
 }
 
 export function formatBytesToMB(bytes: number): string {

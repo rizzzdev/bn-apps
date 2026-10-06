@@ -1,7 +1,7 @@
 import { env as publicEnv } from '$env/dynamic/public';
 import { browser } from '$app/environment';
 
-export type UserRole = 'teacher' | 'student' | 'super_admin' | null;
+export type UserRole = 'teacher' | 'student' | 'super_admin' | 'waka_kurikulum' | null;
 
 export type User = {
   id: string;
@@ -31,6 +31,7 @@ function getIdentifier(data: any): string {
 
 function resolveRole(roles?: string[]): UserRole {
   if (!roles?.length) return null;
+  if (roles.includes('waka_kurikulum')) return 'waka_kurikulum';
   if (roles.includes('student')) return 'student';
   if (roles.includes('teacher')) return 'teacher';
   if (roles.includes('super_admin')) return 'super_admin';
@@ -38,6 +39,7 @@ function resolveRole(roles?: string[]): UserRole {
 }
 
 export function getHomePath(role: UserRole): string {
+  if (role === 'waka_kurikulum') return '/curriculum';
   if (role === 'student') return '/student';
   return '/teacher';
 }

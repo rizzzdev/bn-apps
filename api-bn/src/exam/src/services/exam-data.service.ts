@@ -37,7 +37,7 @@ export class ExamRepository implements IExamRepository {
 
 export class ExamParticipantRepository implements IExamParticipantRepository {
   async findByRoomAndUser(examRoomId: string, userId: string): Promise<ExamParticipantData | null> {
-    const p = await prisma.examParticipant.findFirst({ where: { examRoomId, userId } });
+        const participant = await prisma.examParticipant.findFirst({ where: { examRoomId, userId } });
     if (!p) return null;
     return { id: p.id, examRoomId: p.examRoomId, userId: p.userId, status: p.status };
   }
@@ -50,7 +50,7 @@ export class ExamParticipantRepository implements IExamParticipantRepository {
 
 export class ExamSupervisorRepository implements IExamSupervisorRepository {
   async findByRoomAndUser(examRoomId: string, userId: string): Promise<ExamSupervisorData | null> {
-    const s = await prisma.examSupervisor.findFirst({ where: { examRoomId, userId } });
+        const supervisor = await prisma.examSupervisor.findFirst({ where: { examRoomId, userId } });
     if (!s) return null;
     return { id: s.id, examRoomId: s.examRoomId, userId: s.userId };
   }

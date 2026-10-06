@@ -19,7 +19,7 @@
 		if (!name) return '??';
 		return name
 			.split(' ')
-			.map((n) => n[0])
+			.map((name) => name[0])
 			.slice(0, 2)
 			.join('')
 			.toUpperCase();

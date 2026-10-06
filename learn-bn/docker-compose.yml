@@ -17,11 +17,11 @@ services:
       - proxy
       - backend
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.learn-bn.rule=Host(`learn-bn.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.learn-bn.entrypoints=websecure"
-      - "traefik.http.routers.learn-bn.tls.certresolver=myresolver"
-      - "traefik.http.services.learn-bn.loadbalancer.server.port=3006"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.learn-bn.rule=Host(`learn-bn.${DOMAIN_NAME}`)'
+      - 'traefik.http.routers.learn-bn.entrypoints=websecure'
+      - 'traefik.http.routers.learn-bn.tls.certresolver=myresolver'
+      - 'traefik.http.services.learn-bn.loadbalancer.server.port=3006'
 
 networks:
   proxy:

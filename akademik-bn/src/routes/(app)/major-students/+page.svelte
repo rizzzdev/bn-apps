@@ -31,10 +31,10 @@
 	let error = $state('');
 
 	let filteredMajors = $derived.by(() => {
-		const q = searchTerm.trim().toLowerCase();
-		if (!q) return majors;
+		const query = searchTerm.trim().toLowerCase();
+		if (!query) return majors;
 		return majors.filter(
-			(m) => m.name.toLowerCase().includes(q) || m.code.toLowerCase().includes(q)
+			(m) => (m.name?.toLowerCase().includes(query) ?? false) || (m.code?.toLowerCase().includes(query) ?? false)
 		);
 	});
 	let totalItems = $derived(filteredMajors.length);

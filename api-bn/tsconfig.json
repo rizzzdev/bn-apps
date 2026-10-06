@@ -32,5 +32,6 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "rewriteRelativeImportExtensions": true
-  }
+  },
+  "exclude": ["node_modules", "dist", "test", "scripts", "vitest.config.ts"]
 }

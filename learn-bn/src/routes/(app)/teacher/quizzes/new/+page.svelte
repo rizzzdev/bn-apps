@@ -39,7 +39,7 @@
 			try {
 				classes = await lmsStore.getTeacherClasses();
 				const urlClassId = $page.url.searchParams.get('classId');
-				if (urlClassId && classes.some((c) => c.id === urlClassId)) {
+				if (urlClassId && classes.some((classItem) => classItem.id === urlClassId)) {
 					selectedClassIds = [urlClassId];
 				} else if (selectedClassIds.length === 0 && classes.length > 0) {
 					selectedClassIds = [classes[0].id];

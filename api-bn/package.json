@@ -55,10 +55,11 @@
     "db:pull:auth": "prisma db pull --config=src/auth/prisma.config.ts",
     "db:pull:exam": "prisma db pull --config=src/exam/prisma.config.ts",
     "db:seed:academic": "tsx src/scripts/seed-lesson-hours.ts",
-      "worker": "tsx src/academic/src/modules/timetable-generator/service/timetable.worker.ts",
-  "db:generate": "npm run db:generate:master && npm run db:generate:academic && npm run db:generate:internship && npm run db:generate:learn && npm run db:generate:auth && npm run db:generate:exam",
+    "worker": "tsx src/academic/src/modules/timetable-generator/service/timetable.worker.ts",
+    "db:generate": "npm run db:generate:master && npm run db:generate:academic && npm run db:generate:internship && npm run db:generate:learn && npm run db:generate:auth && npm run db:generate:exam",
     "build": "npm run db:generate",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "arch:check": "node scripts/check-module-boundaries.mjs",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -84,8 +85,11 @@
     "@types/express": "^5.0.6",
     "@types/multer": "^2.2.0",
     "@types/node": "^26.1.1",
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.0",
     "prisma": "^7.8.0",
     "tsx": "^4.23.1",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1"
   }
 }

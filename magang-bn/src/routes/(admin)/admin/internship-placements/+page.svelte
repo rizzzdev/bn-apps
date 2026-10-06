@@ -45,7 +45,7 @@
 
 	let filteredMentorOptions = $derived(
 		selectedIndustry
-			? mentorOptions.filter((m) => m.companyId === selectedIndustry)
+			? mentorOptions.filter((mentor) => mentor.companyId === selectedIndustry)
 			: mentorOptions,
 	);
 
@@ -144,7 +144,7 @@
 		if (isAllSelected) {
 			selectedRows = [];
 		} else {
-			selectedRows = placements.map((p) => p.id);
+			selectedRows = placements.map((placement) => placement.id);
 		}
 		isAllSelected = !isAllSelected;
 	}

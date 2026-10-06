@@ -81,7 +81,7 @@
 		// For ongoing exams, only grade those who submitted.
 		const targets = isFinished(exam)
 			? exam.participants
-			: exam.participants.filter((p) => p.submitted);
+			: exam.participants.filter((participant) => participant.submitted);
 		await Promise.all(targets.map((p) => recalculate(p, exam)));
 	}
 
@@ -205,7 +205,7 @@
 									>
 								</div>
 								<div>
-									{exam.participants.filter((p) => p.submitted).length}/{exam.participants.length} mengumpulkan
+									{exam.participants.filter((participant) => participant.submitted).length}/{exam.participants.length} mengumpulkan
 								</div>
 								<div>
 									KKM: <span class="font-black text-(--text-primary)">{exam.passingGrade}</span>

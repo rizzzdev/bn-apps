@@ -163,7 +163,7 @@
 
 	function toggleAll(e: Event) {
 		const checked = (e.target as HTMLInputElement).checked;
-		selectedIds = checked ? filteredAcademicYears.map((y) => y.id) : [];
+		selectedIds = checked ? filteredAcademicYears.map((year) => year.id) : [];
 	}
 
 	let academicYears = $state<import('$lib/types').AcademicYear[]>([]);
@@ -186,7 +186,7 @@
 				totalItems = result.pagination?.totalData || 0;
 
 				if (selectedAcademicYear) {
-					const updated = academicYears.find((y) => y.id === selectedAcademicYear?.id);
+					const updated = academicYears.find((year) => year.id === selectedAcademicYear?.id);
 					if (updated) selectedAcademicYear = updated;
 				}
 			} else {

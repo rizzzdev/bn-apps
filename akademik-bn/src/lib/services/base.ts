@@ -137,11 +137,11 @@ export async function downloadExcel(endpoint: string, filename: string): Promise
 	if (!res.ok) await parseResponse(res);
 	const blob = await res.blob();
 	const url = URL.createObjectURL(blob);
-	const a = document.createElement('a');
-	a.href = url;
-	a.download = filename;
-	document.body.appendChild(a);
-	a.click();
-	a.remove();
+	const anchor = document.createElement('a');
+	anchor.href = url;
+	anchor.download = filename;
+	document.body.appendChild(anchor);
+	anchor.click();
+	anchor.remove();
 	URL.revokeObjectURL(url);
 }

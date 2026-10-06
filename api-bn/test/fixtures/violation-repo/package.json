@@ -1,0 +1,9 @@
+{
+  "name": "violation-repo-fixture",
+  "imports": {
+    "#auth": "./src/auth/index.ts",
+    "#auth/*": "./src/auth/src/*",
+    "#master": "./src/master/index.ts",
+    "#master/*": "./src/master/src/*"
+  }
+}

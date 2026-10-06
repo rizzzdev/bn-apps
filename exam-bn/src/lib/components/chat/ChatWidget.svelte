@@ -349,7 +349,7 @@
 		mergedConversations.filter((c) => {
 			const name = getAvatarName(c.otherUserName, c.otherUserRole).toLowerCase();
 			const email = (c.otherUserEmail ?? '').toLowerCase();
-			const q = listSearch.toLowerCase().trim();
+			const query = listSearch.toLowerCase().trim();
 			return name.includes(q) || email.includes(q);
 		})
 	);
@@ -358,7 +358,7 @@
 		contacts.filter((c) => {
 			const name = getAvatarName(c.fullname, c.role).toLowerCase();
 			const email = (c.email ?? '').toLowerCase();
-			const q = contactSearch.toLowerCase().trim();
+			const query = contactSearch.toLowerCase().trim();
 			return name.includes(q) || email.includes(q);
 		})
 	);

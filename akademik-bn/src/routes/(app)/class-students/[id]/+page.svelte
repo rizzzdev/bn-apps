@@ -77,7 +77,7 @@
 		if (bulkSelectedStudentIds.length === filteredStudents.length && filteredStudents.length > 0) {
 			bulkSelectedStudentIds = [];
 		} else {
-			bulkSelectedStudentIds = filteredStudents.map((s) => s.id);
+			bulkSelectedStudentIds = filteredStudents.map((student) => student.id);
 		}
 	}
 
@@ -191,7 +191,7 @@
 					(h) => h.status === 'Aktif' && h.academicYearId === activeYearId
 				);
 				if (activeHomeroom) {
-					const teacher = allTeachers.find((t) => t.id === activeHomeroom.teacherId);
+					const teacher = allTeachers.find((teacher) => teacher.id === activeHomeroom.teacherId);
 					activeHomeroomTeacher = teacher ?? null;
 				} else {
 					activeHomeroomTeacher = null;
@@ -238,7 +238,7 @@
 			);
 
 			students = activeClassStudents
-				.map((cs) => allStudents.find((s) => s.id === cs.studentId))
+				.map((cs) => allStudents.find((student) => student.id === cs.studentId))
 				.filter(Boolean) as ShadowStudent[];
 		}
 
@@ -258,7 +258,7 @@
 			const yearsRes = await academicYearApi.list(1, 100);
 			if (yearsRes.data) {
 				allYears = yearsRes.data as ShadowAcademicYear[];
-				const activeYear = allYears.find((y) => y.status === 'Aktif');
+				const activeYear = allYears.find((year) => year.status === 'Aktif');
 				if (activeYear) activeYearId = activeYear.id;
 			}
 
@@ -269,11 +269,11 @@
 				teacherApi.list(1, 1000)
 			]);
 
-			const c = classRes.data as ShadowClass | null;
+			const classData = classRes.data as ShadowClass | null;
 			let majorCode = '-';
-			if (c?.majorId) {
+			if (classData?.majorId) {
 				try {
-					const majorRes = await majorApi.getById(c.majorId);
+					const majorRes = await majorApi.getById(classData.majorId);
 					if (majorRes.data) {
 						majorCode = (majorRes.data as { code: string }).code;
 					}
@@ -292,10 +292,10 @@
 
 			if (classRes.data) {
 				cls = {
-					id: c!.id,
-					majorId: c!.majorId,
+					id: classData!.id,
+					majorId: classData!.majorId,
 					majorCode,
-					name: c!.name,
+					name: classData!.name,
 					totalStudents: 0,
 					homeroomTeacher: '-',
 					homeroomTeacherNip: '-',
@@ -487,7 +487,7 @@
 			<div class="neo-border bg-surface-container p-3 max-h-40 overflow-y-auto">
 				<ul class="list-disc list-inside font-data-mono text-xs">
 					{#each bulkSelectedStudentIds as studentId}
-						<li>{students.find((s) => s.id === studentId)?.fullname || studentId}</li>
+						<li>{students.find((student) => student.id === studentId)?.fullname || studentId}</li>
 					{/each}
 				</ul>
 			</div>
@@ -511,7 +511,7 @@
 				id="bulk-target-class"
 				label="Kelas Tujuan"
 				bind:value={bulkTargetClassId}
-				options={allClasses.filter((c) => c.id !== id).map((c) => ({ value: c.id, label: c.name }))}
+				options={allClasses.filter((classItem) => classItem.id !== id).map((c) => ({ value: c.id, label: c.name }))}
 				placeholder="Pilih Kelas Tujuan"
 				multiple={false}
 			/>

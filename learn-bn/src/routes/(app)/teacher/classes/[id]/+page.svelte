@@ -17,7 +17,7 @@
 				<p class="font-bold text-secondary">Memuat data kelas...</p>
 			</div>
 		{:then classes}
-			{@const classData = classes.find((c) => c.id === classId)}
+			{@const classData = classes.find((classItem) => classItem.id === classId)}
 			{#if classData}
 				<article class="bg-surface-container-lowest neo-border shadow-[4px_4px_0px_0px_rgba(26,28,28,1)] p-8">
 					<h3 class="font-headline-md text-2xl font-bold mb-2">{classData.name}</h3>

@@ -1,9 +1,9 @@
 export function formatCountdown(diffMs: number): string {
 	if (diffMs <= 0) return '00:00:00';
-	const h = Math.floor(diffMs / 3_600_000);
-	const m = Math.floor((diffMs % 3_600_000) / 60_000);
-	const s = Math.floor((diffMs % 60_000) / 1_000);
-	return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+	const hours = Math.floor(diffMs / 3_600_000);
+	const minutes = Math.floor((diffMs % 3_600_000) / 60_000);
+	const seconds = Math.floor((diffMs % 60_000) / 1_000);
+	return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 export function createCountdown(

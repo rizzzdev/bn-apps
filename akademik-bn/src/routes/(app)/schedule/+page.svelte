@@ -43,7 +43,7 @@
 		return day - 1; // 0=Senin..4=Jumat, -1=other
 	});
 
-	let activeTeachers = $derived(allTeachers.filter((t) => t.status === 'Aktif'));
+	let activeTeachers = $derived(allTeachers.filter((teacher) => teacher.status === 'Aktif'));
 
 	// Map day → schedules (non-deleted)
 	let schedulesByDay = $derived.by<Map<string, TeacherPicketSchedule[]>>(() => {
@@ -79,7 +79,7 @@
 
 	// Lookup teacher name
 	function getTeacherName(teacherId: string): string {
-		const t = allTeachers.find((t) => t.id === teacherId);
+		const t = allTeachers.find((teacher) => teacher.id === teacherId);
 		return t ? formatTeacherName(t) : teacherId;
 	}
 

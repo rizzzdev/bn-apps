@@ -104,7 +104,7 @@
 	);
 
 	function toggleSelectAll() {
-		const pageIds = paginatedApps.map((a) => a.id);
+		const pageIds = paginatedApps.map((app) => app.id);
 		if (isAllSelected) {
 			selectedIds = selectedIds.filter((id) => !pageIds.includes(id));
 		} else {

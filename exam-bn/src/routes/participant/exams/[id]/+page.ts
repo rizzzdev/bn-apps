@@ -44,7 +44,7 @@ export const load: PageLoad = async ({ parent, fetch, params }) => {
 			)
 		]);
 
-	const isParticipant = participants.some((p) => p.userId === userId);
+	const isParticipant = participants.some((participant) => participant.userId === userId);
 	if (!isParticipant) throw redirect(302, '/participant/exams');
 
 	const [exam, room] = examRoom

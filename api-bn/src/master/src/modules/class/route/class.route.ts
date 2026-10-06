@@ -1,4 +1,5 @@
-import { validate, uploadExcel } from '#master/middlewares';
+import { validate } from '#app';
+import { uploadExcel } from '#master/middlewares';
 import { Router } from 'express';
 import { classController } from '#master/modules/class/controller';
 import { batchGetClassSchema, createClassSchema, updateClassSchema } from '#master/modules/class/domain';

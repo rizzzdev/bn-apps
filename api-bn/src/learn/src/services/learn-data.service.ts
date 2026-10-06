@@ -35,7 +35,7 @@ export class LearnMaterialRepository implements ILearnMaterialRepository {
     return {
       id: m.id,
       title: m.title,
-      classIds: m.classes.map((c) => c.classId),
+      classIds: m.classes.map((classItem) => classItem.classId),
       status: (m as any).status ?? 'Draft',
     };
   }
@@ -52,7 +52,7 @@ export class LearnMaterialRepository implements ILearnMaterialRepository {
     return rows.map((m) => ({
       id: m.id,
       title: m.title,
-      classIds: m.classes.map((c) => c.classId),
+      classIds: m.classes.map((classItem) => classItem.classId),
       status: (m as any).status ?? 'Draft',
     }));
   }
@@ -68,7 +68,7 @@ export class LearnAssignmentRepository implements ILearnAssignmentRepository {
     return {
       id: a.id,
       title: a.title,
-      classIds: a.classes.map((c) => c.classId),
+      classIds: a.classes.map((classItem) => classItem.classId),
       deadline: (a as any).deadline ?? null,
       status: (a as any).status ?? 'Draft',
     };
@@ -86,7 +86,7 @@ export class LearnAssignmentRepository implements ILearnAssignmentRepository {
     return rows.map((a) => ({
       id: a.id,
       title: a.title,
-      classIds: a.classes.map((c) => c.classId),
+      classIds: a.classes.map((classItem) => classItem.classId),
       deadline: (a as any).deadline ?? null,
       status: (a as any).status ?? 'Draft',
     }));
@@ -103,7 +103,7 @@ export class LearnQuizRepository implements ILearnQuizRepository {
     return {
       id: q.id,
       title: q.title,
-      classIds: q.classes.map((c) => c.classId),
+      classIds: q.classes.map((classItem) => classItem.classId),
       timeLimit: num((q as any).timeLimit),
       status: (q as any).status ?? 'Draft',
     };
@@ -121,7 +121,7 @@ export class LearnQuizRepository implements ILearnQuizRepository {
     return rows.map((q) => ({
       id: q.id,
       title: q.title,
-      classIds: q.classes.map((c) => c.classId),
+      classIds: q.classes.map((classItem) => classItem.classId),
       timeLimit: num((q as any).timeLimit),
       status: (q as any).status ?? 'Draft',
     }));
